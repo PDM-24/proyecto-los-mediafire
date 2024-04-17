@@ -1,0 +1,26 @@
+R_DEF: Internal format may change without notice
+local
+color black
+color dark_blue
+color dark_red
+color dark_yellow
+color light_red
+color light_yellow
+color sky_blue
+color white
+drawable googlee
+drawable ic_launcher_background
+drawable ic_launcher_foreground
+drawable logo
+font montserrat_black
+font montserrat_bold
+font montserrat_extrabold
+font montserrat_medium
+font montserrat_regular
+font montserrat_semibold
+mipmap ic_launcher
+mipmap ic_launcher_round
+string app_name
+style Theme.CineFile
+xml backup_rules
+xml data_extraction_rules
