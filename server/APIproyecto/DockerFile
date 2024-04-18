@@ -6,9 +6,7 @@ COPY package*.json ./
 
 COPY . .
 
-RUN npm install express generator –g
-
-RUN express --git --no-view APIproyecto
+RUN npm install
 
 EXPOSE 3500
-CMD  ["nodemon", "dev"]
+CMD  ["npm", "run","dev"]
