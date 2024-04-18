@@ -1,0 +1,14 @@
+FROM node:20
+
+WORKDIR /app
+
+COPY package*.json ./
+
+COPY . .
+
+RUN npm install express generator –g
+
+RUN express --git --no-view APIproyecto
+
+EXPOSE 3500
+CMD  ["nodemon", "dev"]
