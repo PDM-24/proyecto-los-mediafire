@@ -1,0 +1,98 @@
+[
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.ic.cinefile.app-main-46:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.ic.cinefile.app-main-46:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.ic.cinefile.app-main-46:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/drawable_logo.png.flat",
+        "source": "com.ic.cinefile.app-main-46:/drawable/logo.png"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.ic.cinefile.app-main-46:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.ic.cinefile.app-main-46:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.ic.cinefile.app-main-46:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.ic.cinefile.app-main-46:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.ic.cinefile.app-main-46:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/xml_backup_rules.xml.flat",
+        "source": "com.ic.cinefile.app-main-46:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.ic.cinefile.app-main-46:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/font_montserrat_semibold.ttf.flat",
+        "source": "com.ic.cinefile.app-main-46:/font/montserrat_semibold.ttf"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/xml_data_extraction_rules.xml.flat",
+        "source": "com.ic.cinefile.app-main-46:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/font_montserrat_medium.ttf.flat",
+        "source": "com.ic.cinefile.app-main-46:/font/montserrat_medium.ttf"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/drawable_googlee.png.flat",
+        "source": "com.ic.cinefile.app-main-46:/drawable/googlee.png"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.ic.cinefile.app-main-46:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.ic.cinefile.app-main-46:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/font_montserrat_bold.ttf.flat",
+        "source": "com.ic.cinefile.app-main-46:/font/montserrat_bold.ttf"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.ic.cinefile.app-main-46:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.ic.cinefile.app-main-46:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.ic.cinefile.app-main-46:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/font_montserrat_black.ttf.flat",
+        "source": "com.ic.cinefile.app-main-46:/font/montserrat_black.ttf"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/font_montserrat_extrabold.ttf.flat",
+        "source": "com.ic.cinefile.app-main-46:/font/montserrat_extrabold.ttf"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-44:/font_montserrat_regular.ttf.flat",
+        "source": "com.ic.cinefile.app-main-46:/font/montserrat_regular.ttf"
+    }
+]
