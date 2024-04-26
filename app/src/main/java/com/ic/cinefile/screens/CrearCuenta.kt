@@ -28,10 +28,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.ic.cinefile.R
 
 @Composable
-fun CrearCuenta() {
+fun CrearCuenta(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -168,5 +171,6 @@ fun CrearCuenta() {
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewCrearCuentaScreen() {
-    CrearCuenta()
+    val navController = rememberNavController()
+    CrearCuenta(navController)
 }
