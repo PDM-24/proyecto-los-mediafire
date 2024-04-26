@@ -1,12 +1,16 @@
 FROM node:20
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-COPY . .
+RUN npm i nodemon -D
 
 RUN npm install
 
+COPY . .
+
 EXPOSE 3500
-CMD  ["npm", "run","dev"]
+# CMD ["nodemon", "run"]
+
+CMD ["npm", "run", "dev"]
