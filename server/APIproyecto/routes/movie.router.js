@@ -10,6 +10,4 @@ router.get("/movies",movieController.findAll);
 router.get("/movies/:identifier",movieController.findOneById)
 router.post("/movies/add",movieController.movieData)
 router.delete("/movies/delete/:identifier",movieController.deleteById)
-
-
  module.exports = router;

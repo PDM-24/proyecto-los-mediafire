@@ -9,7 +9,6 @@ const movieRouter=require("./movie.router")
 router.use("/account",userRouter);
 
 //api/data/movie
-router.use("/data",movieRouter)
-
+router.use("/data",movieRouter);
 
 module.exports = router;

@@ -5,12 +5,16 @@ const SchemaUsers = Mongoose.Schema;
 
 
 //practicamente los campos de la tabla
-const register_account = SchemaUsers(
+const accountSchema = SchemaUsers(
     {
         
         username:{
-            type:String,
-            required:true,
+          type: String,
+          required: true,
+          trim: true,
+          unique: true,
+          //no tenga diferencia entre mayuscula y minuscula
+          lowercase: true,
        
         },
         email:{
@@ -22,7 +26,7 @@ const register_account = SchemaUsers(
       lowercase: true,
 
                 },
-        password:{
+                hashedPassword:{
             type:String,
             required:true,
           
@@ -58,19 +62,22 @@ const register_account = SchemaUsers(
 
 
 
-  register_account.methods = {
-    encryptPassword: function (pass) {
-      if (!pass) return "";
+  accountSchema.methods = {
+    encryptPassword: function (password) {
+      if (!password) return "";
       //en este try se ecnripta la contraseña
       try {
         //se necesita inmediatamente la contraseña
-        const _password = crypto.pbkdf2Sync(
+        const _password = crypto
+          .pbkdf2Sync(
             //saca del documento de la salt
-            pass,
+            password,
             this.salt,
-            1000,64, //longitud de la llaves
+            1000,
+            64, //longitud de la llaves
             `sha512`
-          ).toString("hex");
+          )
+          .toString("hex");
   
         return _password;
       } catch (error) {
@@ -84,27 +91,20 @@ const register_account = SchemaUsers(
       return crypto.randomBytes(16).toString("hex");
     },
     //se compara con la contraseña que se escriba con el encriptado
-    comparePassword: function (pass) {
-      return this.password === this.encryptPassword(pass);
+    comparePassword: function (password) {
+      return this.hashedPassword === this.encryptPassword(password);
     },
   };
   
+  
   //es temporal
-  register_account.virtual("pass").set(function (
-    pass = crypto.randomBytes(16).toString()
+  accountSchema.virtual("password").set(function (
+    password = crypto.randomBytes(16).toString()
   ) {
     this.salt = this.makeSalt();
-    this.password = this.encryptPassword(pass);
+    this.hashedPassword = this.encryptPassword(password);
   });
-  
 
 
-
-
-
-
-
-
-
-  const User = Mongoose.model("User",register_account);
+  const User = Mongoose.model("User",accountSchema);
 module.exports = User;
