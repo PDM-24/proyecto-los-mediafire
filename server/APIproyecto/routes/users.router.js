@@ -3,11 +3,10 @@
 const express = require("express");
 
 const router = express.Router(); //enrutador
-const createAccountController = require("../controllers/createAccount.controller");
+const AccountController = require("../controllers/account.controller");
 
  
 //api/account/register
-router.post("/register",createAccountController.register);
-
-
+router.post("/register",AccountController.register);
+router.post("/login",AccountController.login)
  module.exports = router;

@@ -1,0 +1,103 @@
+//prcesos para aobtener la peticion, procesarla y obtener la respuesta
+const controller = {};//encargado de contener la informacion
+const User = require("../models/register.model");
+const httpError = require("http-errors");
+
+controller.register=async(req,res,next)=>{
+    try {
+        const {
+          username,
+          email,
+          password,
+          year_nac,
+          genere,
+         movie_genere,
+         avatar
+        } = req.body;
+  
+        const user = await User.findOne({ $or: [{ email: email }] });
+  
+        if (user) {
+          throw httpError(409, "Ya existe esta cuenta");
+        }
+  
+        const newUser = new User({
+        
+            username:username,
+            email:email,
+            password: password,
+            year_nac:year_nac,
+            genere:genere,
+           movie_genere:movie_genere,
+           avatar:avatar,
+
+        });
+  
+        await newUser.save();
+  
+        return res.status(201).json({ message: "Se ha creado correctamente tu usuario" });
+      } catch (error) {
+        next(error);
+      }
+  
+      
+  
+  
+
+
+};
+
+
+
+    //LOGIN
+    controller.login = async (req, res, next) => {
+      try {
+        const { email,password,username}= req.body;
+
+        // obteniendo informacion(correo,contraseña)
+     
+        const user = await User.findOne({ $or: [{email:email}] });
+
+
+        if (!user) {
+          throw httpError(404, "El usuario no se ha encontrado");
+        }
+
+        //verificar contraseña si no coincide
+        if (!user.comparePassword(password)) {
+          throw httpError(401, "contraseña incorrecta");
+        }
+      //   ///Exisite y ya esta verificado
+
+      //   const token = await createToken(user._id);
+
+      //   //almacenar tokens
+      //   let _tokens = [...user.tokens];
+      //   //verifia la integridad de los tokens actuales
+      //   const _verifiyPromise = _tokens.map(async (_t) => {
+      //     const status = await verifyToken(_t);
+      //     return status ? _t : null;
+      //   });
+
+      //   //5 sesionnes
+      //   _tokens = (await Promise.all(_verifiyPromise))
+      //     .filter(_t => _t)
+      //     .slice(0, 4);
+
+      //   //primera posicion(shitf)
+      //   _tokens = [token, ..._tokens];
+      //   user.tokens = _tokens;
+
+        await user.save();
+
+        return res.status(200).json({ message: "Se ha iniciado correctamente" });
+      } catch (error) {
+        next(error);
+      }
+    };
+
+
+module.exports = controller;
+
+
+
