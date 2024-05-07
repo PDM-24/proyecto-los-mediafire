@@ -4,6 +4,7 @@ color black
 color dark_blue
 color dark_red
 color dark_yellow
+color ic_launcher_background
 color light_red
 color light_yellow
 color sky_blue
@@ -25,6 +26,7 @@ font montserrat_medium
 font montserrat_regular
 font montserrat_semibold
 mipmap ic_launcher
+mipmap ic_launcher_foreground
 mipmap ic_launcher_round
 string app_name
 style Theme.CineFile

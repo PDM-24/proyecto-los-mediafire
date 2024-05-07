@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.ic.cinefile.ui.theme.black
+import com.ic.cinefile.ui.theme.white
 
 @OptIn(ExperimentalMaterial3Api::class)
 
@@ -44,16 +46,16 @@ fun Content(navController: NavHostController) {
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(black),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
 
         Text(
-            text = "¡Te damos la bienvenida a nombrespelicula!",
+            text = "¡Te damos la bienvenida \na CineFile!",
             style = TextStyle(
-                color = Color.White,
-                fontSize = 24.sp,
+                color = white,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Center,
             ),
@@ -66,10 +68,10 @@ fun Content(navController: NavHostController) {
             text = "Por favor, sigue las siguientes reglas: ",
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp),
+                .padding(16.dp, 16.dp),
             style = TextStyle(
-                color = Color.White,
-                fontSize = 24.sp,
+                color = white,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Start,
             )
@@ -78,12 +80,12 @@ fun Content(navController: NavHostController) {
         Spacer(modifier = Modifier.height(26.dp))
 
         Text(
-            text = "Regla 1 \n Descripcion \n regla Regla 2 \n Descripcion regla  ",
+            text = "Regla 1 \nDescripcion \nregla Regla 2 \nDescripcion regla",
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp),
             style = TextStyle(
-                color = Color.White,
+                color = white,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Start,
@@ -94,21 +96,22 @@ fun Content(navController: NavHostController) {
         Spacer(modifier = Modifier.height(40.dp))
 
         Row(
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .clickable { aceptarTerminos = !aceptarTerminos }
-                .padding(start = 10.dp)
+                .padding(16.dp, 0.dp)
         ) {
             Checkbox(
                 checked = aceptarTerminos,
                 onCheckedChange = { aceptarTerminos = it },
-                modifier = Modifier.padding(end = 2.dp)
+                modifier = Modifier.padding(start = 2.dp)
             )
 
             Text(
                 text = "He leído y acepto los términos y condiciones de uso.",
                 style = TextStyle(
-                    color = Color.White,
+                    color = white,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Start,
@@ -123,8 +126,8 @@ fun Content(navController: NavHostController) {
             modifier = Modifier
                 .width(300.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
+                containerColor = white,
+                contentColor = black
             ),
         ) {
             Text(

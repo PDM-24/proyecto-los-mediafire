@@ -46,6 +46,7 @@ color call_notification_decline_color
 color dark_blue
 color dark_red
 color dark_yellow
+color ic_launcher_background
 color light_red
 color light_yellow
 color notification_action_color_filter
@@ -210,6 +211,7 @@ layout notification_template_icon_group
 layout notification_template_part_chronometer
 layout notification_template_part_time
 mipmap ic_launcher
+mipmap ic_launcher_foreground
 mipmap ic_launcher_round
 string androidx_startup
 string app_name
