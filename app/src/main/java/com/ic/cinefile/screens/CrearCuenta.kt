@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.ic.cinefile.Navigation.AppScreens
 import com.ic.cinefile.R
 
 @Composable
@@ -108,7 +109,7 @@ fun CrearCuenta(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(35.dp))
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { navController.navigate(AppScreens.CrearPerfil.route) },
             modifier = Modifier
                 .width(300.dp),
             colors = ButtonDefaults.buttonColors(
