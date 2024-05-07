@@ -6,6 +6,8 @@ import com.ic.cinefile.screens.CrearCuenta
 import com.ic.cinefile.screens.CrearPerfil
 import com.ic.cinefile.screens.ElegirGeneros
 import com.ic.cinefile.screens.HomeAppScreen
+import com.ic.cinefile.screens.RestablecerContra
+import com.ic.cinefile.screens.Login
 
 sealed class AppScreens(val route: String) {
     @Composable
@@ -15,6 +17,13 @@ sealed class AppScreens(val route: String) {
         @Composable
         override fun content(navController: NavController) {
             HomeAppScreen(navController)
+        }
+    }
+
+    object LoginCuenta : AppScreens("LoginCuenta") {
+        @Composable
+        override fun content(navController: NavController) {
+            Login(navController)
         }
     }
 
@@ -38,4 +47,11 @@ sealed class AppScreens(val route: String) {
             ElegirGeneros(navController)
         }
     }
+    object RestablecerContra : AppScreens("RestablecerContra") {
+        @Composable
+        override fun content(navController: NavController) {
+            RestablecerContra(navController)
+        }
+    }
 }
+

@@ -11,6 +11,9 @@ fun AppNavigation(navController: NavController) {
         composable(AppScreens.HomeApp.route) {
             AppScreens.HomeApp.content(navController)
         }
+        composable(AppScreens.LoginCuenta.route) {
+            AppScreens.LoginCuenta.content(navController)
+        }
         composable(AppScreens.CrearCuenta.route) {
             AppScreens.CrearCuenta.content(navController)
         }
@@ -19,6 +22,9 @@ fun AppNavigation(navController: NavController) {
         }
         composable(AppScreens.ElegirGeneros.route) {
             AppScreens.ElegirGeneros.content(navController)
+        }
+        composable(AppScreens.RestablecerContra.route) {
+            AppScreens.RestablecerContra.content(navController)
         }
     }
 }

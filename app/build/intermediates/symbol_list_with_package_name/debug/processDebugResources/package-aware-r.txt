@@ -76,6 +76,12 @@ dimen notification_small_icon_size_as_large
 dimen notification_subtext_size
 dimen notification_top_pad
 dimen notification_top_pad_large_text
+drawable avatar1
+drawable avatar2
+drawable avatar3
+drawable avatar4
+drawable avatar5
+drawable avatar6
 drawable googlee
 drawable ic_call_answer
 drawable ic_call_answer_low

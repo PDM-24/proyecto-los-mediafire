@@ -1,7 +1,15 @@
 [
     {
+        "merged": "com.ic.cinefile.app-debug-50:/drawable_avatar1.png.flat",
+        "source": "com.ic.cinefile.app-main-52:/drawable/avatar1.png"
+    },
+    {
         "merged": "com.ic.cinefile.app-debug-50:/mipmap-hdpi_ic_launcher_round.webp.flat",
         "source": "com.ic.cinefile.app-main-52:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-50:/drawable_avatar3.png.flat",
+        "source": "com.ic.cinefile.app-main-52:/drawable/avatar3.png"
     },
     {
         "merged": "com.ic.cinefile.app-debug-50:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
@@ -16,20 +24,28 @@
         "source": "com.ic.cinefile.app-main-52:/font/montserrat_black.ttf"
     },
     {
-        "merged": "com.ic.cinefile.app-debug-50:/drawable_logo.png.flat",
-        "source": "com.ic.cinefile.app-main-52:/drawable/logo.png"
-    },
-    {
         "merged": "com.ic.cinefile.app-debug-50:/mipmap-xhdpi_ic_launcher.webp.flat",
         "source": "com.ic.cinefile.app-main-52:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-50:/drawable_logo.png.flat",
+        "source": "com.ic.cinefile.app-main-52:/drawable/logo.png"
     },
     {
         "merged": "com.ic.cinefile.app-debug-50:/xml_data_extraction_rules.xml.flat",
         "source": "com.ic.cinefile.app-main-52:/xml/data_extraction_rules.xml"
     },
     {
+        "merged": "com.ic.cinefile.app-debug-50:/drawable_avatar6.png.flat",
+        "source": "com.ic.cinefile.app-main-52:/drawable/avatar6.png"
+    },
+    {
         "merged": "com.ic.cinefile.app-debug-50:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
         "source": "com.ic.cinefile.app-main-52:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-50:/drawable_avatar2.png.flat",
+        "source": "com.ic.cinefile.app-main-52:/drawable/avatar2.png"
     },
     {
         "merged": "com.ic.cinefile.app-debug-50:/font_montserrat_semibold.ttf.flat",
@@ -38,6 +54,10 @@
     {
         "merged": "com.ic.cinefile.app-debug-50:/mipmap-hdpi_ic_launcher.webp.flat",
         "source": "com.ic.cinefile.app-main-52:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-50:/drawable_avatar4.png.flat",
+        "source": "com.ic.cinefile.app-main-52:/drawable/avatar4.png"
     },
     {
         "merged": "com.ic.cinefile.app-debug-50:/xml_backup_rules.xml.flat",
@@ -62,6 +82,10 @@
     {
         "merged": "com.ic.cinefile.app-debug-50:/mipmap-xxxhdpi_ic_launcher.webp.flat",
         "source": "com.ic.cinefile.app-main-52:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-50:/drawable_avatar5.png.flat",
+        "source": "com.ic.cinefile.app-main-52:/drawable/avatar5.png"
     },
     {
         "merged": "com.ic.cinefile.app-debug-50:/mipmap-xhdpi_ic_launcher_round.webp.flat",

@@ -68,7 +68,7 @@ fun HomeAppScreen(navController: NavController) {
         )
 
         Button(
-            onClick = {},
+            onClick = {navController.navigate(AppScreens.LoginCuenta.route)},
             modifier = Modifier
                 .width(300.dp),
             colors = ButtonDefaults.buttonColors(
