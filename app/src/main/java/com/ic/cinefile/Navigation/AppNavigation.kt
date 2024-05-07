@@ -14,5 +14,11 @@ fun AppNavigation(navController: NavController) {
         composable(AppScreens.CrearCuenta.route) {
             AppScreens.CrearCuenta.content(navController)
         }
+        composable(AppScreens.CrearPerfil.route) {
+            AppScreens.CrearPerfil.content(navController)
+        }
+        composable(AppScreens.ElegirGeneros.route) {
+            AppScreens.ElegirGeneros.content(navController)
+        }
     }
 }

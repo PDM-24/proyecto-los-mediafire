@@ -19,7 +19,7 @@ class userViewModel:ViewModel() {
 
     fun createUser(user: User){
         viewModelScope.launch(Dispatchers.IO){
-            val response=apiServer.methods.reateAccountc(user)
+            val response=apiServer.methods.createAccount(user)
             withContext(Dispatchers.Main){
     if(response.body()!!.code=="200"){
 
