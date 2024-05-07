@@ -43,7 +43,8 @@ fun ElegirGeneros(navController: NavController) {
     ) {
         Text(
             text = "Elige tus géneros cinematrográficos favoritas",
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             style = TextStyle(
                 color = white,
                 fontSize = 28.sp,

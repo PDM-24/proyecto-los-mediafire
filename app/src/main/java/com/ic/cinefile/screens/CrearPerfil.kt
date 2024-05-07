@@ -61,7 +61,7 @@ fun CrearPerfil(navController: NavController) {
         Text(
             text = "Crea tu perfil",
             modifier = Modifier.fillMaxWidth(),
-            style = androidx.compose.ui.text.TextStyle(
+            style = TextStyle(
                 color = white,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Normal,
@@ -194,7 +194,7 @@ fun CrearPerfil(navController: NavController) {
         ) {
             Text(
                 text = "Siguiente",
-                style = androidx.compose.ui.text.TextStyle(
+                style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,

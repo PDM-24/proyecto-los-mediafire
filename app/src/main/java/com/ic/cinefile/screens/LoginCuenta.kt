@@ -30,15 +30,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.ic.cinefile.Navigation.AppScreens
 import com.ic.cinefile.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun Login(navController: NavHostController) {
+fun Login(navController: NavController) {
 
     Column(
         modifier = Modifier
@@ -162,7 +164,7 @@ fun Login(navController: NavHostController) {
                 textAlign = TextAlign.Center,
             ),
             modifier = Modifier
-                .clickable { }
+                .clickable {  navController.navigate(AppScreens.RestablecerContra.route) }
         )
 
 
