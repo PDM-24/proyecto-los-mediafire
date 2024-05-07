@@ -9,6 +9,7 @@
     <color name="dark_blue">#007D93</color>
     <color name="dark_red">#AA0000</color>
     <color name="dark_yellow">#AF9100</color>
+    <color name="ic_launcher_background">#E7E6EE</color>
     <color name="light_red">#E04D5D</color>
     <color name="light_yellow">#E6CD57</color>
     <color name="notification_action_color_filter">#ffffffff</color>

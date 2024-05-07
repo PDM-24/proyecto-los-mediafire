@@ -8,6 +8,10 @@
         "source": "com.ic.cinefile.app-main-52:/mipmap-hdpi/ic_launcher_round.webp"
     },
     {
+        "merged": "com.ic.cinefile.app-debug-50:/mipmap-xxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.ic.cinefile.app-main-52:/mipmap-xxhdpi/ic_launcher_foreground.webp"
+    },
+    {
         "merged": "com.ic.cinefile.app-debug-50:/drawable_avatar3.png.flat",
         "source": "com.ic.cinefile.app-main-52:/drawable/avatar3.png"
     },
@@ -40,12 +44,24 @@
         "source": "com.ic.cinefile.app-main-52:/drawable/avatar6.png"
     },
     {
+        "merged": "com.ic.cinefile.app-debug-50:/mipmap-hdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.ic.cinefile.app-main-52:/mipmap-hdpi/ic_launcher_foreground.webp"
+    },
+    {
         "merged": "com.ic.cinefile.app-debug-50:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
         "source": "com.ic.cinefile.app-main-52:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
+        "merged": "com.ic.cinefile.app-debug-50:/mipmap-xhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.ic.cinefile.app-main-52:/mipmap-xhdpi/ic_launcher_foreground.webp"
+    },
+    {
         "merged": "com.ic.cinefile.app-debug-50:/drawable_avatar2.png.flat",
         "source": "com.ic.cinefile.app-main-52:/drawable/avatar2.png"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-50:/mipmap-mdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.ic.cinefile.app-main-52:/mipmap-mdpi/ic_launcher_foreground.webp"
     },
     {
         "merged": "com.ic.cinefile.app-debug-50:/font_montserrat_semibold.ttf.flat",
@@ -78,6 +94,10 @@
     {
         "merged": "com.ic.cinefile.app-debug-50:/mipmap-xxhdpi_ic_launcher.webp.flat",
         "source": "com.ic.cinefile.app-main-52:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.ic.cinefile.app-debug-50:/mipmap-xxxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.ic.cinefile.app-main-52:/mipmap-xxxhdpi/ic_launcher_foreground.webp"
     },
     {
         "merged": "com.ic.cinefile.app-debug-50:/mipmap-xxxhdpi_ic_launcher.webp.flat",
