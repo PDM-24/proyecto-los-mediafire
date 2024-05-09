@@ -1,7 +1,8 @@
 //prcesos para aobtener la peticion, procesarla y obtener la respuesta
 const controller = {};//encargado de contener la informacion
-const User = require("../models/register.model");
+const User = require("../models/account.model");
 const httpError = require("http-errors");
+const { createToken, verifyToken } = require("../utils/jwl.tools");
 
 controller.register=async(req,res,next)=>{
     try {
@@ -52,7 +53,7 @@ controller.register=async(req,res,next)=>{
     //LOGIN
     controller.login = async (req, res, next) => {
       try {
-        const { email,password,username}= req.body;
+        const { email,password}= req.body;
 
         // obteniendo informacion(correo,contraseña)
      
@@ -69,28 +70,28 @@ controller.register=async(req,res,next)=>{
         }
       //   ///Exisite y ya esta verificado
 
-      //   const token = await createToken(user._id);
+      const token = await createToken(user._id);
 
       //   //almacenar tokens
-      //   let _tokens = [...user.tokens];
-      //   //verifia la integridad de los tokens actuales
-      //   const _verifiyPromise = _tokens.map(async (_t) => {
-      //     const status = await verifyToken(_t);
-      //     return status ? _t : null;
-      //   });
+        let _tokens = [...user.tokens];
+        //verifia la integridad de los tokens actuales
+        const _verifiyPromise = _tokens.map(async (_t) => {
+          const status = await verifyToken(_t);
+          return status ? _t : null;
+        });
 
-      //   //5 sesionnes
-      //   _tokens = (await Promise.all(_verifiyPromise))
-      //     .filter(_t => _t)
-      //     .slice(0, 4);
+        //5 sesionnes
+        _tokens = (await Promise.all(_verifiyPromise))
+          .filter(_t => _t)
+          .slice(0, 4);
 
-      //   //primera posicion(shitf)
-      //   _tokens = [token, ..._tokens];
-      //   user.tokens = _tokens;
+        //primera posicion(shitf)
+        _tokens = [token, ..._tokens];
+        user.tokens = _tokens;
 
         await user.save();
 
-        return res.status(200).json({ message: "Se ha iniciado correctamente" });
+        return res.status(200).json({ message:"Se ha iniciado correctamente" });
       } catch (error) {
         next(error);
       }

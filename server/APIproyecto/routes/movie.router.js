@@ -6,8 +6,9 @@ const movieController = require("../controllers/movieData.controller");
 
 
 //api/data/movies
-router.get("/movies",movieController.findAll);
-router.get("/movies/:identifier",movieController.findOneById)
-router.post("/movies/add",movieController.movieData)
-router.delete("/movies/delete/:identifier",movieController.deleteById)
+router.get("/moviesAll",movieController.findAll);
+router.post("/add",movieController.movieData)
+router.delete("/delete/:identifier",movieController.deleteById)
+router.get("/search/:title",movieController.searchTitle)
+router.get("/category/:categoryName",movieController.categoryMovie)
  module.exports = router;
