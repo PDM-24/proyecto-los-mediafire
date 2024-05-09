@@ -1,5 +1,7 @@
 const controller = {};//encargado de contener la informacion
 const Movie = require("../models/movieData.model");
+const MoviesService = require("../services/movies.services");
+
 const httpError = require("http-errors");
 
 controller.movieData=async(req,res,next)=>{
@@ -40,35 +42,73 @@ if (!movieSave) {
         next(error);
 
     }
-}
+};
 
 
 //traer las peliculas
 controller.findAll = async (req, res, next) => {
     try {
-      const movieFindAll = await Movie.find({ hidden: false }); //arreglo
-      return res.status(200).json({ data: movieFindAll });
+      const movies = await MoviesService.getMoviesAPI();
+
+      // Verificamos si se han encontrado películas
+      if (!movies || movies.length === 0) {
+          // Si no se encuentra ninguna película, lanzamos un error 500
+          throw httpError(500, "No se han encontrado películas");
+
+      }      
+      return res.status(200).json({ data: movies });
     } catch (error) {
       next(error);
     }
   };
 
 
-  //traer solo una
-  controller.findOneById = async (req, res, next) => {
-    try {
-      const { identifier } = req.params;
-      const movieFindOneById = await Movie.findById(identifier);
-  
-      if (!movieFindOneById) {
-        throw httpError(500, "No se ha podido obtener la pelicula");
+//Buscar pelicula
+
+controller.searchTitle = async (req, res, next) => {
+  try {
+      const title = req.params.title;
+      const movie = await MoviesService.searchTitleAPI(title);
+      if (!movie || movie.length === 0) {
+          throw new Error("No se encontraron películas con el título especificado.");
       }
-      return res.status(200).json({ data: movieFindOneById });
-    } catch (error) {
+      return res.status(200).json({ data: movie });
+  } catch (error) {
       next(error);
+  }
+};
+
+
+// controller.categoryMovie = async (req, res, next) => {
+//   try {
+//       const genreName=req.params.genreName;
+//     const movies = await MoviesService.getMoviesCategoryAPI(genreName);
+//     if (!movies || movies.length === 0) {
+//           throw new Error("No se encontraron películas con el título especificado.");
+//       }
+//       return res.status(200).json({ data: movies });
+//   } catch (error) {
+//       next(error);
+//   }
+// };
+
+controller.categoryMovie = async (req, res, next) => {
+  try {
+    const categoryName = req.params.categoryName;
+    const movies = await MoviesService.getMoviesCategoryAPI(categoryName);
+    if (!movies || movies.length === 0) {
+      throw new Error("No se encontraron películas en la categoría especificada.");
     }
-  };
- 
+    return res.status(200).json({ data: movies });
+  } catch (error) {
+    next(error);
+  }
+};
+  
+
+
+
+
   //Eliminar pelicula
   controller.deleteById = async (req, res, next) => {
     try {
@@ -87,4 +127,8 @@ controller.findAll = async (req, res, next) => {
       next(); 
     }
   };
+
+
+  
+
 module.exports = controller;
