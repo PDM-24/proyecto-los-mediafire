@@ -4,7 +4,7 @@
             "outputFile": "com.ic.cinefile.app-mergeDebugResources-48:/values-lv/values-lv.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\jenni\\.gradle\\caches\\transforms-3\\594ddcbdc72becf2d664a505adce0235\\transformed\\ui-release\\res\\values-lv\\values-lv.xml",
+                    "source": "C:\\Users\\USUARIO1\\.gradle\\caches\\transforms-3\\4acf56c694860efc684836614d71e383\\transformed\\ui-release\\res\\values-lv\\values-lv.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\jenni\\.gradle\\caches\\transforms-3\\b49b380dbfbf054daa18fea35022ee75\\transformed\\material3-1.1.1\\res\\values-lv\\values-lv.xml",
+                    "source": "C:\\Users\\USUARIO1\\.gradle\\caches\\transforms-3\\21e85e5d293f3c44b8f69e1674f0a96e\\transformed\\material3-1.1.1\\res\\values-lv\\values-lv.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -38,7 +38,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\jenni\\.gradle\\caches\\transforms-3\\fae08cc418d939db58c9885a80864912\\transformed\\core-1.12.0\\res\\values-lv\\values-lv.xml",
+                    "source": "C:\\Users\\USUARIO1\\.gradle\\caches\\transforms-3\\6eff56dca54d65e1031a261bb3b2f763\\transformed\\core-1.12.0\\res\\values-lv\\values-lv.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",

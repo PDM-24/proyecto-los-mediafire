@@ -1,4 +1,4 @@
-package com.ic.cinefile.API.classMethods.users
+package com.ic.cinefile.API.Model.users
 
 data class User(
     //aca van los campos al obtener /o al crear usuario
