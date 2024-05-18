@@ -14,6 +14,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -22,17 +26,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.ic.cinefile.Navigation.AppScreens
 import com.ic.cinefile.components.botonGeneros
 import com.ic.cinefile.components.gridGeneros
 import com.ic.cinefile.components.valoresGeneros.generos
+import com.ic.cinefile.data.accountCreateData
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.userCreateViewModel
 
 
 @Composable
-fun ElegirGeneros(navController: NavController) {
+fun ElegirGeneros(navController: NavController,userCreateViewModel: userCreateViewModel) {
+    var genre_movie by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,9 +77,17 @@ fun ElegirGeneros(navController: NavController) {
                 val (defaultColor, selectedColor) = gridGeneros(genero)
                 botonGeneros(
                     generos = genero,
-                    selectedColor = selectedColor,
+                    selectedColor =selectedColor,
                     defaultColor = defaultColor
-                ) {}
+                ) {genreName, isSelected ->
+
+                    if (isSelected) {
+                        userCreateViewModel.movie_genere.value = userCreateViewModel.movie_genere.value?.plus(genreName) ?: listOf(genreName)
+                    } else {
+                        userCreateViewModel.movie_genere.value = userCreateViewModel.movie_genere.value?.minus(genreName)
+                    }
+                    println(userCreateViewModel.movie_genere.value)
+            }
             }
         }
 
@@ -77,7 +95,18 @@ fun ElegirGeneros(navController: NavController) {
         Spacer(modifier = Modifier.height(50.dp))
 
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                userCreateViewModel.movie_genere.value=userCreateViewModel.movie_genere.value
+                navController.navigate(AppScreens.Avatar.route)
+                println("Datos del userCreateViewModel:")
+                println("Username: ${userCreateViewModel.username.value}")
+                println("Email: ${userCreateViewModel.email.value}")
+                println("Password: ${userCreateViewModel.password.value}")
+                println("Año de nacimiento: ${userCreateViewModel.year_nac.value}")
+                println("Género: ${userCreateViewModel.genere.value}")
+                println("Géneros de películas: ${userCreateViewModel.movie_genere.value}")
+                println("Avatar URL: ${userCreateViewModel.avatar.value}")
+            },
             modifier = Modifier
                 .width(300.dp),
             colors = ButtonDefaults.buttonColors(
@@ -102,5 +131,7 @@ fun ElegirGeneros(navController: NavController) {
 @Composable
 fun ElegirGenerosPreview() {
     val navController = rememberNavController()
-    ElegirGeneros(navController)
+    val userCreateViewModel = userCreateViewModel()
+
+    ElegirGeneros(navController,userCreateViewModel)
 }

@@ -2,6 +2,7 @@ package com.ic.cinefile.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,16 +30,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.ic.cinefile.Navigation.AppScreens
 import com.ic.cinefile.R
-
+import com.ic.cinefile.viewModel.userCreateViewModel
 
 
 @Composable
-fun contentAvatar(navController: NavHostController) {
+fun contentAvatar(navController: NavController,userCreateViewModel: userCreateViewModel) {
 
-    val Avatarimg = listOf("avatar1","avatar2","avatar3","avatar3","avatar4","avatar5","avatar6")
+    val Avatarimg = listOf(R.drawable.avatar1, R.drawable.avatar2, R.drawable.avatar3)
+    val Avatarimg2 = listOf(R.drawable.avatar4, R.drawable.avatar5, R.drawable.avatar6)
+    var avatar by remember { mutableStateOf("") }
+
 
     Column (
         modifier = Modifier
@@ -56,52 +68,67 @@ fun contentAvatar(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(120.dp))
 
-        Row (verticalAlignment = Alignment.CenterVertically){
-            Image(painter = painterResource(id = R.drawable.avatar1) ,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(110.dp))
+        Row (verticalAlignment = Alignment.CenterVertically) {
+            Avatarimg.forEach { img ->
 
-            Image(painter = painterResource(id = R.drawable.avatar2) ,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(110.dp))
+                Image(
+                    painter = painterResource(id = img),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(110.dp)
+                        .clickable {
+                            val selectedAvatarUrl = "drawable://" + img.toString()
 
-            Image(painter = painterResource(id = R.drawable.avatar3) ,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(110.dp))
+                            avatar=selectedAvatarUrl
+                            println("Avatar seleccionado: $avatar")
+
+                        }
+                )
+
+            }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
         Row (verticalAlignment = Alignment.CenterVertically){
-            Image(painter = painterResource(id = R.drawable.avatar4) ,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(110.dp))
+            Avatarimg2.forEach { img ->
 
-            Image(painter = painterResource(id = R.drawable.avatar5) ,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(110.dp))
+                Image(
+                    painter = painterResource(id = img),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(110.dp)
+                        .clickable {
+                            val selectedAvatarUrl = "drawable://" + img.toString()
 
-            Image(painter = painterResource(id = R.drawable.avatar6) ,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(110.dp))
+                                       avatar=selectedAvatarUrl
+                                println("Avatar seleccionado: $avatar")
+
+                        }
+                )
+
+            }
         }
-
         Spacer(modifier = Modifier.height(120.dp))
 
         Button(
-            onClick = {},
+            onClick = {
+                userCreateViewModel.avatar.value = avatar
+                userCreateViewModel.createAccountUser()
+
+                println("Datos del userCreateViewModel:")
+                println("Username: ${userCreateViewModel.username.value}")
+                println("Email: ${userCreateViewModel.email.value}")
+                println("Password: ${userCreateViewModel.password.value}")
+                println("Año de nacimiento: ${userCreateViewModel.year_nac.value}")
+                println("Género: ${userCreateViewModel.genere.value}")
+                println("Géneros de películas: ${userCreateViewModel.movie_genere.value}")
+                println("Avatar URL: ${userCreateViewModel.avatar.value}")
+
+                navController.navigate(AppScreens.CrearPerfil.route)
+            },
             modifier = Modifier
                 .width(300.dp),
             colors = ButtonDefaults.buttonColors(
@@ -127,5 +154,7 @@ fun contentAvatar(navController: NavHostController) {
 @Composable
 fun PreviewSeleccionAvatarScreen() {
     val navController = rememberNavController()
-    contentAvatar(navController)
+    val userCreateViewModel = userCreateViewModel()
+
+    contentAvatar(navController,userCreateViewModel)
 }

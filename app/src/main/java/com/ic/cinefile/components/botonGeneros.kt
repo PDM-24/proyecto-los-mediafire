@@ -16,7 +16,7 @@ fun botonGeneros(
     generos: generos,
     selectedColor: Color,
     defaultColor: Color,
-    onClick: () -> Unit
+    onClick: (String,Boolean) -> Unit
 ) {
     var isSelected by remember { mutableStateOf(false) }
 
@@ -28,7 +28,7 @@ fun botonGeneros(
     Button(
         onClick = {
             isSelected = !isSelected
-            onClick()
+            onClick(generos.name,isSelected)
         },
         colors = ButtonDefaults.buttonColors(containerColor = currentColor)
     ) {

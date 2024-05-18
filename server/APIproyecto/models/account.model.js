@@ -38,7 +38,7 @@ const accountSchema = SchemaUsers(
     },
 
     movie_genere: {
-      type: String,
+      type: Array,
       required: true,
     },
     avatar: {
