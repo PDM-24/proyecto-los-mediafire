@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -52,7 +54,12 @@ fun Login(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val userViewModel=userViewModel()
+    val userViewModel = userViewModel()
+
+    val showErrorSnackbar by userViewModel.showErrorSnackbar
+    val errorMessage by userViewModel.errorMessage
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -78,7 +85,7 @@ fun Login(navController: NavController) {
         TextField(
             value = email,
             onValueChange = {
-email=it
+                email = it
             },
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color(R.color.black),
@@ -99,9 +106,9 @@ email=it
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
-            value =password,
+            value = password,
             onValueChange = {
-            password=it
+                password = it
             },
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color(R.color.black),
@@ -123,8 +130,17 @@ email=it
         Spacer(modifier = Modifier.height(35.dp))
         Button(
             onClick = {
-userViewModel.loginUser(email,password)
-                         },
+
+                if (email.isNotEmpty() && password.isNotEmpty()) {
+
+                    userViewModel.loginUser(email, password)
+
+                } else {
+
+                    userViewModel.setErrorMessage("Por favor, completa todos los campos")
+
+                }
+            },
             modifier = Modifier
                 .width(300.dp),
             colors = ButtonDefaults.buttonColors(
@@ -141,49 +157,65 @@ userViewModel.loginUser(email,password)
                 )
             )
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        Button(
-            onClick = {
 
-            },
-            modifier = Modifier
-                .width(300.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
-            ),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(id = R.drawable.googlee),
-                    contentDescription = null,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-                Text(
-                    text = "Iniciar sesión con Google",
-                    style = TextStyle(
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center,
-                    )
-                )
+        if (showErrorSnackbar) {
+            Snackbar(modifier = Modifier.padding(16.dp),
+                action = {
+                    TextButton(onClick = { userViewModel.hideErrorSnackbar() }) {
+                        Text("Cerrar")
+                    }
+                }
+            ) {
+                Text(errorMessage, color = Color.White)
             }
         }
-        Spacer(modifier = Modifier.height(100.dp))
-        Text(
-            text = "¿Has olvidado la contraseña?",
-            style = TextStyle(
-                color = Color.White,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Normal,
-                textAlign = TextAlign.Center,
-            ),
-            modifier = Modifier
-                .clickable {  navController.navigate(AppScreens.RestablecerContra.route) }
-        )
-
 
     }
+
+
+    Spacer(modifier = Modifier.height(10.dp))
+    Button(
+        onClick = {
+            // Acción para iniciar sesión con Google
+
+        },
+        modifier = Modifier
+            .width(300.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.White,
+            contentColor = Color.Black
+        ),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(id = R.drawable.googlee),
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text(
+                text = "Iniciar sesión con Google",
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                )
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(100.dp))
+    Text(
+        text = "¿Has olvidado la contraseña?",
+        style = TextStyle(
+            color = Color.White,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Normal,
+            textAlign = TextAlign.Center,
+        ),
+        modifier = Modifier
+            .clickable { navController.navigate(AppScreens.RestablecerContra.route) }
+    )
+
+
 }
 
 @Preview(showSystemUi = true)
