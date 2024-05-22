@@ -1,5 +1,6 @@
 package com.ic.cinefile.screens
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,11 +33,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.ic.cinefile.Navigation.AppScreens
 import com.ic.cinefile.R
 
 @Composable
-fun CrearCuenta(navController: NavController) {
+fun CrearCuenta() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -109,7 +110,10 @@ fun CrearCuenta(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(35.dp))
         Button(
-            onClick = { navController.navigate(AppScreens.CrearPerfil.route) },
+            onClick = {
+
+
+            },
             modifier = Modifier
                 .width(300.dp),
             colors = ButtonDefaults.buttonColors(
@@ -172,6 +176,5 @@ fun CrearCuenta(navController: NavController) {
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewCrearCuentaScreen() {
-    val navController = rememberNavController()
-    CrearCuenta(navController)
+    CrearCuenta()
 }

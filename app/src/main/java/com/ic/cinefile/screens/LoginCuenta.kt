@@ -1,5 +1,6 @@
 package com.ic.cinefile.screens
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,7 +40,6 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.ic.cinefile.Navigation.AppScreens
 import com.ic.cinefile.R
 import com.ic.cinefile.data.loginUserData
 import com.ic.cinefile.viewModel.userViewModel
@@ -48,7 +48,7 @@ import com.ic.cinefile.viewModel.userViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun Login(navController: NavController) {
+fun Login() {
 //    val email: MutableState<String> = remember{ mutableStateOf("") }
 //    val password: MutableState<String> = remember{ mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -212,7 +212,6 @@ fun Login(navController: NavController) {
             textAlign = TextAlign.Center,
         ),
         modifier = Modifier
-            .clickable { navController.navigate(AppScreens.RestablecerContra.route) }
     )
 
 
@@ -221,7 +220,6 @@ fun Login(navController: NavController) {
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewLoginCuentaScreen() {
-    val navController = rememberNavController()
 
-    Login(navController)
+    Login()
 }

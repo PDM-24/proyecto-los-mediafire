@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.ic.cinefile.Navigation.AppScreens
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.dark_blue
 import com.ic.cinefile.ui.theme.white
