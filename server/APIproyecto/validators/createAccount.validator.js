@@ -25,7 +25,21 @@ validators.createAccountValidator = [
       "Tiene que contenener al menos ocho caracteres, incluido al menos un número, e incluye letras mayúsculas y minúsculas y caracteres especiales"
     ),
 
-  body("year_nac").notEmpty().withMessage("Debes de completar el campo"),
+  body("year_nac")
+    .notEmpty()
+    .withMessage("Debes de completar el campo")
+    .withMessage("no es fecha valida")
+    .custom((value, { req }) => {
+      const birthDate = new Date(value);
+      const twelveYearsAgo = new Date();
+      twelveYearsAgo.setFullYear(twelveYearsAgo.getFullYear() - 12);
+
+      if (birthDate > twelveYearsAgo) {
+          throw new Error("Debes tener al menos 12 años de edad.");
+      }
+
+      return true;
+  }),
 
   body("genere")
     .notEmpty()
