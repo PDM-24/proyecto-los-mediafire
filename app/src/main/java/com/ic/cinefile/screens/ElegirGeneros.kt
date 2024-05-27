@@ -1,5 +1,8 @@
 package com.ic.cinefile.screens
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,25 +17,40 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.ic.cinefile.activities.ElegirGeneroActivity
+import com.ic.cinefile.activities.HomeAppActivity
 import com.ic.cinefile.components.botonGeneros
 import com.ic.cinefile.components.gridGeneros
-import com.ic.cinefile.components.valoresGeneros.generos
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.components.valoresGeneros.generos as
+import java.util.ArrayList
 
 
 @Composable
-fun ElegirGeneros(navController: NavController) {
+fun ElegirGeneros(context: Context) {
+
+    val activity = context as Activity
+    val correo = activity.intent.getStringExtra("correo") ?: ""
+    val contrasena = activity.intent.getStringExtra("contrasena") ?: ""
+    val username = activity.intent.getStringExtra("username") ?: ""
+    val birthday = activity.intent.getStringExtra("birthday") ?: ""
+    val gender = activity.intent.getStringExtra("gender") ?: ""
+
+    val generosSeleccionados = remember { mutableStateListOf<String>() }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,14 +80,20 @@ fun ElegirGeneros(navController: NavController) {
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(generos.entries.size) { index ->
-                val genero = generos.entries[index]
-                val (defaultColor, selectedColor) = gridGeneros(genero)
+            items(generos.values().toList()) { genero ->
+                val (defaultColor, selectedColor) = gridGeneros(genero.name)
                 botonGeneros(
                     generos = genero,
                     selectedColor = selectedColor,
-                    defaultColor = defaultColor
-                ) {}
+                    defaultColor = defaultColor,
+                    onClick = {
+                        if (generosSeleccionados.contains(genero)) {
+                            generosSeleccionados.remove(genero)
+                        } else {
+                            generosSeleccionados.add(genero)
+                        }
+                    }
+                )
             }
         }
 
@@ -77,7 +101,19 @@ fun ElegirGeneros(navController: NavController) {
         Spacer(modifier = Modifier.height(50.dp))
 
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+
+                val intent = Intent(context, ElegirGeneroActivity::class.java).apply {
+                    putExtra("correo", correo)
+                    putExtra("contrasena", contrasena)
+                    putExtra("username", username)
+                    putExtra("birthday", birthday)
+                    putExtra("gender", gender)
+                    putStringArrayListExtra("generosSeleccionados", ArrayList(generosSeleccionados))
+                }
+                context.startActivity(intent)
+
+            },
             modifier = Modifier
                 .width(300.dp),
             colors = ButtonDefaults.buttonColors(
@@ -101,6 +137,7 @@ fun ElegirGeneros(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun ElegirGenerosPreview() {
-    val navController = rememberNavController()
-    ElegirGeneros(navController)
+    //val navController = rememberNavController()
+    ElegirGeneros(LocalContext.current)
 }
+

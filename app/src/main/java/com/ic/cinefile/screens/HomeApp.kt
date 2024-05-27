@@ -39,7 +39,7 @@ import com.ic.cinefile.ui.theme.white
 
 //pasas como contexto parametro a la funcion
 //que partira de navegacion home->login
-fun HomeAppScreen(context:Context) {
+fun HomeAppScreen(context: Context) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -112,7 +112,7 @@ fun HomeAppScreen(context:Context) {
                 context.startActivity(intent)
                 (context as Activity)
 
-                      //crear cuenta
+                //crear cuenta
             },
             modifier = Modifier
                 .width(300.dp),
@@ -134,10 +134,8 @@ fun HomeAppScreen(context:Context) {
 }
 
 
-
-
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewHomeAppScreen() {
-HomeAppScreen(LocalContext.current)
+    HomeAppScreen(LocalContext.current)
 }

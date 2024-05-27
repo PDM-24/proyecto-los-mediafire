@@ -1,5 +1,6 @@
 package com.ic.cinefile.screens
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,14 +24,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
@@ -39,11 +39,11 @@ import com.ic.cinefile.ui.theme.white
 
 
 @Composable
-fun Content(navController: NavHostController) {
+fun Content(context: Context) {
 
     var aceptarTerminos by remember { mutableStateOf(false) }
 
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(black),
@@ -147,6 +147,6 @@ fun Content(navController: NavHostController) {
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewBienvenidaScreen() {
-    val navController = rememberNavController()
-    Content(navController)
+    //val navController = rememberNavController()
+    Content(LocalContext.current)
 }

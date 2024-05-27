@@ -1,5 +1,8 @@
 package com.ic.cinefile.screens
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -25,24 +29,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.ic.cinefile.R
-
+import com.ic.cinefile.activities.AvatarActivity
 
 
 @Composable
-fun contentAvatar(navController: NavHostController) {
+fun contentAvatar(context: Context) {
 
-    val Avatarimg = listOf("avatar1","avatar2","avatar3","avatar3","avatar4","avatar5","avatar6")
+    val activity = context as Activity
+    val correo = activity.intent.getStringExtra("correo") ?: ""
+    val contrasena = activity.intent.getStringExtra("contrasena") ?: ""
+    val username = activity.intent.getStringExtra("username") ?: ""
+    val birthday = activity.intent.getStringExtra("birthday") ?: ""
+    val gender = activity.intent.getStringExtra("gender") ?: ""
+    val generosSeleccionados = activity.intent.getStringArrayListExtra("generosSeleccionados")
 
-    Column (
+    val Avatarimg =
+        listOf("avatar1", "avatar2", "avatar3", "avatar3", "avatar4", "avatar5", "avatar6")
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    ){
+    ) {
         Text(
             text = "Elige tu avatar",
             style = TextStyle(
@@ -56,52 +67,80 @@ fun contentAvatar(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(120.dp))
 
-        Row (verticalAlignment = Alignment.CenterVertically){
-            Image(painter = painterResource(id = R.drawable.avatar1) ,
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(id = R.drawable.avatar1),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(8.dp)
-                    .size(110.dp))
+                    .size(110.dp)
+            )
 
-            Image(painter = painterResource(id = R.drawable.avatar2) ,
+            Image(
+                painter = painterResource(id = R.drawable.avatar2),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(8.dp)
-                    .size(110.dp))
+                    .size(110.dp)
+            )
 
-            Image(painter = painterResource(id = R.drawable.avatar3) ,
+            Image(
+                painter = painterResource(id = R.drawable.avatar3),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(8.dp)
-                    .size(110.dp))
+                    .size(110.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row (verticalAlignment = Alignment.CenterVertically){
-            Image(painter = painterResource(id = R.drawable.avatar4) ,
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(id = R.drawable.avatar4),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(8.dp)
-                    .size(110.dp))
+                    .size(110.dp)
+            )
 
-            Image(painter = painterResource(id = R.drawable.avatar5) ,
+            Image(
+                painter = painterResource(id = R.drawable.avatar5),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(8.dp)
-                    .size(110.dp))
+                    .size(110.dp)
+            )
 
-            Image(painter = painterResource(id = R.drawable.avatar6) ,
+            Image(
+                painter = painterResource(id = R.drawable.avatar6),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(8.dp)
-                    .size(110.dp))
+                    .size(110.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(120.dp))
 
         Button(
-            onClick = {},
+            onClick = {
+
+                val intent = Intent(context, AvatarActivity::class.java)
+                intent.putExtra("correo", correo)
+                intent.putExtra("contrasena", contrasena)
+                intent.putExtra("username", username)
+                intent.putExtra("birthday", birthday)
+                intent.putExtra("gender", gender)
+                intent.putStringArrayListExtra(
+                    "generosSeleccionados", ArrayList(
+                        generosSeleccionados!!
+                    )
+                )
+                intent.putStringArrayListExtra("Avatar", ArrayList(Avatarimg))
+                context.startActivity(intent)
+
+            },
             modifier = Modifier
                 .width(300.dp),
             colors = ButtonDefaults.buttonColors(
@@ -126,6 +165,6 @@ fun contentAvatar(navController: NavHostController) {
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewSeleccionAvatarScreen() {
-    val navController = rememberNavController()
-    contentAvatar(navController)
+    //val navController = rememberNavController()
+    contentAvatar(LocalContext.current)
 }

@@ -1,5 +1,8 @@
 package com.ic.cinefile.screens
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,19 +41,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.ic.cinefile.activities.CrearPerfilActivity
+import com.ic.cinefile.activities.contentGeneroActivity
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.dark_blue
 import com.ic.cinefile.ui.theme.white
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CrearPerfil(navController: NavController) {
+fun CrearPerfil() {
+
+    val context = LocalContext.current
+    val activity = context as Activity
+
+    // Obtener los datos de la actividad anterior
+    val correo = activity.intent.getStringExtra("correo") ?: ""
+    val contrasena = activity.intent.getStringExtra("contrasena") ?: ""
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -155,7 +169,8 @@ fun CrearPerfil(navController: NavController) {
                         },
 
                         ) {
-                        Text("Confirmar",
+                        Text(
+                            "Confirmar",
                             color = black,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.SemiBold
@@ -166,7 +181,8 @@ fun CrearPerfil(navController: NavController) {
 
                 ) {
 
-                DatePicker(state = datePickerState,
+                DatePicker(
+                    state = datePickerState,
                     colors = DatePickerDefaults.colors(
                         //año actual
                         currentYearContentColor = dark_blue,
@@ -176,14 +192,28 @@ fun CrearPerfil(navController: NavController) {
                         selectedDayContainerColor = dark_blue,
                         todayContentColor = dark_blue,
                         todayDateBorderColor = dark_blue,
-                    ))
+                    )
+                )
             }
         }
 
         Spacer(modifier = Modifier.height(100.dp))
 
         Button(
-            onClick = { },
+            onClick = {
+
+                val username = usuario.value
+                val birthday = dateResult.value
+
+                val intent = Intent(context, CrearPerfilActivity::class.java).apply {
+                    putExtra("correo", correo)
+                    putExtra("contrasena", contrasena)
+                    putExtra("username", username)
+                    putExtra("birthday", birthday)
+                }
+                context.startActivity(intent)
+
+            },
             modifier = Modifier
                 .width(300.dp),
             colors = ButtonDefaults.buttonColors(
@@ -206,6 +236,6 @@ fun CrearPerfil(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun CrearPerfilPreview() {
-    val navController = rememberNavController()
-    CrearPerfil(navController)
+    //val navController = rememberNavController()
+    CrearPerfil()
 }

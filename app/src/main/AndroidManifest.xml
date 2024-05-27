@@ -23,6 +23,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".activities.GeneroActivity" />
+
+        <activity android:name=".activities.ElegirGeneroActivity" />
+        <activity android:name=".activities.AvatarActivity" />
+        <activity android:name=".activities.HomeAppActivity" />
+        <activity android:name=".activities.HomeAppActivity2" />
+        <activity android:name=".activities.LoginCuentaReCuenta" />
+        <activity android:name=".activities.CrearCuentaActivity" />
+        <activity android:name=".activities.CrearPerfilActivity" />
     </application>
 
 </manifest>
