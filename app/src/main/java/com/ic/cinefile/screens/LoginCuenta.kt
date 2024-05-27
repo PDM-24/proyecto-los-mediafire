@@ -1,6 +1,7 @@
 package com.ic.cinefile.screens
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +43,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ic.cinefile.R
+import com.ic.cinefile.activities.HomeAppActivity
+import com.ic.cinefile.activities.LoginCuentaReCuenta
 import com.ic.cinefile.data.loginUserData
 import com.ic.cinefile.viewModel.userViewModel
 
@@ -51,6 +55,9 @@ import com.ic.cinefile.viewModel.userViewModel
 fun Login() {
 //    val email: MutableState<String> = remember{ mutableStateOf("") }
 //    val password: MutableState<String> = remember{ mutableStateOf("") }
+
+    val context = LocalContext.current
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -211,7 +218,13 @@ fun Login() {
             fontWeight = FontWeight.Normal,
             textAlign = TextAlign.Center,
         ),
-        modifier = Modifier
+        modifier = Modifier.clickable{
+
+            val intent = Intent(context, LoginCuentaReCuenta::class.java)
+            intent.putExtra("indexItem", 0)
+            context.startActivity(intent)
+
+        }
     )
 
 
@@ -220,6 +233,5 @@ fun Login() {
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewLoginCuentaScreen() {
-
     Login()
 }

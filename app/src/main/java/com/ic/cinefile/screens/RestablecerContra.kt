@@ -1,5 +1,6 @@
 package com.ic.cinefile.screens
 
+import android.content.Context
 import android.graphics.drawable.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,7 +47,7 @@ import com.ic.cinefile.ui.theme.white
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RestablecerContra(navController: NavController) {
+fun RestablecerContra(context:Context) {
     val correo: MutableState<String> = remember { mutableStateOf("") }
     Scaffold(
         topBar = {
@@ -158,6 +160,6 @@ fun RestablecerContra(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun RestablecerContraPreview() {
-    val navController = rememberNavController()
-    RestablecerContra(navController)
+    //val navController = rememberNavController()
+    RestablecerContra(LocalContext.current)
 }

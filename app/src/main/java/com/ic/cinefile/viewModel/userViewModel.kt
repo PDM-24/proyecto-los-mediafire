@@ -9,8 +9,6 @@ import com.ic.cinefile.API.apiServer
 import com.ic.cinefile.data.loginUserData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Response
-import retrofit2.awaitResponse
 
 
 class userViewModel() : ViewModel() {
