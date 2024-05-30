@@ -1,7 +1,6 @@
 package com.ic.cinefile.screens
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,11 +29,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ic.cinefile.R
-import com.ic.cinefile.activities.AvatarActivity
+import com.ic.cinefile.activities.BienvenidaActivity
 
 
 @Composable
-fun contentAvatar(context: Context) {
+fun contentAvatar() {
+
+    val context = LocalContext.current
 
     val activity = context as Activity
     val correo = activity.intent.getStringExtra("correo") ?: ""
@@ -126,7 +127,7 @@ fun contentAvatar(context: Context) {
         Button(
             onClick = {
 
-                val intent = Intent(context, AvatarActivity::class.java)
+                val intent = Intent(context, BienvenidaActivity::class.java)
                 intent.putExtra("correo", correo)
                 intent.putExtra("contrasena", contrasena)
                 intent.putExtra("username", username)
@@ -166,5 +167,5 @@ fun contentAvatar(context: Context) {
 @Composable
 fun PreviewSeleccionAvatarScreen() {
     //val navController = rememberNavController()
-    contentAvatar(LocalContext.current)
+    contentAvatar()
 }

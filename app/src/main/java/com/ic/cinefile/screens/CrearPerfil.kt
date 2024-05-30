@@ -3,6 +3,7 @@ package com.ic.cinefile.screens
 //import com.ic.cinefile.activities.contentGeneroActivity
 import android.app.Activity
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,7 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.ic.cinefile.activities.CrearPerfilActivity
+import com.ic.cinefile.activities.GeneroActivity
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.dark_blue
 import com.ic.cinefile.ui.theme.white
@@ -86,12 +87,15 @@ fun CrearPerfil() {
         val usuario: MutableState<String> = remember { mutableStateOf("") }
 
         TextField(
-            modifier = Modifier.width(300.dp),
+            modifier = Modifier.width(300.dp), // Ajustar el ancho para que coincida con el botón de selección de fecha
             value = usuario.value,
-            maxLines = 1,
+            maxLines = 1, // Limitar a una línea para evitar saltos de línea
             onValueChange = {
-                usuario.value = it
+                if (!it.contains("\n")) {
+                    usuario.value = it
+                }
             },
+            singleLine = true,
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = black,
                 focusedContainerColor = black,
@@ -204,14 +208,19 @@ fun CrearPerfil() {
                 val username = usuario.value
                 val birthday = dateResult.value
 
-                val intent = Intent(context, CrearPerfilActivity::class.java).apply {
-                    putExtra("correo", correo)
-                    putExtra("contrasena", contrasena)
-                    putExtra("username", username)
-                    putExtra("birthday", birthday)
+                // Validación: verificar que el nombre de usuario y la fecha de nacimiento no estén vacíos
+                if (username.isNotEmpty() && birthday != "DD/MM/YYYY") {
+                    val intent = Intent(context, GeneroActivity::class.java).apply {
+                        putExtra("correo", correo)
+                        putExtra("contrasena", contrasena)
+                        putExtra("username", username)
+                        putExtra("birthday", birthday)
+                    }
+                    context.startActivity(intent)
+                } else {
+                    Toast.makeText(context, "Por favor, Completa todos los campos", Toast.LENGTH_SHORT)
+                        .show()
                 }
-                context.startActivity(intent)
-
             },
             modifier = Modifier
                 .width(300.dp),

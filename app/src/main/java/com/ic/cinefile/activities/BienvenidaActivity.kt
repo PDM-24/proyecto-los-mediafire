@@ -3,13 +3,17 @@ package com.ic.cinefile.activities
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.ic.cinefile.screens.contentAvatar
+import com.ic.cinefile.screens.Content
 
-class AvatarActivity : ComponentActivity() {
+class BienvenidaActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            contentAvatar()
+
+            Content()
+
         }
     }
+
 }

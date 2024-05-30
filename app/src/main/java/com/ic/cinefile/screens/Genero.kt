@@ -1,8 +1,8 @@
 package com.ic.cinefile.screens
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,12 +28,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ic.cinefile.activities.GeneroActivity
+import com.ic.cinefile.activities.ElegirGeneroActivity
 
 //import com.ic.cinefile.activities.contentGeneroActivity
 
 @Composable
-fun contentGenero(context: Context) {
+fun contentGenero() {
+
+    val context = LocalContext.current
 
     val activity = context as Activity
     val correo = activity.intent.getStringExtra("correo") ?: ""
@@ -42,6 +44,32 @@ fun contentGenero(context: Context) {
     val birthday = activity.intent.getStringExtra("birthday") ?: ""
 
     val selectedGender: MutableState<String> = remember { mutableStateOf("") }
+
+    val buttonColors: MutableState<Map<String, Color>> = remember {
+        mutableStateOf(
+            mapOf(
+                "Hombre" to Color.Transparent,
+                "Mujer" to Color.Transparent,
+                "Prefiero no especificar" to Color.Transparent
+            )
+        )
+    }
+
+    // Función para actualizar los colores de los botones
+    fun updateButtonColors(gender: String) {
+        if (selectedGender.value == gender) {
+            // Si el mismo botón es clicado, deseleccionar
+            selectedGender.value = ""
+            buttonColors.value = buttonColors.value.mapValues { Color.Transparent }
+        } else {
+            // Seleccionar el nuevo botón y deseleccionar el anterior
+            selectedGender.value = gender
+            buttonColors.value = buttonColors.value.mapValues { Color.Transparent }
+            buttonColors.value = buttonColors.value.toMutableMap().apply {
+                this[gender] = Color.Gray.copy(alpha = 0.3f) // Gris claro transparente
+            }
+        }
+    }
 
 
     Column(
@@ -65,14 +93,20 @@ fun contentGenero(context: Context) {
         Spacer(modifier = Modifier.height(120.dp))
 
         Button(
-            onClick = { selectedGender.value = "Hombre" },
+            onClick = {
+
+                updateButtonColors("Hombre")
+
+            },
             modifier = Modifier
-                .width(300.dp),
+                .width(300.dp)
+                .background(buttonColors.value["Hombre"]!!),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.White,
                 contentColor = Color.Black
             ),
-        ) {
+
+            ) {
             Text(
                 text = "Hombre",
                 style = TextStyle(
@@ -86,14 +120,20 @@ fun contentGenero(context: Context) {
         Spacer(modifier = Modifier.height(10.dp))
 
         Button(
-            onClick = { selectedGender.value = "Mujer" },
+            onClick = {
+
+                updateButtonColors("Mujer")
+
+            },
             modifier = Modifier
-                .width(300.dp),
+                .width(300.dp)
+                .background(buttonColors.value["Mujer"]!!),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.White,
                 contentColor = Color.Black
             ),
-        ) {
+
+            ) {
             Text(
                 text = "Mujer",
                 style = TextStyle(
@@ -107,14 +147,20 @@ fun contentGenero(context: Context) {
         Spacer(modifier = Modifier.height(10.dp))
 
         Button(
-            onClick = { selectedGender.value = "Prefiero no especificar" },
+            onClick = {
+
+                updateButtonColors("Prefiero no especificar")
+
+            },
             modifier = Modifier
-                .width(300.dp),
+                .width(300.dp)
+                .background(buttonColors.value["Prefiero no especificar"]!!),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.White,
                 contentColor = Color.Black
             ),
-        ) {
+
+            ) {
             Text(
                 text = "Prefiero no especificar",
                 style = TextStyle(
@@ -130,15 +176,20 @@ fun contentGenero(context: Context) {
         Button(
             onClick = {
 
-                val intent = Intent(context, GeneroActivity::class.java).apply {
-                    putExtra("correo", correo)
-                    putExtra("contrasena", contrasena)
-                    putExtra("username", username)
-                    putExtra("birthday", birthday)
-                    putExtra("gender", selectedGender.value)
+                if (selectedGender.value.isNotEmpty()) {
+                    val intent = Intent(context, ElegirGeneroActivity::class.java).apply {
+                        putExtra("correo", correo)
+                        putExtra("contrasena", contrasena)
+                        putExtra("username", username)
+                        putExtra("birthday", birthday)
+                        putExtra("gender", selectedGender.value)
+                    }
+                    context.startActivity(intent)
+                } else {
+                    // Mostrar mensaje de validación usando un Toast
+                    Toast.makeText(context, "Por favor, selecciona un género", Toast.LENGTH_SHORT)
+                        .show()
                 }
-                context.startActivity(intent)
-
             },
             modifier = Modifier
                 .width(300.dp),
@@ -164,7 +215,7 @@ fun contentGenero(context: Context) {
 @Composable
 fun PreviewSeleccionGeneroScreen() {
     //val navController = rememberNavController()
-    contentGenero(LocalContext.current)
+    contentGenero()
 }
 
 
