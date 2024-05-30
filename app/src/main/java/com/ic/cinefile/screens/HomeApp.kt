@@ -1,7 +1,6 @@
 package com.ic.cinefile.screens
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,7 +38,10 @@ import com.ic.cinefile.ui.theme.white
 
 //pasas como contexto parametro a la funcion
 //que partira de navegacion home->login
-fun HomeAppScreen(context: Context) {
+fun HomeAppScreen() {
+
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -137,5 +139,5 @@ fun HomeAppScreen(context: Context) {
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewHomeAppScreen() {
-    HomeAppScreen(LocalContext.current)
+    HomeAppScreen()
 }

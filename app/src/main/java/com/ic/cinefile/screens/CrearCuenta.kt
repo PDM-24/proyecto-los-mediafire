@@ -1,6 +1,6 @@
 package com.ic.cinefile.screens
 
-import android.content.Context
+import android.app.Activity
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,10 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.ic.cinefile.R
-import com.ic.cinefile.activities.CrearCuentaActivity
+import com.ic.cinefile.activities.CrearCuentaInicSesActivity
 import com.ic.cinefile.activities.CrearPerfilActivity
-import kotlinx.coroutines.flow.internal.NoOpContinuation.context
-import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
 @Composable
 fun CrearCuenta() {
@@ -79,7 +77,7 @@ fun CrearCuenta() {
                 correoState.value = newValue
             },
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color(R.color.black),
+                unfocusedContainerColor = Color(R.color.white),
                 unfocusedLabelColor = Color(R.color.white),
                 cursorColor = Color(R.color.white)
             ),
@@ -184,7 +182,15 @@ fun CrearCuenta() {
                 textAlign = TextAlign.Center,
             ),
             modifier = Modifier
-                .clickable { }
+                .clickable {
+
+                    val intent = Intent(context, CrearCuentaInicSesActivity::class.java)
+                    intent.putExtra("indexItem", 0)
+                    context.startActivity(intent)
+                    (context as Activity)
+
+
+                }
         )
 
 

@@ -1,7 +1,7 @@
 package com.ic.cinefile.screens
 
+//import com.ic.cinefile.activities.contentGeneroActivity
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,16 +41,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.ic.cinefile.activities.CrearPerfilActivity
-import com.ic.cinefile.activities.contentGeneroActivity
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.dark_blue
 import com.ic.cinefile.ui.theme.white
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.coroutines.jvm.internal.CompletedContinuation.context
+
+//import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
 
 @OptIn(ExperimentalMaterial3Api::class)

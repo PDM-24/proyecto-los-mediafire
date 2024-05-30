@@ -1,6 +1,6 @@
 package com.ic.cinefile.screens
 
-import android.content.Context
+//import androidx.navigation.compose.rememberNavController
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,7 +25,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,17 +36,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.ic.cinefile.R
-import com.ic.cinefile.activities.HomeAppActivity
 import com.ic.cinefile.activities.LoginCuentaReCuenta
-import com.ic.cinefile.data.loginUserData
 import com.ic.cinefile.viewModel.userViewModel
 
 
@@ -70,7 +70,8 @@ fun Login() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(Color.Black)
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
 
@@ -87,29 +88,44 @@ fun Login() {
             )
         )
 
-        Spacer(modifier = Modifier.height(70.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         TextField(
             value = email,
             onValueChange = {
                 email = it
             },
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color(R.color.black),
-                unfocusedLabelColor = Color(R.color.white),
-                cursorColor = Color(R.color.white)
-            ),
+            colors = TextFieldDefaults.textFieldColors(
+
+                unfocusedIndicatorColor = Color.White,
+                focusedIndicatorColor = Color.White,
+                cursorColor = Color.Gray,
+
+                ),
             placeholder = {
                 Text(
                     text = "Correo",
                     style = TextStyle(
-                        color = Color.White,
+                        color = Color.Gray,
                         fontSize = 15.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
                     ),
                 )
             },
+
+            modifier = Modifier.width(300.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next,
+                keyboardType = KeyboardType.Email
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    // Lógica cuando se presiona Done
+                },
+
+                )
+
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
@@ -117,24 +133,41 @@ fun Login() {
             onValueChange = {
                 password = it
             },
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color(R.color.black),
-                unfocusedLabelColor = Color(R.color.white),
-                cursorColor = Color(R.color.white)
+            colors = TextFieldDefaults.textFieldColors(
+
+                unfocusedIndicatorColor = Color.White,
+                focusedIndicatorColor = Color.White,
+                cursorColor = Color.Gray,
             ),
             placeholder = {
                 Text(
                     text = "Contraseña",
                     style = TextStyle(
-                        color = Color.White,
+                        color = Color.Gray,
                         fontSize = 15.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
                     ),
                 )
             },
+
+            modifier = Modifier.width(300.dp),
+
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Password
+            ),
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    // Lógica cuando se presiona Done
+                },
+            )
+
         )
-        Spacer(modifier = Modifier.height(35.dp))
+
+        Spacer(modifier = Modifier.height(20.dp))
+
         Button(
             onClick = {
 
@@ -165,6 +198,57 @@ fun Login() {
             )
         }
 
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(
+            onClick = {
+                // Acción para iniciar sesión con Google
+
+            },
+            modifier = Modifier
+                .width(300.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.White,
+                contentColor = Color.Black
+            ),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = R.drawable.googlee),
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(
+                    text = "Iniciar sesión con Google",
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "¿Has olvidado la contraseña?",
+            style = TextStyle(
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center,
+            ),
+            modifier = Modifier.clickable {
+
+                val intent = Intent(context, LoginCuentaReCuenta::class.java)
+                intent.putExtra("indexItem", 0)
+                context.startActivity(intent)
+
+            }
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+
         if (showErrorSnackbar) {
             Snackbar(modifier = Modifier.padding(16.dp),
                 action = {
@@ -176,58 +260,7 @@ fun Login() {
                 Text(errorMessage, color = Color.White)
             }
         }
-
     }
-
-
-    Spacer(modifier = Modifier.height(10.dp))
-    Button(
-        onClick = {
-            // Acción para iniciar sesión con Google
-
-        },
-        modifier = Modifier
-            .width(300.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White,
-            contentColor = Color.Black
-        ),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(id = R.drawable.googlee),
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Text(
-                text = "Iniciar sesión con Google",
-                style = TextStyle(
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                )
-            )
-        }
-    }
-    Spacer(modifier = Modifier.height(100.dp))
-    Text(
-        text = "¿Has olvidado la contraseña?",
-        style = TextStyle(
-            color = Color.White,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Normal,
-            textAlign = TextAlign.Center,
-        ),
-        modifier = Modifier.clickable{
-
-            val intent = Intent(context, LoginCuentaReCuenta::class.java)
-            intent.putExtra("indexItem", 0)
-            context.startActivity(intent)
-
-        }
-    )
-
-
 }
 
 @Preview(showSystemUi = true)

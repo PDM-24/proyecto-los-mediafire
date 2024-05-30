@@ -12,7 +12,7 @@ class CrearPerfilActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            contentGenero()
+            contentGenero(LocalContext.current)
         }
     }
 }
