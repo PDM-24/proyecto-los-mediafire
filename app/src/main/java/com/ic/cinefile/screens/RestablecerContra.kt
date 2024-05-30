@@ -1,7 +1,8 @@
 package com.ic.cinefile.screens
 
+import android.app.Activity
 import android.content.Context
-import android.graphics.drawable.Icon
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -23,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -34,14 +36,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.ic.cinefile.Navigation.AppScreens
+import com.ic.cinefile.activities.RestContraActivity
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
 
@@ -59,7 +61,14 @@ fun RestablecerContra(context:Context) {
                 navigationIcon =
                 {
                     IconButton(
-                        onClick = {navController.navigate(AppScreens.LoginCuenta.route)}
+                        onClick = {
+
+                            val intent = Intent(context, RestContraActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(intent)
+                            (context as Activity).finish()
+
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
@@ -130,6 +139,18 @@ fun RestablecerContra(context:Context) {
                         )
                     )
                 },
+
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Email
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        // Lógica cuando se presiona Done
+                    },
+
+                    )
+
             )
 
             Spacer(modifier = Modifier.height(100.dp))

@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
+//import androidx.navigation.compose.rememberNavController
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
 

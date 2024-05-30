@@ -28,9 +28,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.ic.cinefile.activities.GeneroActivity
-import com.ic.cinefile.activities.contentGeneroActivity
+
+//import com.ic.cinefile.activities.contentGeneroActivity
 
 @Composable
 fun contentGenero(context: Context) {
