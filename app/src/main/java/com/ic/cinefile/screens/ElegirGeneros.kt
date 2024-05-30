@@ -1,8 +1,8 @@
 package com.ic.cinefile.screens
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ic.cinefile.activities.ElegirGeneroActivity
+import com.ic.cinefile.activities.AvatarActivity
 import com.ic.cinefile.components.botonGeneros
 import com.ic.cinefile.components.gridGeneros
 import com.ic.cinefile.components.valoresGeneros.generos
@@ -38,7 +38,9 @@ import com.ic.cinefile.ui.theme.white
 
 
 @Composable
-fun ElegirGeneros(context: Context) {
+fun ElegirGeneros() {
+
+    val context = LocalContext.current
 
     val activity = context as Activity
     val correo = activity.intent.getStringExtra("correo") ?: ""
@@ -80,17 +82,30 @@ fun ElegirGeneros(context: Context) {
         ) {
             items(generos.values().toList()) { genero ->
                 val (defaultColor, selectedColor) = gridGeneros(genero)
+                val isGenreSelected = generosSeleccionados.contains(genero.name)
+                val isMaxReached = generosSeleccionados.size >= 6
+
+                // Deshabilitar el botón si se ha alcanzado el límite de géneros
+                val isEnabled = !isMaxReached || isGenreSelected
+
                 botonGeneros(
                     generos = genero,
-                    selectedColor = selectedColor,
+                    selectedColor = if (isGenreSelected) selectedColor else defaultColor,
                     defaultColor = defaultColor,
                     onClick = {
-                        if (generosSeleccionados.contains(genero.name)) {
+                        if (isGenreSelected) {
                             generosSeleccionados.remove(genero.name)
                         } else {
-                            generosSeleccionados.add(genero.name)
+                            if (!isMaxReached) {
+                                generosSeleccionados.add(genero.name)
+                            } else {
+                                // Mostrar mensaje de error al usuario (Toast)
+                                Toast.makeText(context, "¡Máximo 6 géneros!", Toast.LENGTH_SHORT).show()
+                            }
                         }
-                    }
+                    },
+
+                    isEnabled = isEnabled// Pasar el estado de habilitación al botón
                 )
             }
         }
@@ -101,16 +116,27 @@ fun ElegirGeneros(context: Context) {
         Button(
             onClick = {
 
-                val intent = Intent(context, ElegirGeneroActivity::class.java).apply {
-                    putExtra("correo", correo)
-                    putExtra("contrasena", contrasena)
-                    putExtra("username", username)
-                    putExtra("birthday", birthday)
-                    putExtra("gender", gender)
-                    putStringArrayListExtra("generosSeleccionados", ArrayList(generosSeleccionados))
+                if (generosSeleccionados.size >= 5) {
+                    val intent = Intent(context, AvatarActivity::class.java).apply {
+                        putExtra("correo", correo)
+                        putExtra("contrasena", contrasena)
+                        putExtra("username", username)
+                        putExtra("birthday", birthday)
+                        putExtra("gender", gender)
+                        putStringArrayListExtra(
+                            "generosSeleccionados",
+                            ArrayList(generosSeleccionados)
+                        )
+                    }
+                    context.startActivity(intent)
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Selecciona al menos 5 géneros cinematrográficos",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
                 }
-                context.startActivity(intent)
-
             },
             modifier = Modifier
                 .width(300.dp),
@@ -118,6 +144,9 @@ fun ElegirGeneros(context: Context) {
                 containerColor = white,
                 contentColor = black
             ),
+
+            enabled = generosSeleccionados.size >= 5 // Habilitar el botón si se han seleccionado al menos 5 géneros
+
         ) {
             Text(
                 text = "Siguiente",
@@ -136,6 +165,6 @@ fun ElegirGeneros(context: Context) {
 @Composable
 fun ElegirGenerosPreview() {
     //val navController = rememberNavController()
-    ElegirGeneros(LocalContext.current)
+    ElegirGeneros()
 }
 

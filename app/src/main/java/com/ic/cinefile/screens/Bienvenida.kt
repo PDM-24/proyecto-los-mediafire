@@ -1,6 +1,5 @@
 package com.ic.cinefile.screens
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +38,9 @@ import com.ic.cinefile.ui.theme.white
 
 
 @Composable
-fun Content(context: Context) {
+fun Content() {
+
+    val context = LocalContext.current
 
     var aceptarTerminos by remember { mutableStateOf(false) }
 
@@ -148,5 +149,5 @@ fun Content(context: Context) {
 @Composable
 fun PreviewBienvenidaScreen() {
     //val navController = rememberNavController()
-    Content(LocalContext.current)
+    Content()
 }

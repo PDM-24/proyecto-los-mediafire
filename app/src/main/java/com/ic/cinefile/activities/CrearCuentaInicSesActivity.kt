@@ -11,8 +11,8 @@ class CrearCuentaInicSesActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
-            /* esta es la  actividad que te lleva a  la pantalla de inicio
-            * desde la pantalla de reestablecer contraseña */
+            /* esta es la  actividad que te lleva al inicio de sesion
+            * desde la pantalla de Crear Cuenta */
 
             Login()
 

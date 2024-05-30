@@ -34,7 +34,8 @@
         <activity android:name=".activities.CrearCuentaActivity" />
         <activity android:name=".activities.CrearPerfilActivity" />
         <activity android:name=".activities.RestContraActivity" />
-        <activity android:name=".activities.CrearCuentaInicSesActivity" />>
+        <activity android:name=".activities.CrearCuentaInicSesActivity" />
+        <activity android:name=".activities.BienvenidaActivity" />>
     </application>
 
 </manifest>

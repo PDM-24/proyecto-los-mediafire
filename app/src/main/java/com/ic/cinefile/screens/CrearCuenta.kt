@@ -2,6 +2,7 @@ package com.ic.cinefile.screens
 
 import android.app.Activity
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -28,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -72,7 +75,7 @@ fun CrearCuenta() {
         )
 
         TextField(
-            value = "",
+            value = correoState.value,
             onValueChange = { newValue ->
                 correoState.value = newValue
             },
@@ -80,6 +83,7 @@ fun CrearCuenta() {
                 unfocusedContainerColor = Color(R.color.white),
                 unfocusedLabelColor = Color(R.color.white),
                 cursorColor = Color(R.color.white)
+
             ),
             placeholder = {
 
@@ -93,10 +97,16 @@ fun CrearCuenta() {
                     )
                 )
             },
+
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+            ),
+
+
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
-            value = "",
+            value = contrasenaState.value,
             onValueChange = { newValue ->
                 contrasenaState.value = newValue
             },
@@ -116,6 +126,12 @@ fun CrearCuenta() {
                     ),
                 )
             },
+
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password // Teclado optimizado para ingresar contraseñas
+            ),
+            visualTransformation = androidx.compose.ui.text.input.VisualTransformation.None // La contraseña es visible
+
         )
         Spacer(modifier = Modifier.height(35.dp))
         Button(
@@ -123,11 +139,18 @@ fun CrearCuenta() {
 
                 val correo = correoState.value
                 val contrasena = contrasenaState.value
-                val intent = Intent(context, CrearPerfilActivity::class.java).apply {
-                    putExtra("correo", correo)
-                    putExtra("contrasena", contrasena)
+
+
+                if (correo.isEmpty() || contrasena.isEmpty()) {
+                    Toast.makeText(context, "No dejes los campos vacíos", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Navega a la actividad de creación de perfil con los datos ingresados
+                    val intent = Intent(context, CrearPerfilActivity::class.java).apply {
+                        putExtra("correo", correo)
+                        putExtra("contrasena", contrasena)
+                    }
+                    context.startActivity(intent)
                 }
-                context.startActivity(intent)
 
             },
             modifier = Modifier
