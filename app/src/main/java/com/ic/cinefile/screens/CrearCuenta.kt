@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.ic.cinefile.R
 import com.ic.cinefile.activities.CrearCuentaInicSesActivity
 import com.ic.cinefile.activities.CrearPerfilActivity
+import java.util.regex.Pattern
 
 @Composable
 fun CrearCuenta() {
@@ -47,6 +48,12 @@ fun CrearCuenta() {
 
     val correoState = remember { mutableStateOf("") }
     val contrasenaState = remember { mutableStateOf("") }
+
+    fun isValidEmail(email: String): Boolean {
+        val emailPattern = "^[A-Za-z0-9+_.-]+@(.+)$"
+        return Pattern.compile(emailPattern).matcher(email).matches()
+    }
+
 
 
     Column(
@@ -88,7 +95,7 @@ fun CrearCuenta() {
             placeholder = {
 
                 Text(
-                    text = "Correo",
+                    text = "Correo (ejemplo@dominio.com )",
                     style = androidx.compose.ui.text.TextStyle(
                         color = Color.White,
                         fontSize = 15.sp,
@@ -103,12 +110,15 @@ fun CrearCuenta() {
             ),
 
 
-        )
+            )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
             value = contrasenaState.value,
             onValueChange = { newValue ->
-                contrasenaState.value = newValue
+                // Validación para que la contraseña no sea mayor a 8 caracteres
+                if (newValue.length <= 8) {
+                    contrasenaState.value = newValue
+                }
             },
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color(R.color.black),
@@ -117,13 +127,14 @@ fun CrearCuenta() {
             ),
             placeholder = {
                 Text(
-                    text = "Contraseña",
+                    text = "Contraseña (máximo 8 caracteres)",
                     style = androidx.compose.ui.text.TextStyle(
                         color = Color.White,
                         fontSize = 15.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
-                    ),
+
+                        ),
                 )
             },
 
@@ -140,9 +151,11 @@ fun CrearCuenta() {
                 val correo = correoState.value
                 val contrasena = contrasenaState.value
 
-
                 if (correo.isEmpty() || contrasena.isEmpty()) {
                     Toast.makeText(context, "No dejes los campos vacíos", Toast.LENGTH_SHORT).show()
+                } else if (!isValidEmail(correo)) {
+                    // Validación para verificar si el correo tiene un formato válido
+                    Toast.makeText(context, "Formato de correo inválido", Toast.LENGTH_SHORT).show()
                 } else {
                     // Navega a la actividad de creación de perfil con los datos ingresados
                     val intent = Intent(context, CrearPerfilActivity::class.java).apply {
