@@ -2,19 +2,10 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="AvatarActivity">
+      <entry key="PreviewSeleccionGeneroScreen">
         <State />
       </entry>
-      <entry key="CrearCuentaActivity">
-        <State />
-      </entry>
-      <entry key="GeneroActivity">
-        <State />
-      </entry>
-      <entry key="HomeAppActivity">
-        <State />
-      </entry>
-      <entry key="LoginCuentaReCuenta">
+      <entry key="ViewConteinerHome">
         <State />
       </entry>
       <entry key="app">

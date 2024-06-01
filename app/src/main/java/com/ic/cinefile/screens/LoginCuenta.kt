@@ -95,18 +95,17 @@ fun Login() {
             onValueChange = {
                 email = it
             },
-            colors = TextFieldDefaults.textFieldColors(
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color(R.color.white),
+                unfocusedLabelColor = Color(R.color.white),
+                cursorColor = Color(R.color.white)
 
-                unfocusedIndicatorColor = Color.White,
-                focusedIndicatorColor = Color.White,
-                cursorColor = Color.Gray,
-
-                ),
+            ),
             placeholder = {
                 Text(
                     text = "Correo",
-                    style = TextStyle(
-                        color = Color.Gray,
+                    style = androidx.compose.ui.text.TextStyle(
+                        color = Color.White,
                         fontSize = 15.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
@@ -133,17 +132,16 @@ fun Login() {
             onValueChange = {
                 password = it
             },
-            colors = TextFieldDefaults.textFieldColors(
-
-                unfocusedIndicatorColor = Color.White,
-                focusedIndicatorColor = Color.White,
-                cursorColor = Color.Gray,
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color(R.color.black),
+                unfocusedLabelColor = Color(R.color.white),
+                cursorColor = Color(R.color.white)
             ),
             placeholder = {
                 Text(
                     text = "Contraseña",
-                    style = TextStyle(
-                        color = Color.Gray,
+                    style = androidx.compose.ui.text.TextStyle(
+                        color = Color.White,
                         fontSize = 15.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,

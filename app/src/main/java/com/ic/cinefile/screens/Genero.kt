@@ -11,9 +11,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -29,9 +37,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ic.cinefile.activities.ElegirGeneroActivity
+import com.ic.cinefile.activities.RestContraActivity
+import com.ic.cinefile.ui.theme.black
+import com.ic.cinefile.ui.theme.white
 
 //import com.ic.cinefile.activities.contentGeneroActivity
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun contentGenero() {
 
@@ -71,144 +83,176 @@ fun contentGenero() {
         }
     }
 
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = black
+                ),
+                title = {},
+                navigationIcon =
+                {
+                    IconButton(
+                        onClick = {
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Genero",
-            style = TextStyle(
-                color = Color.White,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Normal,
-                textAlign = TextAlign.Center,
-            ),
-            modifier = Modifier.padding(start = 16.dp)
-        )
+                            val intent = Intent(context, RestContraActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(intent)
+                            (context as Activity).finish()
 
-        Spacer(modifier = Modifier.height(120.dp))
-
-        Button(
-            onClick = {
-
-                updateButtonColors("Hombre")
-
-            },
-            modifier = Modifier
-                .width(300.dp)
-                .background(buttonColors.value["Hombre"]!!),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
-            ),
-
-            ) {
-            Text(
-                text = "Hombre",
-                style = TextStyle(
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                )
-            )
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Button(
-            onClick = {
-
-                updateButtonColors("Mujer")
-
-            },
-            modifier = Modifier
-                .width(300.dp)
-                .background(buttonColors.value["Mujer"]!!),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
-            ),
-
-            ) {
-            Text(
-                text = "Mujer",
-                style = TextStyle(
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                )
-            )
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Button(
-            onClick = {
-
-                updateButtonColors("Prefiero no especificar")
-
-            },
-            modifier = Modifier
-                .width(300.dp)
-                .background(buttonColors.value["Prefiero no especificar"]!!),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
-            ),
-
-            ) {
-            Text(
-                text = "Prefiero no especificar",
-                style = TextStyle(
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                )
-            )
-        }
-
-        Spacer(modifier = Modifier.height(120.dp))
-
-        Button(
-            onClick = {
-
-                if (selectedGender.value.isNotEmpty()) {
-                    val intent = Intent(context, ElegirGeneroActivity::class.java).apply {
-                        putExtra("correo", correo)
-                        putExtra("contrasena", contrasena)
-                        putExtra("username", username)
-                        putExtra("birthday", birthday)
-                        putExtra("gender", selectedGender.value)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "",
+                            tint = white
+                        )
                     }
-                    context.startActivity(intent)
-                } else {
-                    // Mostrar mensaje de validación usando un Toast
-                    Toast.makeText(context, "Por favor, selecciona un género", Toast.LENGTH_SHORT)
-                        .show()
                 }
-            },
+            )
+        }
+    ){ innerPadding ->
+        Column(
             modifier = Modifier
-                .width(300.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
-            ),
+                .fillMaxSize()
+                .background(Color.Black),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Siguiente",
+                text = "Genero",
                 style = TextStyle(
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Center,
-                )
+                ),
+                modifier = Modifier.padding(start = 16.dp)
             )
-        }
 
+            Spacer(modifier = Modifier.height(120.dp))
+
+            Button(
+                onClick = {
+
+                    updateButtonColors("Hombre")
+
+                },
+                modifier = Modifier
+                    .width(300.dp)
+                    .background(buttonColors.value["Hombre"]!!),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = Color.Black
+                ),
+
+                ) {
+                Text(
+                    text = "Hombre",
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = {
+
+                    updateButtonColors("Mujer")
+
+                },
+                modifier = Modifier
+                    .width(300.dp)
+                    .background(buttonColors.value["Mujer"]!!),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = Color.Black
+                ),
+
+                ) {
+                Text(
+                    text = "Mujer",
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = {
+
+                    updateButtonColors("Prefiero no especificar")
+
+                },
+                modifier = Modifier
+                    .width(300.dp)
+                    .background(buttonColors.value["Prefiero no especificar"]!!),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = Color.Black
+                ),
+
+                ) {
+                Text(
+                    text = "Prefiero no especificar",
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(120.dp))
+
+            Button(
+                onClick = {
+
+                    if (selectedGender.value.isNotEmpty()) {
+                        val intent = Intent(context, ElegirGeneroActivity::class.java).apply {
+                            putExtra("correo", correo)
+                            putExtra("contrasena", contrasena)
+                            putExtra("username", username)
+                            putExtra("birthday", birthday)
+                            putExtra("gender", selectedGender.value)
+                        }
+                        context.startActivity(intent)
+                    } else {
+                        // Mostrar mensaje de validación usando un Toast
+                        Toast.makeText(context, "Por favor, selecciona un género", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                },
+                modifier = Modifier
+                    .width(300.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = Color.Black
+                ),
+            ) {
+                Text(
+                    text = "Siguiente",
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+            }
+
+        }
     }
+
+
+
 }
 
 @Preview(showSystemUi = true)

@@ -3,6 +3,7 @@ package com.ic.cinefile.activities
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.ui.platform.LocalContext
 import com.ic.cinefile.screens.Content
 
 class BienvenidaActivity : ComponentActivity() {
@@ -11,7 +12,7 @@ class BienvenidaActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
-            Content()
+            Content(LocalContext.current)
 
         }
     }
