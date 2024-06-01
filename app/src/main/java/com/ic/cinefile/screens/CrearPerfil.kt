@@ -47,8 +47,9 @@ import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.dark_blue
 import com.ic.cinefile.ui.theme.white
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 
 //import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
@@ -63,6 +64,13 @@ fun CrearPerfil() {
     // Obtener los datos de la actividad anterior
     val correo = activity.intent.getStringExtra("correo") ?: ""
     val contrasena = activity.intent.getStringExtra("contrasena") ?: ""
+
+
+    //val calendar = Calendar.getInstance() // Inicializar el calendario correctamente
+    // Obtener el año actual
+    //val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+    // Obtener el mes actual
+    //val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1 // Los meses en Calendar son 0-based
 
     Column(
         modifier = Modifier
@@ -91,7 +99,7 @@ fun CrearPerfil() {
             value = usuario.value,
             maxLines = 1, // Limitar a una línea para evitar saltos de línea
             onValueChange = {
-                if (!it.contains("\n")) {
+                if (it.length <= 15) { // Limitar a 15 caracteres
                     usuario.value = it
                 }
             },
@@ -107,7 +115,7 @@ fun CrearPerfil() {
             ),
             placeholder = {
                 Text(
-                    text = "Nombre de usuario",
+                    text = "Nombre de usuario (máximo 15 caracteres)",
                     style = TextStyle(
                         color = white,
                         fontSize = 15.sp,
@@ -164,8 +172,44 @@ fun CrearPerfil() {
                             hidden.value = false
                             var date = "no selection"
                             if (datePickerState.selectedDateMillis != null) {
+                                // Utilizamos la zona horaria UTC para evitar problemas de ajuste de días
+                                val calendar =
+                                    Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+                                        timeInMillis = datePickerState.selectedDateMillis!!
+                                    }
+                                val day = calendar.get(Calendar.DAY_OF_MONTH) - 1
+                                val month = calendar.get(Calendar.MONTH) + 1
+                                val year = calendar.get(Calendar.YEAR)
+
+                                // Validar el día según el mes
+                                val maxDay = when (month) {
+                                    4, 6, 9, 11 -> 30
+                                    2 -> if (calendar.get(Calendar.YEAR) % 4 == 0) 29 else 28
+                                    else -> 31
+                                }
+                                if (day > maxDay) {
+                                    calendar.set(Calendar.DAY_OF_MONTH, maxDay)
+                                }
+
+                                // Validar el mes
+                                if (month > 12) {
+                                    calendar.set(Calendar.MONTH, 11)
+                                }
+
+                                // Sumar 1 al día (si el día es menor que el máximo)
+                                if (day < maxDay) {
+                                    calendar.add(Calendar.DAY_OF_MONTH, 1)
+                                }
+
+                                // Validar el año con el año actual
+                                val currentYearValidation =
+                                    Calendar.getInstance().get(Calendar.YEAR)
+                                if (year > currentYearValidation) {
+                                    calendar.set(Calendar.YEAR, currentYearValidation)
+                                }
+
                                 date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(
-                                    Date(datePickerState.selectedDateMillis!!)
+                                    calendar.time
                                 )
                             }
                             dateResult.value = date
@@ -204,22 +248,58 @@ fun CrearPerfil() {
 
         Button(
             onClick = {
-
                 val username = usuario.value
                 val birthday = dateResult.value
 
                 // Validación: verificar que el nombre de usuario y la fecha de nacimiento no estén vacíos
                 if (username.isNotEmpty() && birthday != "DD/MM/YYYY") {
-                    val intent = Intent(context, GeneroActivity::class.java).apply {
-                        putExtra("correo", correo)
-                        putExtra("contrasena", contrasena)
-                        putExtra("username", username)
-                        putExtra("birthday", birthday)
+                    // Parsear la fecha de nacimiento
+                    val birthDate =
+                        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(birthday)
+                    birthDate?.let {
+                        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                        calendar.time = birthDate
+
+                        val birthYear = calendar.get(Calendar.YEAR)
+                        val birthMonth =
+                            calendar.get(Calendar.MONTH) + 1 // Los meses en Calendar son 0-based
+                        val birthDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+                        // Obtener la fecha actual
+                        val currentCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                        val currentYear = currentCalendar.get(Calendar.YEAR)
+                        val currentMonth = currentCalendar.get(Calendar.MONTH) + 1
+                        val currentDay = currentCalendar.get(Calendar.DAY_OF_MONTH)
+
+                        // Calcular la edad
+                        var age = currentYear - birthYear
+                        if (currentMonth < birthMonth || (currentMonth == birthMonth && currentDay < birthDay)) {
+                            age--
+                        }
+
+                        // Validar la edad
+                        if (age >= 12) {
+                            val intent = Intent(context, GeneroActivity::class.java).apply {
+                                putExtra("correo", correo)
+                                putExtra("contrasena", contrasena)
+                                putExtra("username", username)
+                                putExtra("birthday", birthday)
+                            }
+                            context.startActivity(intent)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Debes ser mayor de 12 años para usar la aplicación",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                    context.startActivity(intent)
                 } else {
-                    Toast.makeText(context, "Por favor, Completa todos los campos", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(
+                        context,
+                        "Por favor, Completa todos los campos",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             },
             modifier = Modifier

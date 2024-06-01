@@ -2,8 +2,11 @@ package com.ic.cinefile.screens
 
 import android.app.Activity
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +20,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,8 +50,12 @@ fun contentAvatar() {
     val gender = activity.intent.getStringExtra("gender") ?: ""
     val generosSeleccionados = activity.intent.getStringArrayListExtra("generosSeleccionados")
 
-    val Avatarimg =
-        listOf("avatar1", "avatar2", "avatar3", "avatar3", "avatar4", "avatar5", "avatar6")
+
+    val avatarSeleccionado = remember { mutableStateOf<String?>(null) }
+
+
+    //val Avatarimg =
+    //  listOf("avatar1", "avatar2", "avatar3", "avatar3", "avatar4", "avatar5", "avatar6")
 
     Column(
         modifier = Modifier
@@ -66,81 +75,72 @@ fun contentAvatar() {
             modifier = Modifier.padding(start = 16.dp)
         )
 
-        Spacer(modifier = Modifier.height(120.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(id = R.drawable.avatar1),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(110.dp)
-            )
+        val avatars = listOf(
+            R.drawable.avatar1 to "avatar1",
+            R.drawable.avatar2 to "avatar2",
+            R.drawable.avatar3 to "avatar3",
+            R.drawable.avatar4 to "avatar4",
+            R.drawable.avatar5 to "avatar5",
+            R.drawable.avatar6 to "avatar6"
+        )
 
-            Image(
-                painter = painterResource(id = R.drawable.avatar2),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(110.dp)
-            )
 
-            Image(
-                painter = painterResource(id = R.drawable.avatar3),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(110.dp)
-            )
+        // Mostrar avatares en filas
+        avatars.chunked(3).forEach { rowAvatars ->
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                rowAvatars.forEach { (avatarRes, avatarName) ->
+                    Image(
+                        painter = painterResource(id = avatarRes),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .size(110.dp)
+                            .border(
+                                width = 2.dp,
+                                color = if (avatarSeleccionado.value == avatarName) Color.Gray else Color.Transparent
+                            )
+                            .clickable {
+                                if (avatarSeleccionado.value == avatarName) {
+                                    avatarSeleccionado.value = null
+                                } else {
+                                    avatarSeleccionado.value = avatarName
+                                }
+                            }
+                    )
+                }
+            }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(id = R.drawable.avatar4),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(110.dp)
-            )
-
-            Image(
-                painter = painterResource(id = R.drawable.avatar5),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(110.dp)
-            )
-
-            Image(
-                painter = painterResource(id = R.drawable.avatar6),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(110.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(120.dp))
+        Spacer(modifier = Modifier.height(60.dp))
 
         Button(
             onClick = {
 
-                val intent = Intent(context, BienvenidaActivity::class.java)
-                intent.putExtra("correo", correo)
-                intent.putExtra("contrasena", contrasena)
-                intent.putExtra("username", username)
-                intent.putExtra("birthday", birthday)
-                intent.putExtra("gender", gender)
-                intent.putStringArrayListExtra(
-                    "generosSeleccionados", ArrayList(
-                        generosSeleccionados!!
-                    )
-                )
-                intent.putStringArrayListExtra("Avatar", ArrayList(Avatarimg))
-                context.startActivity(intent)
+                if (avatarSeleccionado.value == null) {
+                    Toast.makeText(context, "Por favor, selecciona un avatar", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    val intent = Intent(context, BienvenidaActivity::class.java).apply {
+                        putExtra("correo", correo)
+                        putExtra("contrasena", contrasena)
+                        putExtra("username", username)
+                        putExtra("birthday", birthday)
+                        putExtra("gender", gender)
+                        putStringArrayListExtra(
+                            "generosSeleccionados",
+                            ArrayList(generosSeleccionados)
+                        )
 
+                        //putStringArrayListExtra("generosSeleccionados", ArrayList(generosSeleccionados))
+                        putExtra("avatarSeleccionado", avatarSeleccionado.value)
+                    }
+                    context.startActivity(intent)
+                }
             },
             modifier = Modifier
                 .width(300.dp),
