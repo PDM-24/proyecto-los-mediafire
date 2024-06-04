@@ -84,7 +84,9 @@ fun CrearCuenta() {
         TextField(
             value = correoState.value,
             onValueChange = { newValue ->
-                correoState.value = newValue
+                if (!newValue.contains("\n")) {
+                    correoState.value = newValue
+                }
             },
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color(R.color.white),
@@ -107,6 +109,7 @@ fun CrearCuenta() {
 
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
+
             ),
 
 
@@ -116,7 +119,7 @@ fun CrearCuenta() {
             value = contrasenaState.value,
             onValueChange = { newValue ->
                 // Validación para que la contraseña no sea mayor a 8 caracteres
-                if (newValue.length <= 8) {
+                if (newValue.length <= 8 && !newValue.contains("\n")) {
                     contrasenaState.value = newValue
                 }
             },
