@@ -1,7 +1,11 @@
 package com.ic.cinefile.screens
 
 //import androidx.navigation.compose.rememberNavController
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +29,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,13 +51,17 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.ic.cinefile.R
 import com.ic.cinefile.activities.LoginCuentaReCuenta
-import com.ic.cinefile.viewModel.userViewModel
+//import com.ic.cinefile.viewModel.userViewModel
+import androidx.compose.runtime.collectAsState
+import userViewModel
+import androidx.compose.runtime.collectAsState
+//import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun Login() {
+fun Login(viewModel: userViewModel = userViewModel()) {
 //    val email: MutableState<String> = remember{ mutableStateOf("") }
 //    val password: MutableState<String> = remember{ mutableStateOf("") }
 
@@ -61,11 +70,13 @@ fun Login() {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val userViewModel = userViewModel()
+    val showErrorToast by viewModel.showErrorToast.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
-    val showErrorSnackbar by userViewModel.showErrorSnackbar
-    val errorMessage by userViewModel.errorMessage
-
+    if (showErrorToast) {
+        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+        viewModel.hideErrorToast() // Oculta el Toast después de mostrarlo
+    }
 
     Column(
         modifier = Modifier
@@ -95,17 +106,18 @@ fun Login() {
             onValueChange = {
                 email = it
             },
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color(R.color.white),
-                unfocusedLabelColor = Color(R.color.white),
-                cursorColor = Color(R.color.white)
+            colors = TextFieldDefaults.textFieldColors(
 
-            ),
+                unfocusedIndicatorColor = Color.White,
+                focusedIndicatorColor = Color.White,
+                cursorColor = Color.Gray,
+
+                ),
             placeholder = {
                 Text(
                     text = "Correo",
-                    style = androidx.compose.ui.text.TextStyle(
-                        color = Color.White,
+                    style = TextStyle(
+                        color = Color.Gray,
                         fontSize = 15.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
@@ -130,18 +142,21 @@ fun Login() {
         TextField(
             value = password,
             onValueChange = {
-                password = it
+                if (it.length <= 8) { // Validar que la contraseña no tenga más de 8 caracteres
+                    password = it
+                }
             },
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color(R.color.black),
-                unfocusedLabelColor = Color(R.color.white),
-                cursorColor = Color(R.color.white)
+            colors = TextFieldDefaults.textFieldColors(
+
+                unfocusedIndicatorColor = Color.White,
+                focusedIndicatorColor = Color.White,
+                cursorColor = Color.Gray,
             ),
             placeholder = {
                 Text(
                     text = "Contraseña",
-                    style = androidx.compose.ui.text.TextStyle(
-                        color = Color.White,
+                    style = TextStyle(
+                        color = Color.Gray,
                         fontSize = 15.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
@@ -158,9 +173,11 @@ fun Login() {
             visualTransformation = PasswordVisualTransformation(),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    // Lógica cuando se presiona Done
+                    hideKeyboard(context)
                 },
             )
+
+
 
         )
 
@@ -168,16 +185,21 @@ fun Login() {
 
         Button(
             onClick = {
-
                 if (email.isNotEmpty() && password.isNotEmpty()) {
-
-                    userViewModel.loginUser(email, password)
-
+                    if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        viewModel.loginUser(email, password)
+                    } else {
+                        Toast.makeText(context, "Formato de correo incorrecto", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 } else {
-
-                    userViewModel.setErrorMessage("Por favor, completa todos los campos")
-
+                    Toast.makeText(
+                        context,
+                        "Por favor, completa todos los campos",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+
             },
             modifier = Modifier
                 .width(300.dp),
@@ -247,18 +269,14 @@ fun Login() {
         )
         Spacer(modifier = Modifier.height(10.dp))
 
-        if (showErrorSnackbar) {
-            Snackbar(modifier = Modifier.padding(16.dp),
-                action = {
-                    TextButton(onClick = { userViewModel.hideErrorSnackbar() }) {
-                        Text("Cerrar")
-                    }
-                }
-            ) {
-                Text(errorMessage, color = Color.White)
-            }
-        }
     }
+}
+
+
+fun hideKeyboard(current: Context) {
+    val inputMethodManager =
+        current.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputMethodManager.hideSoftInputFromWindow((current as Activity).window.decorView.windowToken, 0)
 }
 
 @Preview(showSystemUi = true)
