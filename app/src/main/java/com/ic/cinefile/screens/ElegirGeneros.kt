@@ -2,6 +2,7 @@ package com.ic.cinefile.screens
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,8 +19,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,28 +33,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.activities.AvatarActivity
 import com.ic.cinefile.components.botonGeneros
 import com.ic.cinefile.components.gridGeneros
 import com.ic.cinefile.components.valoresGeneros.generos
+import com.ic.cinefile.data.accountRegisterDataMovieGenere
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.userCreateViewModel
 
 
 @Composable
-fun ElegirGeneros() {
+fun ElegirGeneros(viewModel: userCreateViewModel, navController : NavController) {
 
     val context = LocalContext.current
 
-    val activity = context as Activity
-    val correo = activity.intent.getStringExtra("correo") ?: ""
-    val contrasena = activity.intent.getStringExtra("contrasena") ?: ""
-    val username = activity.intent.getStringExtra("username") ?: ""
-    val birthday = activity.intent.getStringExtra("birthday") ?: ""
-    val gender = activity.intent.getStringExtra("gender") ?: ""
 
-    val generosSeleccionados = remember { mutableStateListOf<String>() }
 
+
+    val accountData by viewModel.accountcreateAPIData
+    val generosSeleccionados = remember { mutableStateListOf<accountRegisterDataMovieGenere>().apply { addAll(accountData.movieGenereList) } }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -82,7 +86,7 @@ fun ElegirGeneros() {
         ) {
             items(generos.values().toList()) { genero ->
                 val (defaultColor, selectedColor) = gridGeneros(genero)
-                val isGenreSelected = generosSeleccionados.contains(genero.name)
+                val isGenreSelected = generosSeleccionados.any { it.type == genero.name }
                 val isMaxReached = generosSeleccionados.size >= 6
 
                 // Deshabilitar el botón si se ha alcanzado el límite de géneros
@@ -94,10 +98,10 @@ fun ElegirGeneros() {
                     defaultColor = defaultColor,
                     onClick = {
                         if (isGenreSelected) {
-                            generosSeleccionados.remove(genero.name)
+                            generosSeleccionados.removeIf { it.type == genero.name }
                         } else {
                             if (!isMaxReached) {
-                                generosSeleccionados.add(genero.name)
+                                generosSeleccionados.add(accountRegisterDataMovieGenere(type = genero.name))
                             } else {
                                 // Mostrar mensaje de error al usuario (Toast)
                                 Toast.makeText(context, "¡Máximo 6 géneros!", Toast.LENGTH_SHORT).show()
@@ -116,23 +120,17 @@ fun ElegirGeneros() {
         Button(
             onClick = {
 
-                if (generosSeleccionados.size >= 5) {
-                    val intent = Intent(context, AvatarActivity::class.java).apply {
-                        putExtra("correo", correo)
-                        putExtra("contrasena", contrasena)
-                        putExtra("username", username)
-                        putExtra("birthday", birthday)
-                        putExtra("gender", gender)
-                        putStringArrayListExtra(
-                            "generosSeleccionados",
-                            ArrayList(generosSeleccionados)
-                        )
-                    }
-                    context.startActivity(intent)
+                if (generosSeleccionados.size >= 3) {
+                    viewModel.updateMovieGenres(generosSeleccionados)
+
+                    navController.navigate(screenRoute.contentAvatar.route)
+                    Log.d("generos_movies","generos:${accountData.movieGenereList}")
+                    Log.d("generos_movies","genere:${accountData}")
+
                 } else {
                     Toast.makeText(
                         context,
-                        "Selecciona al menos 5 géneros cinematrográficos",
+                        "Selecciona al menos 3 géneros cinematrográficos",
                         Toast.LENGTH_SHORT
                     )
                         .show()
@@ -161,10 +159,10 @@ fun ElegirGeneros() {
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun ElegirGenerosPreview() {
-    //val navController = rememberNavController()
-    ElegirGeneros()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ElegirGenerosPreview() {
+//    //val navController = rememberNavController()
+//    ElegirGeneros()
+//}
 

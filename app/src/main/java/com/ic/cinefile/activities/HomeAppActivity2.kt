@@ -12,7 +12,7 @@ class HomeAppActivity2 : ComponentActivity() {
 
             //llamas la screen a la vista que querres navegar, es decir, aca digo que de la b
             // bienvenida ir al crearCuenta
-            CrearCuenta()
+//            CrearCuenta()
 
         }
     }

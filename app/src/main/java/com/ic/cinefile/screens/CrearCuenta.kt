@@ -2,6 +2,7 @@ package com.ic.cinefile.screens
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,8 +23,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,13 +39,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
 import com.ic.cinefile.activities.CrearCuentaInicSesActivity
 import com.ic.cinefile.activities.CrearPerfilActivity
+import com.ic.cinefile.data.accountRegisterData
+import com.ic.cinefile.viewModel.userCreateViewModel
 import java.util.regex.Pattern
 
 @Composable
-fun CrearCuenta() {
+fun CrearCuenta(viewModel: userCreateViewModel, navController : NavController) {
 
     val context = LocalContext.current
 
@@ -54,7 +61,9 @@ fun CrearCuenta() {
         return Pattern.compile(emailPattern).matcher(email).matches()
     }
 
-
+    val accountData by viewModel.accountcreateAPIData
+    var email by remember { mutableStateOf(accountData.email) }
+    var password by remember { mutableStateOf(accountData.password) }
 
     Column(
         modifier = Modifier
@@ -82,10 +91,8 @@ fun CrearCuenta() {
         )
 
         TextField(
-            value = correoState.value,
-            onValueChange = { newValue ->
-                correoState.value = newValue
-            },
+            value =email,
+            onValueChange ={email= it},
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color(R.color.white),
                 unfocusedLabelColor = Color(R.color.white),
@@ -113,11 +120,11 @@ fun CrearCuenta() {
             )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
-            value = contrasenaState.value,
-            onValueChange = { newValue ->
+            value = password,
+            onValueChange = {
                 // Validación para que la contraseña no sea mayor a 8 caracteres
-                if (newValue.length <= 8) {
-                    contrasenaState.value = newValue
+                if (password.length <= 8) {
+                        password= it
                 }
             },
             colors = TextFieldDefaults.colors(
@@ -148,8 +155,9 @@ fun CrearCuenta() {
         Button(
             onClick = {
 
-                val correo = correoState.value
-                val contrasena = contrasenaState.value
+                val correo = email
+                val contrasena = password
+
 
                 if (correo.isEmpty() || contrasena.isEmpty()) {
                     Toast.makeText(context, "No dejes los campos vacíos", Toast.LENGTH_SHORT).show()
@@ -157,12 +165,10 @@ fun CrearCuenta() {
                     // Validación para verificar si el correo tiene un formato válido
                     Toast.makeText(context, "Formato de correo inválido", Toast.LENGTH_SHORT).show()
                 } else {
-                    // Navega a la actividad de creación de perfil con los datos ingresados
-                    val intent = Intent(context, CrearPerfilActivity::class.java).apply {
-                        putExtra("correo", correo)
-                        putExtra("contrasena", contrasena)
-                    }
-                    context.startActivity(intent)
+                    viewModel.updateAccountData(accountData.copy(email = email, password = password))
+                    Log.i("CrearCuenta", "Navigating to CrearPerfil with data: email=$email, password=$password")
+                    navController.navigate(screenRoute.CrearPerfil.route)
+
                 }
 
             },
@@ -233,8 +239,8 @@ fun CrearCuenta() {
     }
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun PreviewCrearCuentaScreen() {
-    CrearCuenta()
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun PreviewCrearCuentaScreen() {
+//    CrearCuenta()
+//}

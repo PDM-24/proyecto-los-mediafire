@@ -2,6 +2,7 @@ package com.ic.cinefile.screens
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,8 +29,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,33 +44,35 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.ic.cinefile.R
 import com.ic.cinefile.activities.BienvenidaActivity
 import com.ic.cinefile.activities.RestContraActivity
+import com.ic.cinefile.data.accountRegisterData
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.userCreateViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun contentAvatar() {
+fun contentAvatar(viewModel: userCreateViewModel, navController : NavController) {
 
     val context = LocalContext.current
 
-    val activity = context as Activity
-    val correo = activity.intent.getStringExtra("correo") ?: ""
-    val contrasena = activity.intent.getStringExtra("contrasena") ?: ""
-    val username = activity.intent.getStringExtra("username") ?: ""
-    val birthday = activity.intent.getStringExtra("birthday") ?: ""
-    val gender = activity.intent.getStringExtra("gender") ?: ""
-    val generosSeleccionados = activity.intent.getStringArrayListExtra("generosSeleccionados")
-
 
     val avatarSeleccionado = remember { mutableStateOf<String?>(null) }
+    val accountData by viewModel.accountcreateAPIData
+    var avatar by remember { mutableStateOf(accountData.avatar) }
 
 
     //val Avatarimg =
     //  listOf("avatar1", "avatar2", "avatar3", "avatar3", "avatar4", "avatar5", "avatar6")
+
+
+
+
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -80,10 +85,12 @@ fun contentAvatar() {
                     IconButton(
                         onClick = {
 
-                            val intent = Intent(context, RestContraActivity::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                            context.startActivity(intent)
-                            (context as Activity).finish()
+//                            val intent = Intent(context, RestContraActivity::class.java)
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+//                            context.startActivity(intent)
+//                            (context as Activity).finish()
+                            navController.popBackStack()
+
 
                         }
                     ) {
@@ -142,13 +149,13 @@ fun contentAvatar() {
                                 .size(110.dp)
                                 .border(
                                     width = 2.dp,
-                                    color = if (avatarSeleccionado.value == avatarName) Color.Gray else Color.Transparent
+                                    color = if (avatar == avatarName) Color.Gray else Color.Transparent
                                 )
                                 .clickable {
-                                    if (avatarSeleccionado.value == avatarName) {
-                                        avatarSeleccionado.value = null
+                                    if (avatar == avatarName) {
+                                        avatar = ""
                                     } else {
-                                        avatarSeleccionado.value = avatarName
+                                        avatar = avatarName
                                     }
                                 }
                         )
@@ -161,25 +168,24 @@ fun contentAvatar() {
             Button(
                 onClick = {
 
-                    if (avatarSeleccionado.value == null) {
-                        Toast.makeText(context, "Por favor, selecciona un avatar", Toast.LENGTH_SHORT)
-                            .show()
+                    if (avatar.isNullOrEmpty()) {
+                        Toast.makeText(context, "Por favor, selecciona un avatar", Toast.LENGTH_SHORT).show()
                     } else {
-                        val intent = Intent(context, BienvenidaActivity::class.java).apply {
-                            putExtra("correo", correo)
-                            putExtra("contrasena", contrasena)
-                            putExtra("username", username)
-                            putExtra("birthday", birthday)
-                            putExtra("gender", gender)
-                            putStringArrayListExtra(
-                                "generosSeleccionados",
-                                ArrayList(generosSeleccionados)
-                            )
 
-                            //putStringArrayListExtra("generosSeleccionados", ArrayList(generosSeleccionados))
-                            putExtra("avatarSeleccionado", avatarSeleccionado.value)
-                        }
-                        context.startActivity(intent)
+
+                        val userData = accountRegisterData(
+                            username = accountData.username,
+                            email = accountData.email,
+                            password = accountData.password,
+                            year_nac = accountData.year_nac,
+                            genere = accountData.genere,
+                            avatar = avatar
+                        )
+
+                        viewModel.createAccountUser(userData)
+                        Log.d("generos_movies","viewModel:${accountData}")
+                        Log.d("generos_movies","datos:${userData}")
+
                     }
                 },
                 modifier = Modifier
@@ -205,9 +211,9 @@ fun contentAvatar() {
 }
 
 
-@Preview(showSystemUi = true)
-@Composable
-fun PreviewSeleccionAvatarScreen() {
-    //val navController = rememberNavController()
-    contentAvatar()
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun PreviewSeleccionAvatarScreen() {
+//    //val navController = rememberNavController()
+//    contentAvatar()
+//}

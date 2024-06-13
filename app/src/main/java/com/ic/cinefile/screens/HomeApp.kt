@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import com.ic.cinefile.R
-import com.ic.cinefile.activities.HomeAppActivity
-import com.ic.cinefile.activities.HomeAppActivity2
+//import com.ic.cinefile.activities.HomeAppActivity
+//import com.ic.cinefile.activities.HomeAppActivity2
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
 
@@ -77,12 +77,12 @@ fun HomeAppScreen() {
 
         Button(
             onClick = {
-                //login
-                //aca es puero copiar pagar, nombreActivity::class.java
-                val intent = Intent(context, HomeAppActivity::class.java)
-                intent.putExtra("indexItem", 0)
-                context.startActivity(intent)
-                (context as Activity)
+//                //login
+//                //aca es puero copiar pagar, nombreActivity::class.java
+//                val intent = Intent(context, HomeAppActivity::class.java)
+//                intent.putExtra("indexItem", 0)
+//                context.startActivity(intent)
+//                (context as Activity)
 
             },
             modifier = Modifier
@@ -109,10 +109,10 @@ fun HomeAppScreen() {
 
         Button(
             onClick = {
-                val intent = Intent(context, HomeAppActivity2::class.java)
-                intent.putExtra("indexItem", 0)
-                context.startActivity(intent)
-                (context as Activity)
+//                val intent = Intent(context, HomeAppActivity2::class.java)
+//                intent.putExtra("indexItem", 0)
+//                context.startActivity(intent)
+//                (context as Activity)
 
                 //crear cuenta
             },

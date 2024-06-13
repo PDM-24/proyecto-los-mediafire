@@ -12,7 +12,7 @@ class CrearCuentaActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             // Llama al composable de la pantalla "CrearPerfil"
-            CrearPerfil()
+//            CrearPerfil()
         }
     }
 }
