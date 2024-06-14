@@ -2,25 +2,25 @@ package com.ic.cinefile.API.methods
 
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.Model.users.accountCreateResponse
-import com.ic.cinefile.data.accountCreateData
-import com.ic.cinefile.data.loginUserData
-import okhttp3.ResponseBody
-import retrofit2.Call
+import com.ic.cinefile.data.accountLoginData
+import com.ic.cinefile.data.accountRegisterData
 
 //import okhttp3.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.Response
+import retrofit2.http.Headers
 
 interface Methods {
+    @Headers(value=["Content-Type:application/json"])
     @POST("api/account/register")
     suspend fun createAccount(
-        @Body userCreateData: accountCreateData
+        @Body userregisterData: accountRegisterData
     ): Response<accountCreateResponse>
 
-
+    @Headers(value=["Content-Type:application/json"])
     @POST("api/account/login")
     suspend fun loginAccount(
-        @Body userData: loginUserData
+        @Body userLoginData: accountLoginData
     ):Response<UserLoginResponse>
 }

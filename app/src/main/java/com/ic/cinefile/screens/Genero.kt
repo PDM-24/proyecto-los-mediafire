@@ -24,8 +24,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,16 +38,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ic.cinefile.activities.ElegirGeneroActivity
-import com.ic.cinefile.activities.RestContraActivity
+import androidx.navigation.NavController
+import com.ic.cinefile.Navigation.screenRoute
+
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.userCreateViewModel
 
 //import com.ic.cinefile.activities.contentGeneroActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun contentGenero() {
+fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
 
     val context = LocalContext.current
 
@@ -56,7 +60,8 @@ fun contentGenero() {
     val birthday = activity.intent.getStringExtra("birthday") ?: ""
 
     val selectedGender: MutableState<String> = remember { mutableStateOf("") }
-
+    val accountData by viewModel.accountcreateAPIData
+    var genero by remember { mutableStateOf(accountData.genere) }
     val buttonColors: MutableState<Map<String, Color>> = remember {
         mutableStateOf(
             mapOf(
@@ -69,13 +74,13 @@ fun contentGenero() {
 
     // Función para actualizar los colores de los botones
     fun updateButtonColors(gender: String) {
-        if (selectedGender.value == gender) {
+        if (genero == gender) {
             // Si el mismo botón es clicado, deseleccionar
-            selectedGender.value = ""
+            genero = ""
             buttonColors.value = buttonColors.value.mapValues { Color.Transparent }
         } else {
             // Seleccionar el nuevo botón y deseleccionar el anterior
-            selectedGender.value = gender
+            genero= gender
             buttonColors.value = buttonColors.value.mapValues { Color.Transparent }
             buttonColors.value = buttonColors.value.toMutableMap().apply {
                 this[gender] = Color.Gray.copy(alpha = 0.3f) // Gris claro transparente
@@ -95,10 +100,10 @@ fun contentGenero() {
                     IconButton(
                         onClick = {
 
-                            val intent = Intent(context, RestContraActivity::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                            context.startActivity(intent)
-                            (context as Activity).finish()
+//                            val intent = Intent(context, RestContraActivity::class.java)
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+//                            context.startActivity(intent)
+//                            (context as Activity).finish()
 
                         }
                     ) {
@@ -216,15 +221,11 @@ fun contentGenero() {
             Button(
                 onClick = {
 
-                    if (selectedGender.value.isNotEmpty()) {
-                        val intent = Intent(context, ElegirGeneroActivity::class.java).apply {
-                            putExtra("correo", correo)
-                            putExtra("contrasena", contrasena)
-                            putExtra("username", username)
-                            putExtra("birthday", birthday)
-                            putExtra("gender", selectedGender.value)
-                        }
-                        context.startActivity(intent)
+                    if (genero.isNotEmpty()) {
+                        viewModel.updateAccountData(accountData.copy(genere = genero))
+
+                        navController.navigate(screenRoute.ElegirGeneros.route)
+
                     } else {
                         // Mostrar mensaje de validación usando un Toast
                         Toast.makeText(context, "Por favor, selecciona un género", Toast.LENGTH_SHORT)
@@ -255,11 +256,11 @@ fun contentGenero() {
 
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun PreviewSeleccionGeneroScreen() {
-    //val navController = rememberNavController()
-    contentGenero()
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun PreviewSeleccionGeneroScreen() {
+//    //val navController = rememberNavController()
+//    contentGenero()
+//}
 
 
