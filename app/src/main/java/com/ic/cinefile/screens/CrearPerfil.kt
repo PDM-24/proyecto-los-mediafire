@@ -105,7 +105,6 @@ fun CrearPerfil(viewModel: userCreateViewModel,navController : NavController) {
 
         Spacer(modifier = Modifier.height(70.dp))
 
-        val usuario: MutableState<String> = remember { mutableStateOf("") }
 
         TextField(
             modifier = Modifier.width(300.dp), // Ajustar el ancho para que coincida con el botón de selección de fecha

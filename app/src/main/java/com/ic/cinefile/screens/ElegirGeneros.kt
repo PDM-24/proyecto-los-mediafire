@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ic.cinefile.Navigation.screenRoute
-import com.ic.cinefile.activities.AvatarActivity
 import com.ic.cinefile.components.botonGeneros
 import com.ic.cinefile.components.gridGeneros
 import com.ic.cinefile.components.valoresGeneros.generos

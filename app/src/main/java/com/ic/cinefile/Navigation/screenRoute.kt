@@ -8,4 +8,6 @@ sealed class screenRoute(var route: String) {
     object ElegirGeneros:screenRoute("ElegirGeneros")
     object contentAvatar:screenRoute("contentAvatar")
 
+    object HomeAppScreen:screenRoute("HomeAppScreen")
+    object LoginCuenta:screenRoute("LoginCuenta")
 }

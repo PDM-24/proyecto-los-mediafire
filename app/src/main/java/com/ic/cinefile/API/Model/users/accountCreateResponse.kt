@@ -8,6 +8,4 @@ data class accountCreateResponse(
     @SerializedName(value="message")
     val successfull:String="",
 
-    @SerializedName(value="message")
-    val error:String=""
 )

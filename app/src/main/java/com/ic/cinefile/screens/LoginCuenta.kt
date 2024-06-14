@@ -4,6 +4,7 @@ package com.ic.cinefile.screens
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -50,25 +51,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.ic.cinefile.R
-import com.ic.cinefile.activities.LoginCuentaReCuenta
 //import com.ic.cinefile.viewModel.userViewModel
 import androidx.compose.runtime.collectAsState
-import userViewModel
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.navigation.NavController
+import com.ic.cinefile.components.LoadingProgressDialog
+import com.ic.cinefile.data.accountLoginData
+import com.ic.cinefile.data.accountRegisterData
+import com.ic.cinefile.viewModel.UiState
+import com.ic.cinefile.viewModel.userCreateViewModel
+
 //import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun Login(viewModel: userViewModel = userViewModel()) {
+fun Login(viewModel: userCreateViewModel,navController: NavController) {
 //    val email: MutableState<String> = remember{ mutableStateOf("") }
 //    val password: MutableState<String> = remember{ mutableStateOf("") }
 
     val context = LocalContext.current
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+
 
     val showErrorToast by viewModel.showErrorToast.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
@@ -77,6 +83,35 @@ fun Login(viewModel: userViewModel = userViewModel()) {
         Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
         viewModel.hideErrorToast() // Oculta el Toast después de mostrarlo
     }
+
+    val accountLoginData by viewModel.accountLoginAPIData
+    var email by remember { mutableStateOf(accountLoginData.email) }
+    var password by remember { mutableStateOf(accountLoginData.password) }
+
+
+    var passwordVisible by remember { mutableStateOf(false) } // Estado para mostrar u ocultar la contraseña
+
+    val addScreenState = viewModel.uiState.collectAsState()
+    when(addScreenState.value){
+        is UiState.Error -> {
+            val message = (addScreenState.value as UiState.Error).msg
+            Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()
+            viewModel.setStateToReady()
+        }
+        UiState.Loading -> {
+            LoadingProgressDialog()
+        }
+        UiState.Ready -> {}
+        is UiState.Success -> {
+            val message = (addScreenState.value as UiState.Success).msg
+            Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()
+            viewModel.setStateToReady()
+            navController.popBackStack()
+        }
+    }
+
+
+
 
     Column(
         modifier = Modifier
@@ -103,9 +138,7 @@ fun Login(viewModel: userViewModel = userViewModel()) {
 
         TextField(
             value = email,
-            onValueChange = {
-                email = it
-            },
+            onValueChange ={email= it},
             colors = TextFieldDefaults.textFieldColors(
 
                 unfocusedIndicatorColor = Color.White,
@@ -130,6 +163,7 @@ fun Login(viewModel: userViewModel = userViewModel()) {
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Email
             ),
+
             keyboardActions = KeyboardActions(
                 onDone = {
                     // Lógica cuando se presiona Done
@@ -170,24 +204,55 @@ fun Login(viewModel: userViewModel = userViewModel()) {
                 imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Password
             ),
-            visualTransformation = PasswordVisualTransformation(),
+
+            visualTransformation = if (passwordVisible) {
+                VisualTransformation.None // Mostrar la contraseña
+            } else {
+                PasswordVisualTransformation() // Ocultar la contraseña
+            },
             keyboardActions = KeyboardActions(
                 onDone = {
                     hideKeyboard(context)
                 },
-            )
+            ),
+
 
 
 
         )
 
         Spacer(modifier = Modifier.height(20.dp))
+        TextButton(
+            onClick = { passwordVisible = !passwordVisible },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(50.dp)
+        ) {
+            Text(
+                text = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña",
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                )
+            )
+        }
 
+        Spacer(modifier = Modifier.height(20.dp))
         Button(
             onClick = {
                 if (email.isNotEmpty() && password.isNotEmpty()) {
                     if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                        viewModel.loginUser(email, password)
+                        val userData = accountLoginData(
+                            email = email,
+                            password = password,
+                        )
+
+                        viewModel.loginUser(userData)
+
+                        Log.d("activity","userData:$userData")
                     } else {
                         Toast.makeText(context, "Formato de correo incorrecto", Toast.LENGTH_SHORT)
                             .show()
@@ -260,11 +325,12 @@ fun Login(viewModel: userViewModel = userViewModel()) {
                 textAlign = TextAlign.Center,
             ),
             modifier = Modifier.clickable {
+//
+//                val intent = Intent(context, LoginCuentaReCuenta::class.java)
+//                intent.putExtra("indexItem", 0)
+//                context.startActivity(intent)
 
-                val intent = Intent(context, LoginCuentaReCuenta::class.java)
-                intent.putExtra("indexItem", 0)
-                context.startActivity(intent)
-
+                //ir a otra pantalla
             }
         )
         Spacer(modifier = Modifier.height(10.dp))
@@ -279,8 +345,8 @@ fun hideKeyboard(current: Context) {
     inputMethodManager.hideSoftInputFromWindow((current as Activity).window.decorView.windowToken, 0)
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun PreviewLoginCuentaScreen() {
-    Login()
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun PreviewLoginCuentaScreen() {
+//    Login()
+//}

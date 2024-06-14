@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,12 +46,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
-import com.ic.cinefile.activities.BienvenidaActivity
-import com.ic.cinefile.activities.RestContraActivity
+
+import com.ic.cinefile.components.LoadingProgressDialog
 import com.ic.cinefile.data.accountRegisterData
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.userCreateViewModel
 
 
@@ -60,15 +63,27 @@ fun contentAvatar(viewModel: userCreateViewModel, navController : NavController)
 
     val context = LocalContext.current
 
-
-    val avatarSeleccionado = remember { mutableStateOf<String?>(null) }
     val accountData by viewModel.accountcreateAPIData
     var avatar by remember { mutableStateOf(accountData.avatar) }
 
-
-    //val Avatarimg =
-    //  listOf("avatar1", "avatar2", "avatar3", "avatar3", "avatar4", "avatar5", "avatar6")
-
+    val addScreenState = viewModel.uiState.collectAsState()
+    when(addScreenState.value){
+        is UiState.Error -> {
+            val message = (addScreenState.value as UiState.Error).msg
+            Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()
+            viewModel.setStateToReady()
+        }
+        UiState.Loading -> {
+            LoadingProgressDialog()
+        }
+        UiState.Ready -> {}
+        is UiState.Success -> {
+            val message = (addScreenState.value as UiState.Success).msg
+            Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()
+            viewModel.setStateToReady()
+            navController.popBackStack()
+        }
+    }
 
 
 
@@ -179,12 +194,15 @@ fun contentAvatar(viewModel: userCreateViewModel, navController : NavController)
                             password = accountData.password,
                             year_nac = accountData.year_nac,
                             genere = accountData.genere,
+                            movieGenereList=accountData.movieGenereList,
                             avatar = avatar
                         )
 
                         viewModel.createAccountUser(userData)
                         Log.d("generos_movies","viewModel:${accountData}")
-                        Log.d("generos_movies","datos:${userData}")
+                        Log.d("generos_movies","userData:${userData}")
+
+                        navController.navigate(screenRoute.LoginCuenta.route)
 
                     }
                 },

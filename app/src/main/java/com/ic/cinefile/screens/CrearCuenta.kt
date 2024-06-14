@@ -42,8 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
-import com.ic.cinefile.activities.CrearCuentaInicSesActivity
-import com.ic.cinefile.activities.CrearPerfilActivity
+
 import com.ic.cinefile.data.accountRegisterData
 import com.ic.cinefile.viewModel.userCreateViewModel
 import java.util.regex.Pattern
@@ -53,8 +52,6 @@ fun CrearCuenta(viewModel: userCreateViewModel, navController : NavController) {
 
     val context = LocalContext.current
 
-    val correoState = remember { mutableStateOf("") }
-    val contrasenaState = remember { mutableStateOf("") }
 
     fun isValidEmail(email: String): Boolean {
         val emailPattern = "^[A-Za-z0-9+_.-]+@(.+)$"
@@ -225,12 +222,15 @@ fun CrearCuenta(viewModel: userCreateViewModel, navController : NavController) {
             ),
             modifier = Modifier
                 .clickable {
+//
+//                    val intent = Intent(context, CrearCuentaInicSesActivity::class.java)
+//                    intent.putExtra("indexItem", 0)
+//                    context.startActivity(intent)
+//                    (context as Activity)
+//
 
-                    val intent = Intent(context, CrearCuentaInicSesActivity::class.java)
-                    intent.putExtra("indexItem", 0)
-                    context.startActivity(intent)
-                    (context as Activity)
 
+                    ///aca se navega
 
                 }
         )

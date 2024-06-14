@@ -40,7 +40,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ic.cinefile.activities.RestContraActivity
 //import androidx.navigation.compose.rememberNavController
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
@@ -66,10 +65,10 @@ fun Content(context: Context) {
                     IconButton(
                         onClick = {
 
-                            val intent = Intent(context, RestContraActivity::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                            context.startActivity(intent)
-                            (context as Activity).finish()
+//                            val intent = Intent(context, RestContraActivity::class.java)
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+//                            context.startActivity(intent)
+//                            (context as Activity).finish()
 
                         }
                     ) {

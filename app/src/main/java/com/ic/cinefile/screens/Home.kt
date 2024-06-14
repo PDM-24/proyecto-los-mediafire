@@ -55,7 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.ic.cinefile.activities.RestContraActivity
+import androidx.navigation.NavController
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.montserratFamily
 import com.ic.cinefile.ui.theme.white
@@ -64,7 +64,7 @@ import com.ic.cinefile.ui.theme.white
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun Home(context: Context){
+fun Home(){
     var buscador by remember { mutableStateOf("") }
 
 
@@ -373,5 +373,5 @@ fun Home(context: Context){
 @Preview(showSystemUi = true)
 @Composable
 fun ViewConteinerHome(){
-    Home(LocalContext.current)
+    Home()
 }

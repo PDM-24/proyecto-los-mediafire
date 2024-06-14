@@ -8,19 +8,20 @@ import com.ic.cinefile.screens.CrearCuenta
 import com.ic.cinefile.screens.CrearPerfil
 import com.ic.cinefile.screens.ElegirGeneros
 import com.ic.cinefile.screens.HomeAppScreen
+import com.ic.cinefile.screens.Login
 import com.ic.cinefile.screens.contentAvatar
 import com.ic.cinefile.screens.contentGenero
 import com.ic.cinefile.viewModel.userCreateViewModel
 
 @Composable
 fun AppNavigation(
-    viewModel : userCreateViewModel
+    viewModel : userCreateViewModel,
 ){
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = screenRoute.CrearCuenta.route
+        startDestination = screenRoute.HomeAppScreen.route
     ){
         composable(route = screenRoute.CrearCuenta.route){
             CrearCuenta(viewModel, navController)
@@ -39,6 +40,12 @@ fun AppNavigation(
         }
         composable(route=screenRoute.contentAvatar.route){
             contentAvatar(viewModel,navController)
+        }
+        composable(route=screenRoute.HomeAppScreen.route){
+            HomeAppScreen(navController)
+        }
+        composable(route=screenRoute.LoginCuenta.route){
+          Login(viewModel,navController)
         }
 //        composable(
 //            route = "${screenRoute.Edit.route}/{code}",

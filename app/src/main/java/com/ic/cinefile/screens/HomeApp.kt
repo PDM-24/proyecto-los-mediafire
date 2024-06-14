@@ -27,6 +27,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.ic.cinefile.Navigation.screenRoute
 
 import com.ic.cinefile.R
 //import com.ic.cinefile.activities.HomeAppActivity
@@ -38,9 +40,8 @@ import com.ic.cinefile.ui.theme.white
 
 //pasas como contexto parametro a la funcion
 //que partira de navegacion home->login
-fun HomeAppScreen() {
+fun HomeAppScreen(navController: NavController) {
 
-    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -84,6 +85,9 @@ fun HomeAppScreen() {
 //                context.startActivity(intent)
 //                (context as Activity)
 
+                navController.navigate(screenRoute.LoginCuenta.route)
+
+
             },
             modifier = Modifier
                 .width(300.dp),
@@ -115,6 +119,8 @@ fun HomeAppScreen() {
 //                (context as Activity)
 
                 //crear cuenta
+                navController.navigate(screenRoute.CrearCuenta.route)
+
             },
             modifier = Modifier
                 .width(300.dp),
@@ -136,8 +142,8 @@ fun HomeAppScreen() {
 }
 
 
-@Preview(showSystemUi = true)
-@Composable
-fun PreviewHomeAppScreen() {
-    HomeAppScreen()
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun PreviewHomeAppScreen() {
+//    HomeAppScreen()
+//}
