@@ -12,6 +12,7 @@ navigationRuntimeKtx = "2.7.7"
 recyclerview = "1.3.2"
 foundationAndroid = "1.6.7"
 foundationDesktop = "1.6.7"
+constraintlayoutCompose = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,6 +33,7 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 androidx-foundation-desktop = { group = "androidx.compose.foundation", name = "foundation-desktop", version.ref = "foundationDesktop" }
+androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

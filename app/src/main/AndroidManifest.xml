@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CineFile"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        tools:ignore="ExtraText">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -24,18 +25,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.GeneroActivity" />
 
-        <activity android:name=".activities.ElegirGeneroActivity" />
-        <activity android:name=".activities.AvatarActivity" />
-        <activity android:name=".activities.HomeAppActivity" />
-        <activity android:name=".activities.HomeAppActivity2" />
-        <activity android:name=".activities.LoginCuentaReCuenta" />
-        <activity android:name=".activities.CrearCuentaActivity" />
-        <activity android:name=".activities.CrearPerfilActivity" />
-        <activity android:name=".activities.RestContraActivity" />
-        <activity android:name=".activities.CrearCuentaInicSesActivity" />
-        <activity android:name=".activities.BienvenidaActivity" />>
+        >
     </application>
 
 </manifest>
