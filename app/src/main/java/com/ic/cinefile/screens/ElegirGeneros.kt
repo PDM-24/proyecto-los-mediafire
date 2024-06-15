@@ -49,9 +49,6 @@ fun ElegirGeneros(viewModel: userCreateViewModel, navController : NavController)
 
     val context = LocalContext.current
 
-
-
-
     val accountData by viewModel.accountcreateAPIData
     val generosSeleccionados = remember { mutableStateListOf<accountRegisterDataMovieGenere>().apply { addAll(accountData.movieGenereList) } }
     Column(

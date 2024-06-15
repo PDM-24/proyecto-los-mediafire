@@ -1,9 +1,9 @@
 package com.ic.cinefile.screens
 
 import android.app.Activity
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -35,34 +35,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ic.cinefile.Navigation.screenRoute
-
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.userCreateViewModel
 
-//import com.ic.cinefile.activities.contentGeneroActivity
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
+fun contentGenero(viewModel: userCreateViewModel, navController: NavController) {
 
     val context = LocalContext.current
-
     val activity = context as Activity
-    val correo = activity.intent.getStringExtra("correo") ?: ""
-    val contrasena = activity.intent.getStringExtra("contrasena") ?: ""
-    val username = activity.intent.getStringExtra("username") ?: ""
-    val birthday = activity.intent.getStringExtra("birthday") ?: ""
 
     val selectedGender: MutableState<String> = remember { mutableStateOf("") }
     val accountData by viewModel.accountcreateAPIData
     var genero by remember { mutableStateOf(accountData.genere) }
-    val buttonColors: MutableState<Map<String, Color>> = remember {
+    val buttonBorders: MutableState<Map<String, Color>> = remember {
         mutableStateOf(
             mapOf(
                 "Hombre" to Color.Transparent,
@@ -72,18 +63,18 @@ fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
         )
     }
 
-    // Función para actualizar los colores de los botones
-    fun updateButtonColors(gender: String) {
+    // Función para actualizar los bordes de los botones
+    fun updateButtonBorders(gender: String) {
         if (genero == gender) {
             // Si el mismo botón es clicado, deseleccionar
             genero = ""
-            buttonColors.value = buttonColors.value.mapValues { Color.Transparent }
+            buttonBorders.value = buttonBorders.value.mapValues { Color.Transparent }
         } else {
             // Seleccionar el nuevo botón y deseleccionar el anterior
-            genero= gender
-            buttonColors.value = buttonColors.value.mapValues { Color.Transparent }
-            buttonColors.value = buttonColors.value.toMutableMap().apply {
-                this[gender] = Color.Gray.copy(alpha = 0.3f) // Gris claro transparente
+            genero = gender
+            buttonBorders.value = buttonBorders.value.mapValues { Color.Transparent }
+            buttonBorders.value = buttonBorders.value.toMutableMap().apply {
+                this[gender] = Color.White // Borde blanco
             }
         }
     }
@@ -95,16 +86,10 @@ fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
                     containerColor = black
                 ),
                 title = {},
-                navigationIcon =
-                {
+                navigationIcon = {
                     IconButton(
                         onClick = {
-
-//                            val intent = Intent(context, RestContraActivity::class.java)
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-//                            context.startActivity(intent)
-//                            (context as Activity).finish()
-
+                            activity.onBackPressed()
                         }
                     ) {
                         Icon(
@@ -116,16 +101,17 @@ fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
                 }
             )
         }
-    ){ innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black),
+                .background(Color.Black)
+                .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Genero",
+                text = "Género",
                 style = TextStyle(
                     color = Color.White,
                     fontSize = 24.sp,
@@ -139,19 +125,16 @@ fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
 
             Button(
                 onClick = {
-
-                    updateButtonColors("Hombre")
-
+                    updateButtonBorders("Hombre")
                 },
                 modifier = Modifier
                     .width(300.dp)
-                    .background(buttonColors.value["Hombre"]!!),
+                    .border(2.dp, buttonBorders.value["Hombre"]!!), // Agregar borde blanco
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
                     contentColor = Color.Black
                 ),
-
-                ) {
+            ) {
                 Text(
                     text = "Hombre",
                     style = TextStyle(
@@ -166,19 +149,16 @@ fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
 
             Button(
                 onClick = {
-
-                    updateButtonColors("Mujer")
-
+                    updateButtonBorders("Mujer")
                 },
                 modifier = Modifier
                     .width(300.dp)
-                    .background(buttonColors.value["Mujer"]!!),
+                    .border(2.dp, buttonBorders.value["Mujer"]!!), // Agregar borde blanco
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
                     contentColor = Color.Black
                 ),
-
-                ) {
+            ) {
                 Text(
                     text = "Mujer",
                     style = TextStyle(
@@ -193,19 +173,16 @@ fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
 
             Button(
                 onClick = {
-
-                    updateButtonColors("Prefiero no especificar")
-
+                    updateButtonBorders("Prefiero no especificar")
                 },
                 modifier = Modifier
                     .width(300.dp)
-                    .background(buttonColors.value["Prefiero no especificar"]!!),
+                    .border(2.dp, buttonBorders.value["Prefiero no especificar"]!!), // Agregar borde blanco
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
                     contentColor = Color.Black
                 ),
-
-                ) {
+            ) {
                 Text(
                     text = "Prefiero no especificar",
                     style = TextStyle(
@@ -220,20 +197,16 @@ fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
 
             Button(
                 onClick = {
-
                     if (genero.isNotEmpty()) {
                         viewModel.updateAccountData(accountData.copy(genere = genero))
-
                         navController.navigate(screenRoute.ElegirGeneros.route)
-
                     } else {
                         // Mostrar mensaje de validación usando un Toast
                         Toast.makeText(context, "Por favor, selecciona un género", Toast.LENGTH_SHORT)
                             .show()
                     }
                 },
-                modifier = Modifier
-                    .width(300.dp),
+                modifier = Modifier.width(300.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
                     contentColor = Color.Black
@@ -248,13 +221,10 @@ fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
                     )
                 )
             }
-
         }
     }
-
-
-
 }
+
 
 //@Preview(showSystemUi = true)
 //@Composable
@@ -262,5 +232,4 @@ fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
 //    //val navController = rememberNavController()
 //    contentGenero()
 //}
-
 
