@@ -3,7 +3,8 @@ const express = require("express");
 
 const router = express.Router(); //enrutador
 const movieController = require("../controllers/movieData.controller");
-
+const authenticate = require("../middlewares/authorization.middlewares");
+const userLogin=require("../controllers/userLogin.controller")
 
 //api/data/movies
 router.get("/moviesAll",movieController.findAll);

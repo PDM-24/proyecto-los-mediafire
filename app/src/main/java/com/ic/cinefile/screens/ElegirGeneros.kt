@@ -35,10 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ic.cinefile.Navigation.screenRoute
-import com.ic.cinefile.components.botonGeneros
+ import com.ic.cinefile.components.botonGeneros
 import com.ic.cinefile.components.gridGeneros
 import com.ic.cinefile.components.valoresGeneros.generos
-import com.ic.cinefile.data.accountRegisterDataMovieGenere
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.userCreateViewModel
@@ -53,7 +52,7 @@ fun ElegirGeneros(viewModel: userCreateViewModel, navController : NavController)
 
 
     val accountData by viewModel.accountcreateAPIData
-    val generosSeleccionados = remember { mutableStateListOf<accountRegisterDataMovieGenere>().apply { addAll(accountData.movieGenereList) } }
+    val generosSeleccionados = remember { mutableStateListOf<String>().apply { addAll(accountData.movieGenereList) } }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -85,7 +84,7 @@ fun ElegirGeneros(viewModel: userCreateViewModel, navController : NavController)
         ) {
             items(generos.values().toList()) { genero ->
                 val (defaultColor, selectedColor) = gridGeneros(genero)
-                val isGenreSelected = generosSeleccionados.any { it.type == genero.name }
+                val isGenreSelected = generosSeleccionados.contains(genero.name)
                 val isMaxReached = generosSeleccionados.size >= 6
 
                 // Deshabilitar el botón si se ha alcanzado el límite de géneros
@@ -97,10 +96,12 @@ fun ElegirGeneros(viewModel: userCreateViewModel, navController : NavController)
                     defaultColor = defaultColor,
                     onClick = {
                         if (isGenreSelected) {
-                            generosSeleccionados.removeIf { it.type == genero.name }
+                            generosSeleccionados.remove(genero.name)
                         } else {
                             if (!isMaxReached) {
-                                generosSeleccionados.add(accountRegisterDataMovieGenere(type = genero.name))
+                                if (!generosSeleccionados.contains(genero.name)) {
+                                    generosSeleccionados.add(genero.name)
+                                }
                             } else {
                                 // Mostrar mensaje de error al usuario (Toast)
                                 Toast.makeText(context, "¡Máximo 6 géneros!", Toast.LENGTH_SHORT).show()

@@ -120,9 +120,7 @@ fun CrearCuenta(viewModel: userCreateViewModel, navController : NavController) {
             value = password,
             onValueChange = {
                 // Validación para que la contraseña no sea mayor a 8 caracteres
-                if (password.length <= 8) {
-                        password= it
-                }
+                password = it.take(8)
             },
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color(R.color.black),

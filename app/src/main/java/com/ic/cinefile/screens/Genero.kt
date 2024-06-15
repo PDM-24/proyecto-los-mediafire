@@ -53,13 +53,6 @@ fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
 
     val context = LocalContext.current
 
-    val activity = context as Activity
-    val correo = activity.intent.getStringExtra("correo") ?: ""
-    val contrasena = activity.intent.getStringExtra("contrasena") ?: ""
-    val username = activity.intent.getStringExtra("username") ?: ""
-    val birthday = activity.intent.getStringExtra("birthday") ?: ""
-
-    val selectedGender: MutableState<String> = remember { mutableStateOf("") }
     val accountData by viewModel.accountcreateAPIData
     var genero by remember { mutableStateOf(accountData.genere) }
     val buttonColors: MutableState<Map<String, Color>> = remember {
@@ -104,6 +97,7 @@ fun contentGenero(viewModel: userCreateViewModel,navController: NavController) {
 //                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
 //                            context.startActivity(intent)
 //                            (context as Activity).finish()
+
 
                         }
                     ) {

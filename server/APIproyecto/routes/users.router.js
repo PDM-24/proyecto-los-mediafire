@@ -11,6 +11,11 @@ const validateAccount = require("../middlewares/index.middlewares");
 const {
   loginAccountValidator,
 } = require("../validators/loginAccount.validator");
+
+const authorization = require("../middlewares/authorization.middlewares");
+const authenticate = require("../middlewares/authorization.middlewares");
+const userLoginController = require('../controllers/userLogin.controller');
+
 //api/account/register
 router.post(
   "/register",
@@ -21,8 +26,12 @@ router.post(
 );
 router.post(
   "/login",
+
   loginAccountValidator,
   validateAccount,
-  AccountController.login
+  AccountController.login,
+  authorization
 );
+router.get('/user/Home',authenticate,userLoginController.getUserData)
+
 module.exports = router;

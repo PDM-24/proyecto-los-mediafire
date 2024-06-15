@@ -91,7 +91,10 @@ controller.register=async(req,res,next)=>{
 
         await user.save();
 
-        return res.status(200).json({ message:"Se ha iniciado correctamente" });
+        return res.status(200).json({
+          message: 'Se ha iniciado sesión correctamente',
+          token
+      });
       } catch (error) {
         next(error);
       }

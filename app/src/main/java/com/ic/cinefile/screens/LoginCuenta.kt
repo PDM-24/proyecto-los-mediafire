@@ -56,6 +56,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.navigation.NavController
+import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.components.LoadingProgressDialog
 import com.ic.cinefile.data.accountLoginData
 import com.ic.cinefile.data.accountRegisterData
@@ -84,6 +85,7 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
         viewModel.hideErrorToast() // Oculta el Toast después de mostrarlo
     }
 
+
     val accountLoginData by viewModel.accountLoginAPIData
     var email by remember { mutableStateOf(accountLoginData.email) }
     var password by remember { mutableStateOf(accountLoginData.password) }
@@ -103,10 +105,10 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
         }
         UiState.Ready -> {}
         is UiState.Success -> {
-            val message = (addScreenState.value as UiState.Success).msg
-            Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()
+            showMessage(context,"Token: ${(addScreenState.value as UiState.Success).token}")
+            navController.navigate(screenRoute.Home.route)
             viewModel.setStateToReady()
-            navController.popBackStack()
+
         }
     }
 
@@ -251,8 +253,8 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
                         )
 
                         viewModel.loginUser(userData)
-
                         Log.d("activity","userData:$userData")
+
                     } else {
                         Toast.makeText(context, "Formato de correo incorrecto", Toast.LENGTH_SHORT)
                             .show()
@@ -350,3 +352,12 @@ fun hideKeyboard(current: Context) {
 //fun PreviewLoginCuentaScreen() {
 //    Login()
 //}
+
+fun showMessage(
+    context: Context,
+    msg: String
+){
+    Toast.makeText(context,
+        msg,
+        Toast.LENGTH_SHORT).show()
+}
