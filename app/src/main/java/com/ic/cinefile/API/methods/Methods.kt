@@ -27,10 +27,11 @@ interface Methods {
         @Body userLoginData: accountLoginData
     ):UserLoginResponse
 
+
+    @Headers("Content-Type: application/json")
     @GET("api/account/user/home")
-    @Headers(value = ["Content-Type:application/json"])  // Fijo para Content-Type
     suspend fun getUserHome(
-        @Header("Authorization") token: String            // Dinámico para Authorization
+        @Header("Authorization") authorization: String
     ): Response<homeUserResponse>
 
 }

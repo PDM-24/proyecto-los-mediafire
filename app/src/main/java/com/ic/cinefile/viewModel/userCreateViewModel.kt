@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import java.util.Locale.Category
 
 class userCreateViewModel: ViewModel() {
 
@@ -34,10 +35,13 @@ class userCreateViewModel: ViewModel() {
     val accountLoginAPIData: State<accountLoginData> = _accountLoginAPI
 
 
-    // Variable para almacenar el token
-    private val _authToken = MutableStateFlow<String?>(null)
-    val authToken: StateFlow<String?> = _authToken.asStateFlow()
 
+
+    private var authToken: String? = null
+
+
+
+    // Estado para manejar la información del usuario y sus películas favoritas
 
     fun updateAccountData(newData: accountRegisterData) {
         _accountCreateAPI.value = newData
@@ -53,6 +57,8 @@ class userCreateViewModel: ViewModel() {
         )
         Log.i("userCreateViewModel", "Updated data: ${_accountCreateAPI.value.movieGenereList}")
     }
+
+
 
     fun createAccountUser(userregisterData: accountRegisterData){
 
@@ -107,7 +113,6 @@ class userCreateViewModel: ViewModel() {
                 val response = apiServer.methods.loginAccount(userLoginData)
                 Log.i("userLoginViewModel", response.toString())
 
-                _authToken.value = response.token // Almacenar el token
 
                 _uiState.value = UiState.Success(response.token)
 
@@ -140,37 +145,6 @@ class userCreateViewModel: ViewModel() {
 
 
 
-
-//traer info:
-fun getUserHome() {
-    viewModelScope.launch(Dispatchers.IO) {
-        try {
-            _uiState.value = UiState.Loading
-            val token = _authToken.value ?: throw IllegalStateException("Token no disponible")
-            val response = apiServer.methods.getUserHome("Bearer $token")
-            if (response.isSuccessful) {
-                val responseData = response.body()
-                // Maneja la respuesta exitosa aquí
-                Log.i("userCreateViewModel", "Response: $responseData")
-            } else {
-                // Maneja el error de la respuesta aquí
-                Log.i("userCreateViewModel", "Error: ${response.message()}")
-            }
-        } catch (e: Exception) {
-            when (e) {
-                is HttpException -> {
-                    Log.i("userCreateViewModel", e.message())
-                    _uiState.value = UiState.Error(e.message())
-                }
-
-                else -> {
-                    Log.i("userCreateViewModel", e.toString())
-                    _uiState.value = UiState.Error("Error. Contacte con el servicio de soporte")
-                }
-            }
-        }
-    }
-}
 
 
 
