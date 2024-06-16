@@ -1,5 +1,6 @@
 package com.ic.cinefile.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,6 +36,9 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,19 +62,60 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.ic.cinefile.R
+import com.ic.cinefile.components.LoadingProgressDialog
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.montserratFamily
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.MostViewsMoviestState
+import com.ic.cinefile.viewModel.RecentMoviestState
+import com.ic.cinefile.viewModel.UiState
+import com.ic.cinefile.viewModel.UserDataState
+import com.ic.cinefile.viewModel.userCreateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun Buscador() {
+fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
     var buscador by remember { mutableStateOf("") }
     var isSearching by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+
+
+
+    val context = LocalContext.current
+    val addScreenState = viewModel.uiState.collectAsState()
+    val recentMoviesState by viewModel.recentMoviesState.collectAsState()
+    val mostViewsMoviesState by viewModel.mostViewsMoviesState.collectAsState()
+
+    LaunchedEffect(addScreenState.value) {
+        when (addScreenState.value) {
+            is UiState.Error -> {
+                val message = (addScreenState.value as UiState.Error).msg
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.setStateToReady()
+            }
+            UiState.Loading -> {
+                // Mostrar un diálogo de carga o algún indicador de progreso
+            }
+            UiState.Ready -> {}
+            is UiState.Success -> {
+                val token = (addScreenState.value as UiState.Success).token
+                viewModel.getRecentMoviesData(token) // Llama a getUserData para obtener la información del usuario
+                viewModel.setStateToReady()
+            }
+        }
+    }
+
+
+
+
+
+
 
     Scaffold(
         containerColor = Color.Black,
@@ -209,117 +254,130 @@ fun Buscador() {
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    Box(modifier = Modifier.padding(8.dp) ){
-                        Text(text = "Nuevos lanzamientos",
-                            style = TextStyle(
-                                color = Color.White,
-                                textAlign =  TextAlign.Start,
-                                fontFamily = montserratFamily,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 20.sp
 
-                            )
-                        )
-                    }
 
-                    LazyRow {
 
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.dunc),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(200.dp),
+
+                    //peliculas recientes
+                    when (recentMoviesState) {
+                        is RecentMoviestState.Success -> {
+                            val movies = (recentMoviesState as RecentMoviestState.Success).data.moviesRecent
+                            Column {
+                                Text(
+                                    text = "Películas Mas recientes",
+                                    style = TextStyle(
+                                        color = Color.White,
+                                        textAlign = TextAlign.Start,
+                                        fontFamily = montserratFamily,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 20.sp
+                                    ),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+
+                                LazyRow {
+                                    items(movies.size) { index ->
+                                        val movie = movies[index]
+                                        AsyncImage(
+                                            model = movie.posterUrl,
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .padding(4.dp)
+                                                .height(200.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        is RecentMoviestState.Loading -> {
+                            // Aquí puedes mostrar un diálogo de carga o un indicador de progreso
+                            LoadingProgressDialog()
+                        }
+                        is RecentMoviestState.Error -> {
+                            // Aquí puedes manejar el estado de error
+                            Text(
+                                text = "Error: ${(recentMoviesState as RecentMoviestState.Error).msg}",
+                                color = Color.Red,
+                                modifier = Modifier.padding(8.dp)
                             )
                         }
-
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.godzilla),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(200.dp),
-                            )
-                        }
-
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.migration),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(200.dp),
-                            )
-                        }
-
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.garfield),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(200.dp),
-                            )
+                        is RecentMoviestState.Ready -> {
+                            // Aquí puedes manejar el estado de preparación inicial si es necesario
                         }
                     }
 
-                    Box(modifier = Modifier.padding(8.dp) ){
-                        Text(text = "Lo mas vistos",
-                            style = TextStyle(
-                                color = Color.White,
-                                textAlign =  TextAlign.Start,
-                                fontFamily = montserratFamily,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 20.sp
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//mas visto
+                    when (mostViewsMoviesState) {
+                        is MostViewsMoviestState.Success -> {
+                            val movies = (mostViewsMoviesState as MostViewsMoviestState.Success).data.moviesMostViews
+                            Column {
+                                Text(
+                                    text = "Películas más vistas",
+                                    style = TextStyle(
+                                        color = Color.White,
+                                        textAlign = TextAlign.Start,
+                                        fontFamily = montserratFamily,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 20.sp
+                                    ),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+
+                                LazyRow {
+                                    items(movies.size) { index ->
+                                        val movie = movies[index]
+                                        AsyncImage(
+                                            model = movie.posterUrl,
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .padding(4.dp)
+                                                .height(200.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        is MostViewsMoviestState.Loading -> {
+                            // Aquí puedes mostrar un diálogo de carga o un indicador de progreso
+                            LoadingProgressDialog()
+                        }
+                        is MostViewsMoviestState.Error -> {
+                            // Aquí puedes manejar el estado de error
+                            Text(
+                                text = "Error: ${(mostViewsMoviesState as MostViewsMoviestState.Error).msg}",
+                                color = Color.Red,
+                                modifier = Modifier.padding(8.dp)
                             )
-                        )
+                        }
+                        is MostViewsMoviestState.Ready -> {
+                            // Aquí puedes manejar el estado de preparación inicial si es necesario
+                        }
                     }
 
-                    LazyRow {
 
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.dunc),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(200.dp),
-                            )
-                        }
 
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.godzilla),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(200.dp),
-                            )
-                        }
 
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.migration),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(200.dp),
-                            )
-                        }
 
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.garfield),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(200.dp),
-                            )
-                        }
-                    }
+
+
+
+
+
 
                     Box(modifier = Modifier.padding(8.dp) ){
                         Text(text = "Valoracion 5 estrellas",
@@ -414,8 +472,34 @@ fun SearchHistoryScreen(onBackClick: () -> Unit) {
 
 
 
-@Preview(showSystemUi = true)
-@Composable
-fun ViewConteinerBuscador(){
-    Buscador()
+//@Preview(showSystemUi = true)
+//@Composable
+//fun ViewConteinerBuscador(){
+//    Buscador)
+//}
+
+
+
+
+/*
+* var token: String? by remember { mutableStateOf(null) }
+
+// Función para manejar la recarga de películas más vistas
+fun reloadMostViewedMovies(token: String) {
+    viewModel.getMostViewMoviesData(token) // Llama a la función del ViewModel para cargar las películas más vistas nuevamente
 }
+*
+* IconButton(
+    onClick = { token?.let { reloadMostViewedMovies(it) } },
+    modifier = Modifier.padding(8.dp)
+) {
+    Icon(
+        imageVector = Icons.Default.Refresh,
+        contentDescription = "Refresh",
+        tint = Color.White
+    )
+}
+*
+*
+*
+* */

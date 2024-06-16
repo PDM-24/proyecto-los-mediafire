@@ -1,6 +1,8 @@
 package com.ic.cinefile.API.methods
 
 import com.ic.cinefile.API.Model.movies.homeUserResponse
+import com.ic.cinefile.API.Model.movies.mostViewMoviesResponse
+import com.ic.cinefile.API.Model.movies.recentMoviesResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.Model.users.accountCreateResponse
 import com.ic.cinefile.data.accountLoginData
@@ -34,4 +36,16 @@ interface Methods {
         @Header("Authorization") authorization: String
     ): Response<homeUserResponse>
 
+
+    @Headers("Content-Type: application/json")
+    @GET("api/movies/mostViewed")
+    suspend fun getMostViewMovies(
+        @Header("Authorization") authorization: String
+    ): Response<mostViewMoviesResponse>
+
+    @Headers("Content-Type: application/json")
+    @GET("api/movies/recentMovies")
+    suspend fun getRecentMovies(
+        @Header("Authorization") authorization: String
+    ): Response<recentMoviesResponse>
 }

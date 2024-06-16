@@ -10,6 +10,12 @@ const userLogin=require("../controllers/userLogin.controller")
 router.get("/moviesAll",movieController.findAll);
 router.post("/add",movieController.movieData)
 router.delete("/delete/:identifier",movieController.deleteById)
-router.get("/search/:title",movieController.searchTitle)
-router.get("/category/:categoryName",movieController.categoryMovie)
- module.exports = router;
+
+// Rutas nuevas para obtener las películas más vistas y más recientes (protegidas por autenticación)
+router.get("/mostViewed", authenticate, movieController.getMostViewedMovies);
+router.get("/recentMovies", authenticate, movieController.getMostRecentMovies);
+
+// Nueva ruta para buscar películas por título (protegida por autenticación)
+router.get("/search/:title", authenticate, movieController.searchMovieByTitle);
+
+module.exports = router;
