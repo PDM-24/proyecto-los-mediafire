@@ -42,7 +42,6 @@ import com.ic.cinefile.ui.theme.white
 //que partira de navegacion home->login
 fun HomeAppScreen(navController: NavController) {
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
