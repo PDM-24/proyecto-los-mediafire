@@ -54,6 +54,7 @@ import com.ic.cinefile.data.accountRegisterData
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.UiState
+import com.ic.cinefile.viewModel.UiState2
 import com.ic.cinefile.viewModel.userCreateViewModel
 
 
@@ -66,22 +67,23 @@ fun contentAvatar(viewModel: userCreateViewModel, navController : NavController)
     val accountData by viewModel.accountcreateAPIData
     var avatar by remember { mutableStateOf(accountData.avatar) }
 
-    val addScreenState = viewModel.uiState.collectAsState()
+    val addScreenState = viewModel.uiState2.collectAsState()
     when(addScreenState.value){
-        is UiState.Error -> {
-            val message = (addScreenState.value as UiState.Error).msg
+        is UiState2.Error -> {
+            val message = (addScreenState.value as UiState2.Error).msg
             Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()
             viewModel.setStateToReady()
         }
-        UiState.Loading -> {
+        UiState2.Loading -> {
             LoadingProgressDialog()
         }
-        UiState.Ready -> {}
-        is UiState.Success -> {
-            val message = (addScreenState.value as UiState.Success).msg
+        UiState2.Ready -> {}
+        is UiState2.Success -> {
+            val message = (addScreenState.value as UiState2.Success).msg
             Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()
             viewModel.setStateToReady()
-            navController.popBackStack()
+            navController.navigate(screenRoute.Login.route)
+
         }
     }
 
@@ -202,7 +204,6 @@ fun contentAvatar(viewModel: userCreateViewModel, navController : NavController)
                         Log.d("generos_movies","viewModel:${accountData}")
                         Log.d("generos_movies","userData:${userData}")
 
-                        navController.navigate(screenRoute.LoginCuenta.route)
 
                     }
                 },

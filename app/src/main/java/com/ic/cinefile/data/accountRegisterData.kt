@@ -23,28 +23,13 @@ data class accountRegisterData(
     var genere:String="",
 
     @SerializedName("movie_genere")
-    val movieGenereList: MutableList<accountRegisterDataMovieGenere> = mutableListOf(),
+    val movieGenereList: MutableList<String> = mutableListOf(),
 
     @SerializedName(value="avatar")
     var avatar: String=""
 ){
     override fun toString(): String {
-        val movieGenresString = movieGenereList.joinToString(", ", "movieGenereList=[", "]") { it.toString() }
+        val movieGenresString = movieGenereList.joinToString(", ", "movieGenereList=[", "]")
         return "accountRegisterData(id=$id, username=$username, email=$email, password=$password, year_nac=$year_nac, genere=$genere, $movieGenresString, avatar=$avatar)"
-    }
-}
-
-
-data class accountRegisterDataMovieGenere(
-//    @SerializedName(value="_id")
-//    var id:String="",
-
-    @SerializedName(value="type_genere")
-    val type:String=""
-
-
-){
-    override fun toString(): String {
-        return "type=$type"
     }
 }

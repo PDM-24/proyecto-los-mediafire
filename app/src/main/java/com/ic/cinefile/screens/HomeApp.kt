@@ -85,7 +85,7 @@ fun HomeAppScreen(navController: NavController) {
 //                context.startActivity(intent)
 //                (context as Activity)
 
-                navController.navigate(screenRoute.LoginCuenta.route)
+                navController.navigate(screenRoute.Login.route)
 
 
             },

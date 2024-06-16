@@ -201,7 +201,7 @@ fun CrearCuenta(viewModel: userCreateViewModel, navController: NavController) {
                 textAlign = TextAlign.Center,
             ),
             modifier = Modifier.clickable {
-                navController.navigate(screenRoute.LoginCuenta.route)
+                navController.navigate(screenRoute.Login.route)
             }
         )
     }

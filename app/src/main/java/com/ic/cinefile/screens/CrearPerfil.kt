@@ -67,20 +67,6 @@ import java.util.TimeZone
 fun CrearPerfil(viewModel: userCreateViewModel,navController : NavController) {
 
     val context = LocalContext.current
-    val activity = context as Activity
-
-    // Obtener los datos de la actividad anterior
-    val correo = activity.intent.getStringExtra("correo") ?: ""
-    val contrasena = activity.intent.getStringExtra("contrasena") ?: ""
-
-
-    //val calendar = Calendar.getInstance() // Inicializar el calendario correctamente
-    // Obtener el año actual
-    //val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-    // Obtener el mes actual
-    //val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1 // Los meses en Calendar son 0-based
-
-//    var accountregisterdata by remember { mutableStateOf(accountRegisterData()) }
 
     val accountData by viewModel.accountcreateAPIData
     var username by remember { mutableStateOf(accountData.username) }
@@ -113,7 +99,7 @@ fun CrearPerfil(viewModel: userCreateViewModel,navController : NavController) {
             onValueChange = {
 
                 if (username.length <= 15) { // Limitar a 15 caracteres
-                username=it
+                    username=it
                 }
             },
             singleLine = true,

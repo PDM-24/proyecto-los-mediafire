@@ -1,5 +1,6 @@
 package com.ic.cinefile.API.methods
 
+import com.ic.cinefile.API.Model.movies.homeUserResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.Model.users.accountCreateResponse
 import com.ic.cinefile.data.accountLoginData
@@ -9,6 +10,8 @@ import com.ic.cinefile.data.accountRegisterData
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.Response
+import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 
 interface Methods {
@@ -22,5 +25,13 @@ interface Methods {
     @POST("api/account/login")
     suspend fun loginAccount(
         @Body userLoginData: accountLoginData
-    ):Response<UserLoginResponse>
+    ):UserLoginResponse
+
+
+    @Headers("Content-Type: application/json")
+    @GET("api/account/user/home")
+    suspend fun getUserHome(
+        @Header("Authorization") authorization: String
+    ): Response<homeUserResponse>
+
 }

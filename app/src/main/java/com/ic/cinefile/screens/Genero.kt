@@ -48,6 +48,7 @@ import com.ic.cinefile.viewModel.userCreateViewModel
 fun contentGenero(viewModel: userCreateViewModel, navController: NavController) {
 
     val context = LocalContext.current
+
     val activity = context as Activity
 
     val selectedGender: MutableState<String> = remember { mutableStateOf("") }
@@ -89,7 +90,13 @@ fun contentGenero(viewModel: userCreateViewModel, navController: NavController) 
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            activity.onBackPressed()
+
+//                            val intent = Intent(context, RestContraActivity::class.java)
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+//                            context.startActivity(intent)
+//                            (context as Activity).finish()
+
+
                         }
                     ) {
                         Icon(
@@ -232,4 +239,3 @@ fun contentGenero(viewModel: userCreateViewModel, navController: NavController) 
 //    //val navController = rememberNavController()
 //    contentGenero()
 //}
-
