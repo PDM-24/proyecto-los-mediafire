@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ic.cinefile.API.Model.movies.homeUserResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.apiServer
 import com.ic.cinefile.data.accountLoginData
@@ -35,10 +36,8 @@ class userCreateViewModel: ViewModel() {
     val accountLoginAPIData: State<accountLoginData> = _accountLoginAPI
 
 
-
-
-    private var authToken: String? = null
-
+    private val _userDataState = MutableStateFlow<UserDataState>(UserDataState.Ready)
+    val userDataState: StateFlow<UserDataState> = _userDataState
 
 
     // Estado para manejar la información del usuario y sus películas favoritas
@@ -112,9 +111,12 @@ class userCreateViewModel: ViewModel() {
                 _uiState.value = UiState.Loading
                 val response = apiServer.methods.loginAccount(userLoginData)
                 Log.i("userLoginViewModel", response.toString())
+                val token = response.token
 
 
                 _uiState.value = UiState.Success(response.token)
+                fetchUserData(token) // Obtener información del usuario utilizando el token
+
 
             }catch (e:Exception){
                 when (e) {
@@ -141,6 +143,29 @@ class userCreateViewModel: ViewModel() {
         _showErrorToast.value = false
     }
 
+//manejar token
+fun fetchUserData(token: String) {
+    viewModelScope.launch(Dispatchers.IO) {
+        try {
+            _userDataState.value = UserDataState.Loading
+            val response = apiServer.methods.getUserHome("Bearer $token")
+            if (response.isSuccessful) {
+                val userData = response.body()
+                _userDataState.value = userData?.let { UserDataState.Success(it) } ?: UserDataState.Error("Error: Datos del usuario no encontrados")
+            } else {
+                _userDataState.value = UserDataState.Error("Error: ${response.message()}")
+            }
+        } catch (e: Exception) {
+            when (e) {
+                is HttpException -> {
+                    Log.i("userCreateViewModel", e.message())
+                    _userDataState.value = UserDataState.Error(e.message())
+                }
+
+            }
+        }
+    }
+}
 
 
 
@@ -168,3 +193,13 @@ sealed class UiState {
     data class Success(val token: String): UiState()
     data class Error (val msg : String) : UiState()
 }
+
+
+
+sealed class UserDataState {
+    data object Loading : UserDataState()
+    data object Ready : UserDataState()
+    data class Success(val userData: homeUserResponse) : UserDataState()
+    data class Error(val msg: String) : UserDataState()
+}
+

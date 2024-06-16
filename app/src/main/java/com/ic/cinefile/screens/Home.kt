@@ -3,6 +3,7 @@ package com.ic.cinefile.screens
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Icon
@@ -42,6 +43,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,36 +59,52 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.compose.rememberImagePainter
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.montserratFamily
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.UiState
+import com.ic.cinefile.viewModel.UserDataState
 import com.ic.cinefile.viewModel.userCreateViewModel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-
-fun Home(viewModel: userCreateViewModel, navController : NavController){
+fun Home(viewModel: userCreateViewModel, navController: NavController) {
     var buscador by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val addScreenState = viewModel.uiState.collectAsState()
+    val userDataState by viewModel.userDataState.collectAsState()
 
+    LaunchedEffect(addScreenState.value) {
+        when (addScreenState.value) {
+            is UiState.Error -> {
+                val message = (addScreenState.value as UiState.Error).msg
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.setStateToReady()
+            }
+            UiState.Loading -> {
+                // Mostrar un diálogo de carga o algún indicador de progreso
+            }
+            UiState.Ready -> {}
+            is UiState.Success -> {
+                val token = (addScreenState.value as UiState.Success).token
+                viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
+                viewModel.setStateToReady()
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.padding(0.dp)
+                modifier = Modifier
+                    .padding(0.dp)
                     .height(50.dp),
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = black
-                ),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = black),
                 title = {},
-                navigationIcon =
-                {
-                    IconButton(
-                        onClick = {
-
-
-                        }
-                    ) {
+                navigationIcon = {
+                    IconButton(onClick = {}) {
                         Icon(
                             imageVector = Icons.Filled.Menu,
                             contentDescription = "",
@@ -130,37 +149,43 @@ fun Home(viewModel: userCreateViewModel, navController : NavController){
                 }
             )
         }
-    ){innerPadding ->
-        Column (
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(Color.Black)
                 .verticalScroll(rememberScrollState()),
+        ) {
+            Text(
+                text = when (userDataState) {
+                    is UserDataState.Loading -> "Cargando..."
+                    is UserDataState.Success -> {
+                        val userData = (userDataState as UserDataState.Success).userData.user
+                        "Usuario: ${userData.username}"
+                    }
+                    is UserDataState.Error -> "Error"
+                    else -> "Usuario"
+                },
+                color = Color.White,
+                modifier = Modifier.padding(8.dp)
+            )
 
-            ) {
-            Row (
-                modifier = Modifier
-                    .padding(start = 12.dp),
-
+            Row(
+                modifier = Modifier.padding(start = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
-
-            ){
-                Surface (
+            ) {
+                Surface(
                     color = Color.White,
                     shape = RoundedCornerShape(24.dp),
                     modifier = Modifier.padding(6.dp)
-                ){
-                    Row (
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             modifier = Modifier.padding(6.dp),
-                            painter = painterResource(id = R.drawable.baseline_search_24 ),
+                            painter = painterResource(id = R.drawable.baseline_search_24),
                             contentDescription = "Lupa"
                         )
-
 
                         TextField(
                             value = buscador,
@@ -170,7 +195,8 @@ fun Home(viewModel: userCreateViewModel, navController : NavController){
                                 focusedContainerColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent),
+                                disabledIndicatorColor = Color.Transparent
+                            ),
                             placeholder = {
                                 Text(
                                     text = "Buscar",
@@ -184,195 +210,52 @@ fun Home(viewModel: userCreateViewModel, navController : NavController){
                             },
                             textStyle = TextStyle(color = Color.Black),
                             singleLine = true
-
                         )
                     }
                 }
 
                 IconButton(onClick = {}) {
                     Icon(
-                        painter = painterResource(id = R.drawable.baseline_notifications_24 ),
+                        painter = painterResource(id = R.drawable.baseline_notifications_24),
                         tint = Color.White,
                         contentDescription = "notificaciones"
                     )
                 }
-
-            }
-            Box(modifier = Modifier.padding(8.dp) ){
-                Text(text = "Animacion",
-                    style = TextStyle(
-                        color = Color.White,
-                        textAlign =  TextAlign.Start,
-                        fontFamily = montserratFamily,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 20.sp
-
-                    )
-                )
             }
 
-            LazyRow {
+            when (userDataState) {
+                is UserDataState.Success -> {
+                    val movieCategories = (userDataState as UserDataState.Success).userData.movies
+                    movieCategories.forEach { (category, movies) ->
+                        Box(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = category,
+                                style = TextStyle(
+                                    color = Color.White,
+                                    textAlign = TextAlign.Start,
+                                    fontFamily = montserratFamily,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 20.sp
+                                )
+                            )
+                        }
 
-                item {
-                    Image(
-                        painter = painterResource(id = R.drawable.dunc),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(200.dp),
-                    )
+                        LazyRow {
+                            items(movies.size) { index ->
+                                val movie = movies[index]
+                                AsyncImage(
+                                    model = movie.posterUrl,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(4.dp)
+                                        .height(200.dp),
+                                )
+                            }
+                        }
+                    }
                 }
-
-                item {
-                    Image(
-                        painter = painterResource(id = R.drawable.godzilla),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(200.dp),
-                    )
-                }
-
-                item {
-                    Image(
-                        painter = painterResource(id = R.drawable.migration),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(200.dp),
-                    )
-                }
-
-                item {
-                    Image(
-                        painter = painterResource(id = R.drawable.garfield),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(200.dp),
-                    )
-                }
+                else -> {}
             }
-
-            Box(modifier = Modifier.padding(8.dp) ){
-                Text(text = "Drama",
-                    style = TextStyle(
-                        color = Color.White,
-                        textAlign =  TextAlign.Start,
-                        fontFamily = montserratFamily,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 20.sp
-
-                    )
-                )
-            }
-
-            LazyRow {
-
-                item {
-                    Image(
-                        painter = painterResource(id = R.drawable.dunc),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(200.dp),
-                    )
-                }
-
-                item {
-                    Image(
-                        painter = painterResource(id = R.drawable.godzilla),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(200.dp),
-                    )
-                }
-
-                item {
-                    Image(
-                        painter = painterResource(id = R.drawable.migration),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(200.dp),
-                    )
-                }
-
-                item {
-                    Image(
-                        painter = painterResource(id = R.drawable.garfield),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(200.dp),
-                    )
-                }
-            }
-
-            Box(modifier = Modifier.padding(8.dp) ){
-                Text(text = "Comedia",
-                    style = TextStyle(
-                        color = Color.White,
-                        textAlign =  TextAlign.Start,
-                        fontFamily = montserratFamily,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 20.sp
-
-                    )
-                )
-            }
-
-            LazyRow {
-
-                item {
-                    Image(
-                        painter = painterResource(id = R.drawable.dunc),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(200.dp),
-                    )
-                }
-
-                item {
-                    Image(
-                        painter = painterResource(id = R.drawable.godzilla),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(200.dp),
-                    )
-                }
-
-                item {
-                    Image(
-                        painter = painterResource(id = R.drawable.migration),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(200.dp),
-                    )
-                }
-
-                item {
-                    Image(
-                        painter = painterResource(id = R.drawable.garfield),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(200.dp),
-                    )
-                }
-            }
-
         }
     }
-
 }
-
-//@Preview(showSystemUi = true)
-//@Composable
-//fun ViewConteinerHome(){
-//    Home()
-//}
