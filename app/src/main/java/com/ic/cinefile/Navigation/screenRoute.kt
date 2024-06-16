@@ -12,4 +12,7 @@ sealed class screenRoute(var route: String) {
     object Login:screenRoute("Login")
 
     object Home:screenRoute("Home")
+
+    object Buscador:screenRoute("Buscador")
+
 }

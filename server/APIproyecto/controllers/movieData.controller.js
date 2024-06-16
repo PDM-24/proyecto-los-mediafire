@@ -1,6 +1,7 @@
 const controller = {};//encargado de contener la informacion
 const Movie = require("../models/movieData.model");
-const MoviesService = require("../services/movies.services");
+const MoviesService = require('../services/movies.services');
+const User = require('../models/account.model');
 
 const httpError = require("http-errors");
 
@@ -63,48 +64,109 @@ controller.findAll = async (req, res, next) => {
   };
 
 
-//Buscar pelicula
 
-controller.searchTitle = async (req, res, next) => {
+
+
+controller.getMostViewedMovies = async (req, res, next) => {
   try {
-      const title = req.params.title;
-      const movie = await MoviesService.searchTitleAPI(title);
-      if (!movie || movie.length === 0) {
-          throw new Error("No se encontraron películas con el título especificado.");
+      // Obtener el usuario autenticado desde req.user (gracias al middleware authenticate)
+      const userId = req.user._id;
+
+      // Buscar al usuario en la base de datos
+      const user = await User.findById(userId);
+      if (!user) {
+          throw httpError(404, 'Usuario no encontrado');
       }
-      return res.status(200).json({ data: movie });
+
+      const limit = 2; // Puedes ajustar este valor según tus necesidades
+      const mostViewedMovies = await MoviesService.getMostViewedMoviesAPI(limit);
+
+      res.status(200).json({moviesMostViews:mostViewedMovies});
+  } catch (error) {
+      next(error);
+  }
+};
+
+controller.getMostRecentMovies = async (req, res, next) => {
+  try {
+      // Obtener el usuario autenticado desde req.user (gracias al middleware authenticate)
+      const userId = req.user._id;
+
+      // Buscar al usuario en la base de datos
+      const user = await User.findById(userId);
+      if (!user) {
+          throw httpError(404, 'Usuario no encontrado');
+      }
+
+      const limit = 2; // Puedes ajustar este valor según tus necesidades
+      const mostRecentMovies = await MoviesService.getMostRecentMoviesAPI(limit);
+
+      res.status(200).json({moviesRecent:mostRecentMovies});
   } catch (error) {
       next(error);
   }
 };
 
 
-// controller.categoryMovie = async (req, res, next) => {
-//   try {
-//       const genreName=req.params.genreName;
-//     const movies = await MoviesService.getMoviesCategoryAPI(genreName);
-//     if (!movies || movies.length === 0) {
-//           throw new Error("No se encontraron películas con el título especificado.");
-//       }
-//       return res.status(200).json({ data: movies });
-//   } catch (error) {
-//       next(error);
-//   }
-// };
 
-controller.categoryMovie = async (req, res, next) => {
+
+
+
+
+
+/// Buscar película por título
+controller.searchMovieByTitle = async (req, res, next) => {
   try {
-    const categoryName = req.params.categoryName;
-    const movies = await MoviesService.getMoviesCategoryAPI(categoryName);
-    if (!movies || movies.length === 0) {
-      throw new Error("No se encontraron películas en la categoría especificada.");
-    }
-    return res.status(200).json({ data: movies });
+      const userId = req.user._id;
+
+      const user = await User.findById(userId);
+      if (!user) {
+          throw httpError(404, 'Usuario no encontrado');
+      }
+
+      const { title } = req.params;
+      const movies = await MoviesService.searchMovieByTitleAPI(title);
+
+      if (!movies || movies.length === 0) {
+          throw httpError(404, "No se encontraron películas con el título especificado.");
+      }
+      return res.status(200).json({ data: movies });
   } catch (error) {
-    next(error);
+      next(error);
   }
 };
-  
+
+
+
+
+
+
+
+
+
+
+
+
+// Obtener las películas más vistas
+controller.getMostViewedMovies = async (req, res, next) => {
+  try {
+      const userId = req.user._id;
+
+      const user = await User.findById(userId);
+      if (!user) {
+          throw httpError(404, 'Usuario no encontrado');
+      }
+
+      const limit = 2; 
+      const mostViewedMovies = await MoviesService.getMostViewedMoviesAPI(limit);
+
+      res.status(200).json({ moviesMostViews: mostViewedMovies });
+  } catch (error) {
+      next(error);
+  }
+};
+
+
 
 
 

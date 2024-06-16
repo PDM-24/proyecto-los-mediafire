@@ -4,7 +4,7 @@ const { SignJWT, jwtVerify } = require("jose");
 const secret = new TextEncoder().encode(
   process.env.TOKEN_SECRET || "Super Secret Value"
 );
-const expTime = process.TOKEN_EXP || "2m";
+const expTime = process.TOKEN_EXP || "60m";
 const tools = {};
 
 tools.createToken = async (id) => {

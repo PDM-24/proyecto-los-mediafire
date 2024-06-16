@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ic.cinefile.screens.Buscador
 import com.ic.cinefile.screens.CrearCuenta
 import com.ic.cinefile.screens.CrearPerfil
 import com.ic.cinefile.screens.ElegirGeneros
@@ -22,7 +23,7 @@ fun AppNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = screenRoute.HomeAppScreen.route
+        startDestination = screenRoute.Login.route
     ){
         composable(route = screenRoute.CrearCuenta.route){
             CrearCuenta(viewModel, navController)
@@ -50,6 +51,9 @@ fun AppNavigation(
         }
         composable(route=screenRoute.Home.route){
             Home(viewModel,navController)
+        }
+        composable(route=screenRoute.Buscador.route){
+            Buscador(viewModel,navController)
         }
 //        composable(
 //            route = "${screenRoute.Edit.route}/{code}",

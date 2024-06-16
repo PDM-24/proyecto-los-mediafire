@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ic.cinefile.API.Model.movies.homeUserResponse
+import com.ic.cinefile.API.Model.movies.mostViewMoviesResponse
+import com.ic.cinefile.API.Model.movies.recentMoviesResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.apiServer
 import com.ic.cinefile.data.accountLoginData
@@ -39,8 +41,14 @@ class userCreateViewModel: ViewModel() {
     private val _userDataState = MutableStateFlow<UserDataState>(UserDataState.Ready)
     val userDataState: StateFlow<UserDataState> = _userDataState
 
+    // Estado para manejar las películas más recientes
+    private val _recentMoviesState = MutableStateFlow<RecentMoviestState>(RecentMoviestState.Ready)
+    val recentMoviesState: StateFlow<RecentMoviestState> = _recentMoviesState
 
-    // Estado para manejar la información del usuario y sus películas favoritas
+    // Estado para manejar las películas más recientes
+    private val _mostViewsMoviesState = MutableStateFlow<MostViewsMoviestState>(MostViewsMoviestState.Ready)
+    val mostViewsMoviesState: StateFlow<MostViewsMoviestState> = _mostViewsMoviesState
+
 
     fun updateAccountData(newData: accountRegisterData) {
         _accountCreateAPI.value = newData
@@ -116,8 +124,8 @@ class userCreateViewModel: ViewModel() {
 
                 _uiState.value = UiState.Success(response.token)
                 fetchUserData(token) // Obtener información del usuario utilizando el token
-
-
+                getRecentMoviesData(token)
+                    getMostViewMoviesData(token)
             }catch (e:Exception){
                 when (e) {
                     is HttpException -> {
@@ -168,6 +176,59 @@ fun fetchUserData(token: String) {
 }
 
 
+    //obtener peliculas recientes
+    fun getRecentMoviesData(token: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _recentMoviesState.value = RecentMoviestState.Loading
+                val response = apiServer.methods.getRecentMovies("Bearer $token")
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    val uniqueMovies = data?.moviesRecent?.distinctBy { it.id } // Filtra duplicados por ID
+                    _recentMoviesState.value = uniqueMovies?.let { RecentMoviestState.Success(recentMoviesResponse(it)) } ?: RecentMoviestState.Error("Error: Peliculas no encontradas")
+
+                } else {
+                    _recentMoviesState.value = RecentMoviestState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        Log.i("userCreateViewModel", e.message())
+                        _mostViewsMoviesState.value = MostViewsMoviestState.Error(e.message())
+                    }
+
+                }
+            }
+        }
+    }
+
+
+
+    //obtener peliculas mas vistas
+    fun getMostViewMoviesData(token: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _mostViewsMoviesState.value = MostViewsMoviestState.Loading
+                val response = apiServer.methods.getMostViewMovies("Bearer $token")
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    val uniqueMovies = data?.moviesMostViews?.distinctBy { it.id } // Filtra duplicados por ID
+
+                    _mostViewsMoviesState.value = uniqueMovies?.let { MostViewsMoviestState.Success(mostViewMoviesResponse(it)) } ?: MostViewsMoviestState.Error("Error: Peliculas no encontradas")
+                } else {
+                    _mostViewsMoviesState.value = MostViewsMoviestState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        Log.i("userCreateViewModel", e.message())
+                        _mostViewsMoviesState.value = MostViewsMoviestState.Error(e.message())
+                    }
+
+                }
+            }
+        }
+    }
 
 
 
@@ -203,3 +264,18 @@ sealed class UserDataState {
     data class Error(val msg: String) : UserDataState()
 }
 
+
+
+sealed class RecentMoviestState {
+    data object Loading : RecentMoviestState()
+    data object Ready : RecentMoviestState()
+    data class Success(val data: recentMoviesResponse) : RecentMoviestState()
+    data class Error(val msg: String) : RecentMoviestState()
+}
+
+sealed class MostViewsMoviestState {
+    data object Loading : MostViewsMoviestState()
+    data object Ready : MostViewsMoviestState()
+    data class Success(val data: mostViewMoviesResponse) : MostViewsMoviestState()
+    data class Error(val msg: String) : MostViewsMoviestState()
+}
