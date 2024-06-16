@@ -59,12 +59,13 @@ import androidx.navigation.NavController
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.montserratFamily
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.userCreateViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun Home(){
+fun Home(viewModel: userCreateViewModel, navController : NavController){
     var buscador by remember { mutableStateOf("") }
 
 
@@ -370,8 +371,8 @@ fun Home(){
 
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun ViewConteinerHome(){
-    Home()
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun ViewConteinerHome(){
+//    Home()
+//}

@@ -1,25 +1,49 @@
 package com.ic.cinefile.components.valoresGeneros
 
 enum class generos {
+    accion,
+    aventura,
+    animacion,
+    comedia,
+    crimen,
+    documental,
+    drama,
+    familia,
+    fantasia,
+    historia,
+    terror,
+    musica,
+    misterio,
+    romance,
+    suspenso,
+    belica,
+    western,
 
-    Accion,
-    Animacion,
-    Aventura,
-    Bélica,
-    CienciaFicción,
-    Comedia,
-    Crimen,
-    Documental,
-    Drama,
-    Familia,
-    Fantasía,
-    Historia,
-    Misterio,
-    Música,
-    PeliculaTV,
-    Romance,
-    Terror,
-    Suspense,
-    Western
 
 }
+
+
+
+
+
+
+
+//accion,
+//aventura,
+//animacion,
+//comedia,
+//crimen,
+//documental,
+//drama,
+//familia,
+//fantasia,
+//historia,
+//terror,
+//musica,
+//misterio,
+//romance,
+//ciencia_ficcion,
+//pelicula_de_tv,
+//suspenso,
+//belica,
+//western

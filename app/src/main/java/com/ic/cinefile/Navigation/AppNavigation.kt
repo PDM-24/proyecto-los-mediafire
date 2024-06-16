@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ic.cinefile.screens.CrearCuenta
 import com.ic.cinefile.screens.CrearPerfil
 import com.ic.cinefile.screens.ElegirGeneros
+import com.ic.cinefile.screens.Home
 import com.ic.cinefile.screens.HomeAppScreen
 import com.ic.cinefile.screens.Login
 import com.ic.cinefile.screens.contentAvatar
@@ -44,8 +45,11 @@ fun AppNavigation(
         composable(route=screenRoute.HomeAppScreen.route){
             HomeAppScreen(navController)
         }
-        composable(route=screenRoute.LoginCuenta.route){
-          Login(viewModel,navController)
+        composable(route=screenRoute.Login.route){
+            Login(viewModel,navController)
+        }
+        composable(route=screenRoute.Home.route){
+            Home(viewModel,navController)
         }
 //        composable(
 //            route = "${screenRoute.Edit.route}/{code}",
