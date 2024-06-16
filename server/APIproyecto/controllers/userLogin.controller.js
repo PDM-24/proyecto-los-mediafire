@@ -20,7 +20,7 @@ controller.getUserData = async (req, res, next) => {
         const moviesByGenre = {};
 
         for (const genre of genres) {
-            const movies = await MoviesService.getMoviesCategoryAPI(genre,2 ); // Obtener las primeras 10 películas
+            const movies = await MoviesService.getMoviesCategoryAPI(genre,10 ); // Obtener las primeras 10 películas
             moviesByGenre[genre] = movies;
         }
 
