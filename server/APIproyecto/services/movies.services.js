@@ -5,6 +5,7 @@ const BASE_URL_API="https://api.themoviedb.org/3/"
 
 const API_KEY="376635a2a15525fb5b00a5b6ac0f2861"
 
+const User = require('../models/account.model');
 
 const genreMap = {
     "accion": 28,
@@ -47,8 +48,7 @@ const normalizeString = (str) => {
 
 
 
-
-const searchMovieByTitle = async (title) => {
+const searchMovieByTitle = async (title, userId) => {
   const normalizedTitle = normalizeString(title);
 
   try {
@@ -71,16 +71,22 @@ const searchMovieByTitle = async (title) => {
           };
       }));
 
-      // Filtrar las películas que contienen la parte normalizada del título
-      const filteredMovies = moviesWithGenres.filter(movie =>
-          normalizeString(movie.title).includes(normalizedTitle)
-      );
+      // Guardar la búsqueda reciente del usuario
+      const user = await User.findById(userId);
+      if (user) {
+          // Agregar la nueva búsqueda al inicio del array
+          user.recentSearches.unshift({ query: title });
+          // Limitar la lista a las últimas 5 búsquedas
+          user.recentSearches = user.recentSearches.slice(0, 5);
+          await user.save();
+      }
 
-      return filteredMovies;
+      return moviesWithGenres;
   } catch (error) {
       throw new Error("Error occurred while searching for the movie. Please try again.");
   }
 };
+
 
 
 
@@ -114,73 +120,104 @@ const getGenreId = (genreName) => {
 
 const getMoviesCategory = async (categoryName, limit = 10) => {
   try {
-      const categoryId = getGenreId(categoryName);
-      const response = await axios.get(`${BASE_URL_API}discover/movie?api_key=${API_KEY}&language=es-ES&with_genres=${categoryId}&page=1&include_adult=false&sort_by=popularity.desc&vote_count.gte=1000&vote_average.gte=5&with_watch_monetization_types=flatrate`);
-      
-      const movies = response.data.results.slice(0, limit); // Limitar las películas al número especificado
+    const categoryId = getGenreId(categoryName);
+    const response = await axios.get(
+      `${BASE_URL_API}discover/movie?api_key=${API_KEY}&language=es-ES&with_genres=${categoryId}&page=1&include_adult=false&sort_by=popularity.desc&vote_count.gte=1000&vote_average.gte=5&with_watch_monetization_types=flatrate`
+    );
 
-      // Enrich each movie with additional details
-      const moviesWithDetails = await Promise.all(movies.map(async (movie) => {
-          const detailsResponse = await axios.get(`${BASE_URL_API}movie/${movie.id}?api_key=${API_KEY}&language=es-ES&append_to_response=videos`);
-          const detailedMovie = detailsResponse.data;
+    const movies = response.data.results.slice(0, limit); // Limitar las películas al número especificado
 
-          return {
-              id: detailedMovie.id,
-              poster: detailedMovie.poster_path ? `https://image.tmdb.org/t/p/w500${detailedMovie.poster_path}` : null,
-              title: detailedMovie.title,
-              duracion: detailedMovie.runtime,
-              fecha_lanzamiento: detailedMovie.release_date,
-              genero: detailedMovie.genres.map(genre => genre.name).join(", "),
-              descripcion: detailedMovie.overview,
-              trailer: detailedMovie.videos.results.length > 0 ? `https://www.youtube.com/watch?v=${detailedMovie.videos.results[0].key}` : null
-          };
-      }));
+    // Enrich each movie with additional details including actors
+    const moviesWithDetails = await Promise.all(
+      movies.map(async (movie) => {
+        // Obtener detalles de la película
+        const detailsResponse = await axios.get(
+          `${BASE_URL_API}movie/${movie.id}?api_key=${API_KEY}&language=es-ES&append_to_response=credits,videos`
+        );
+        const detailedMovie = detailsResponse.data;
 
-      return moviesWithDetails.sort(() => Math.random() - 0.5); // Reordenar aleatoriamente las películas
+        // Mapear los nombres y fotos de los actores
+        const actors = detailedMovie.credits.cast.map((actor) => ({
+          name: actor.name,
+          profileUrl: actor.profile_path
+            ? `https://image.tmdb.org/t/p/w500${actor.profile_path}`
+            : null,
+        }));
+
+        return {
+          id: detailedMovie.id,
+          poster: detailedMovie.poster_path
+            ? `https://image.tmdb.org/t/p/w500${detailedMovie.poster_path}`
+            : null,
+          title: detailedMovie.title,
+          duracion: detailedMovie.runtime,
+          fecha_lanzamiento: detailedMovie.release_date,
+          genero: detailedMovie.genres.map((genre) => genre.name).join(", "),
+          descripcion: detailedMovie.overview,
+          trailer:
+            detailedMovie.videos.results.length > 0
+              ? `https://www.youtube.com/watch?v=${detailedMovie.videos.results[0].key}`
+              : null,
+          actors: actors,
+        };
+      })
+    );
+
+
+
+
+    
+    return moviesWithDetails.sort(() => Math.random() - 0.5); // Reordenar aleatoriamente las películas
   } catch (error) {
-      throw new Error(`No se ha podido encontrar películas en la categoría: ${categoryName}`);
+    throw new Error(`No se ha podido encontrar películas en la categoría: ${categoryName}`);
   }
-}
+};
 
 
 
 
 
 const getMoviesBySortType = async (sortType, limit = 10) => {
-    try {
-      const genreIds = Object.values(genreMap);
-      let allMovies = [];
-      
-      for (const genreId of genreIds) {
-        const response = await axios.get(`${BASE_URL_API}discover/movie?api_key=${API_KEY}&language=es-ES&with_genres=${genreId}&page=1&include_adult=false&sort_by=${sortType}&vote_count.gte=1000&vote_average.gte=5&with_watch_monetization_types=flatrate`);
-        const movies = response.data.results.slice(0, limit);
-    
-        // Enrich each movie with additional details
-        const moviesWithDetails = await Promise.all(movies.map(async (movie) => {
-          const detailsResponse = await axios.get(`${BASE_URL_API}movie/${movie.id}?api_key=${API_KEY}&language=es-ES&append_to_response=videos`);
-          const detailedMovie = detailsResponse.data;
-    
-          return {
-            id: detailedMovie.id,
-            poster: detailedMovie.poster_path ? `https://image.tmdb.org/t/p/w500${detailedMovie.poster_path}` : null,
-            title: detailedMovie.title,
-            duracion: detailedMovie.runtime,
-            fecha_lanzamiento: detailedMovie.release_date,
-            genero: detailedMovie.genres.map(genre => genre.name).join(", "),
-            descripcion: detailedMovie.overview,
-            trailer: detailedMovie.videos.results.length > 0 ? `https://www.youtube.com/watch?v=${detailedMovie.videos.results[0].key}` : null
-          };
-        }));
-    
-        allMovies = allMovies.concat(moviesWithDetails);
-      }
-    
-      return allMovies;
-    } catch (error) {
-      throw new Error("No se ha podido encontrar las películas.");
-    }
-  };
+  try {
+    const genreIds = Object.values(genreMap);
+    let allMovies = [];
 
+    for (const genreId of genreIds) {
+      const response = await axios.get(`${BASE_URL_API}discover/movie?api_key=${API_KEY}&language=es-ES&with_genres=${genreId}&page=1&include_adult=false&sort_by=${sortType}&vote_count.gte=1000&vote_average.gte=5&with_watch_monetization_types=flatrate`);
+      const movies = response.data.results.slice(0, limit);
+
+      // Enrich each movie with additional details
+      const moviesWithDetails = await Promise.all(movies.map(async (movie) => {
+        const detailsResponse = await axios.get(`${BASE_URL_API}movie/${movie.id}?api_key=${API_KEY}&language=es-ES&append_to_response=videos,credits`); // Agregar credits para obtener los actores
+        const detailedMovie = detailsResponse.data;
+
+        // Obtener nombres y fotos de los actores
+        const actors = detailedMovie.credits.cast.map(actor => ({
+          name: actor.name,
+          profilePhoto: actor.profile_path ? `https://image.tmdb.org/t/p/w500${actor.profile_path}` : null
+        }));
+
+        return {
+          id: detailedMovie.id,
+          poster: detailedMovie.poster_path ? `https://image.tmdb.org/t/p/w500${detailedMovie.poster_path}` : null,
+          title: detailedMovie.title,
+          duracion: detailedMovie.runtime,
+          fecha_lanzamiento: detailedMovie.release_date,
+          genero: detailedMovie.genres.map(genre => genre.name).join(", "),
+          descripcion: detailedMovie.overview,
+          trailer: detailedMovie.videos.results.length > 0 ? `https://www.youtube.com/watch?v=${detailedMovie.videos.results[0].key}` : null,
+          actors: actors // Agregar información de los actores al objeto de la película
+        };
+      }));
+
+      allMovies = allMovies.concat(moviesWithDetails);
+    }
+
+    return allMovies;
+  } catch (error) {
+    throw new Error("No se ha podido encontrar las películas.");
+  }
+};
 
   const getMostViewedMovies = async (limit = 10) => {
     return getMoviesBySortType('popularity.desc', limit);
@@ -192,6 +229,32 @@ const getMoviesBySortType = async (sortType, limit = 10) => {
   
 
 
+  //por id
+  const fetchMovieById = async (id) => {
+    try {
+      const response = await axios.get(`${BASE_URL_API}movie/${id}?api_key=${API_KEY}&language=es-ES&append_to_response=videos,credits`);
+      const movie = response.data;
+  
+      const actors = movie.credits.cast.map(actor => ({
+        name: actor.name,
+        profileUrl: actor.profile_path ? `https://image.tmdb.org/t/p/w500${actor.profile_path}` : null,
+      }));
+  
+      return {
+        id: movie.id,
+        poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
+        title: movie.title,
+        duracion: movie.runtime,
+        fecha_lanzamiento: movie.release_date,
+        genero: movie.genres.map(genre => genre.name).join(", "),
+        descripcion: movie.overview,
+        trailer: movie.videos.results.length > 0 ? `https://www.youtube.com/watch?v=${movie.videos.results[0].key}` : null,
+        actors: actors,
+      };
+    } catch (error) {
+      throw new Error("Error occurred while fetching movie details. Please try again.");
+    }
+  };
 
 // se exportan como se deven son variables por asi asi
 module.exports={
@@ -199,6 +262,6 @@ module.exports={
     getMoviesCategoryAPI:getMoviesCategory,
       getMostViewedMoviesAPI: getMostViewedMovies,
   getMostRecentMoviesAPI: getMostRecentMovies,
-  searchMovieByTitleAPI: searchMovieByTitle
-
+  searchMovieByTitleAPI: searchMovieByTitle,
+  fetchMovieByIdAPI:fetchMovieById
 }

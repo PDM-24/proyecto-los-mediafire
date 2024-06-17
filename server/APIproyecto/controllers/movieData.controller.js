@@ -111,31 +111,31 @@ controller.getMostRecentMovies = async (req, res, next) => {
 
 
 
-
-
-
-/// Buscar película por título
 controller.searchMovieByTitle = async (req, res, next) => {
   try {
-      const userId = req.user._id;
+    const userId = req.user._id;
 
-      const user = await User.findById(userId);
-      if (!user) {
-          throw httpError(404, 'Usuario no encontrado');
-      }
+    // Buscar al usuario en la base de datos
+    const user = await User.findById(userId);
+    if (!user) {
+      throw httpError(404, 'Usuario no encontrado');
+    }
 
-      const { title } = req.params;
-      const movies = await MoviesService.searchMovieByTitleAPI(title);
+    const { title } = req.params;
 
-      if (!movies || movies.length === 0) {
-          throw httpError(404, "No se encontraron películas con el título especificado.");
-      }
-      return res.status(200).json({ data: movies });
+    // Buscar películas según el título proporcionado
+    const movies = await MoviesService.searchMovieByTitleAPI(title, userId);
+
+    if (!movies || movies.length === 0) {
+      throw httpError(404, "No se encontraron películas con el título especificado.");
+    }
+
+    // Devolver las películas encontradas como respuesta
+    return res.status(200).json({ movies} );
   } catch (error) {
-      next(error);
+    next(error);
   }
 };
-
 
 
 
@@ -160,11 +160,36 @@ controller.getMostViewedMovies = async (req, res, next) => {
       const limit = 2; 
       const mostViewedMovies = await MoviesService.getMostViewedMoviesAPI(limit);
 
+      
       res.status(200).json({ moviesMostViews: mostViewedMovies });
   } catch (error) {
       next(error);
   }
 };
+
+
+
+
+
+controller.getMovieById = async (req, res, next) => {
+  try {
+
+ 
+
+    const { id } = req.params;
+
+    // Obtener los detalles de la película por ID
+    const movieDetails = await MoviesService.fetchMovieByIdAPI(id);
+    if (!movieDetails || movieDetails.length === 0) {
+      throw httpError(404, "No se encontraron películas.");
+    }
+    // Devolver los detalles de la película
+    res.status(200).json( movieDetails);
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 
 
