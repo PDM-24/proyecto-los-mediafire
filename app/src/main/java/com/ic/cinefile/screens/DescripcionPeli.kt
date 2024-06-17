@@ -19,9 +19,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,17 +36,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ic.cinefile.R
 import com.ic.cinefile.components.botonGuardar
-import com.ic.cinefile.components.comentarios
+import com.ic.cinefile.components.comentariosSecc.comentarios
 import com.ic.cinefile.components.ratingStars
 import com.ic.cinefile.components.verTrailer
+import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.light_yellow
 import com.ic.cinefile.ui.theme.sky_blue
 import com.ic.cinefile.ui.theme.white
@@ -51,6 +56,9 @@ import com.ic.cinefile.ui.theme.white
 @Composable
 fun descripcionPeli(
     onClick: () -> Unit,
+    id: String,
+    imagePainter: Painter,
+    description: String
 ) {
 
     var isBookmarked by remember { mutableStateOf(false) }
@@ -69,6 +77,18 @@ fun descripcionPeli(
                 .fillMaxHeight(0.7f)
                 .fillMaxWidth()
         )
+
+        //Para volver atrás
+        IconButton(
+            onClick = {/*navController.popBackStack() para volver atrás*/ },
+            colors = IconButtonDefaults.iconButtonColors(black)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "",
+                tint = white
+            )
+        }
 
         //Card de información de la peli
         Card(
@@ -249,16 +269,16 @@ fun descripcionPeli(
                 //COMENTARIOS
                 item {
                     Spacer(modifier = Modifier.height(20.dp))
-                    comentarios()
+                    comentarios(id = id, description = description, imagePainter = imagePainter)
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun descripcionPeliPreview() {
     var isBookmarked by remember { mutableStateOf(false) }
     descripcionPeli(onClick = { isBookmarked = !isBookmarked })
-}
+}*/
