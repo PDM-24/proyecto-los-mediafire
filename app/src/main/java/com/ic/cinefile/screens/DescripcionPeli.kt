@@ -38,35 +38,36 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.ic.cinefile.API.Model.movies.ActorResponse
 import com.ic.cinefile.R
 import com.ic.cinefile.components.botonGuardar
-import com.ic.cinefile.components.comentarios
+import com.ic.cinefile.components.seccComentarios.comentarios
 import com.ic.cinefile.components.ratingStars
 import com.ic.cinefile.components.verTrailer
 import com.ic.cinefile.ui.theme.light_yellow
 import com.ic.cinefile.ui.theme.sky_blue
 import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.MovieState
-import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.userCreateViewModel
 
 
 @Composable
 fun descripcionPeli(
     onClick: () -> Unit,
-    viewModel: userCreateViewModel, navController : NavController,
-movieId: Int
-    ) {
+    viewModel: userCreateViewModel, navController: NavController,
+    movieId: Int,
+    id: String,
+    imagePainter: Painter,
+    description: String
+) {
 
 
     var isBookmarked by remember { mutableStateOf(false) }
@@ -309,10 +310,10 @@ movieId: Int
                                                     .size(60.dp)
                                                     .clip(CircleShape)
                                             )
-                                        }
-                                        else {
+                                        } else {
                                             // Mostrar la imagen de reemplazo si no hay URL de imagen
-                                            val placeholderActorImage = painterResource(id = R.drawable.reynolds)
+                                            val placeholderActorImage =
+                                                painterResource(id = R.drawable.reynolds)
                                             Image(
                                                 painter = placeholderActorImage,
                                                 contentDescription = null,
@@ -336,7 +337,11 @@ movieId: Int
                         //COMENTARIOS
                         item {
                             Spacer(modifier = Modifier.height(20.dp))
-                            comentarios()
+                            comentarios(
+                                id = id,
+                                description = description,
+                                imagePainter = imagePainter
+                            )
                         }
                     }
                 }
