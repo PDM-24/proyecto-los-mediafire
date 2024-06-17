@@ -52,6 +52,10 @@ const accountSchema = SchemaUsers(
       type: [String],
       default: [],
     },
+    recentSearches: [{
+      query: String,
+      timestamp: { type: Date, default: Date.now }
+    }]
   },
   { timestamps: true }
 );

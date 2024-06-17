@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
 import com.ic.cinefile.components.LoadingProgressDialog
 import com.ic.cinefile.ui.theme.black
@@ -278,6 +279,15 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
                                 LazyRow {
                                     items(movies.size) { index ->
                                         val movie = movies[index]
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(4.dp)
+                                                .clickable {
+                                                    // Aquí navegas a la pantalla de descripción de la película
+                                                    navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
+                                                }
+                                        )
+                                        {
                                         AsyncImage(
                                             model = movie.posterUrl,
                                             contentDescription = null,
@@ -285,6 +295,7 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
                                                 .padding(4.dp)
                                                 .height(200.dp)
                                         )
+                                    }
                                     }
                                 }
                             }
@@ -341,13 +352,22 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
                                 LazyRow {
                                     items(movies.size) { index ->
                                         val movie = movies[index]
-                                        AsyncImage(
-                                            model = movie.posterUrl,
-                                            contentDescription = null,
+                                        Box(
                                             modifier = Modifier
                                                 .padding(4.dp)
-                                                .height(200.dp)
-                                        )
+                                                .clickable {
+                                                    // Aquí navegas a la pantalla de descripción de la película
+                                                    navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
+                                                }
+                                        ) {
+                                            AsyncImage(
+                                                model = movie.posterUrl,
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .padding(4.dp)
+                                                    .height(200.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -469,37 +489,3 @@ fun SearchHistoryScreen(onBackClick: () -> Unit) {
         }
     }
 }
-
-
-
-//@Preview(showSystemUi = true)
-//@Composable
-//fun ViewConteinerBuscador(){
-//    Buscador)
-//}
-
-
-
-
-/*
-* var token: String? by remember { mutableStateOf(null) }
-
-// Función para manejar la recarga de películas más vistas
-fun reloadMostViewedMovies(token: String) {
-    viewModel.getMostViewMoviesData(token) // Llama a la función del ViewModel para cargar las películas más vistas nuevamente
-}
-*
-* IconButton(
-    onClick = { token?.let { reloadMostViewedMovies(it) } },
-    modifier = Modifier.padding(8.dp)
-) {
-    Icon(
-        imageVector = Icons.Default.Refresh,
-        contentDescription = "Refresh",
-        tint = Color.White
-    )
-}
-*
-*
-*
-* */

@@ -170,45 +170,51 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                     Row (
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                    Icon(
-                        modifier = Modifier.padding(6.dp),
-                        painter = painterResource(id = R.drawable.baseline_search_24 ),
-                        contentDescription = "Lupa"
-                    )
-
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
                                     navController.navigate(screenRoute.Buscador.route)
                                 }
-                        ){
-                        TextField(
-                        value = buscador,
-                        onValueChange = { newBuscador -> buscador = newBuscador },
-
-                        colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent),
-                        placeholder = {
-                            Text(
-                                text = "Buscar",
-                                style = TextStyle(
-                                    color = Color.Gray,
-                                    fontSize = 15.sp,
-                                    letterSpacing = 0.1.em,
-                                    fontWeight = FontWeight.Normal
-                                )
+                        ) {
+                            Icon(
+                                modifier = Modifier.padding(6.dp),
+                                painter = painterResource(id = R.drawable.baseline_search_24),
+                                contentDescription = "Lupa"
                             )
-                        },
-                        textStyle = TextStyle(color = Color.Black),
-                        singleLine = true
 
-                    )
-                }
+
+                            TextField(
+                                value = buscador,
+                                onValueChange = { newBuscador -> buscador = newBuscador },
+
+                                colors = TextFieldDefaults.colors(
+                                    unfocusedContainerColor = Color.Transparent,
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent
+                                ),
+                                placeholder = {
+                                    Text(
+                                        text = "Buscar",
+                                        style = TextStyle(
+                                            color = Color.Gray,
+                                            fontSize = 15.sp,
+                                            letterSpacing = 0.1.em,
+                                            fontWeight = FontWeight.Normal
+                                        )
+                                    )
+                                },
+                                textStyle = TextStyle(color = Color.Black),
+                                singleLine = true
+
+                            )
+
+                        }
+
+
+
                     }
                 }
 
@@ -241,13 +247,22 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         LazyRow {
                             items(movies.size) { index ->
                                 val movie = movies[index]
-                                AsyncImage(
-                                    model = movie.posterUrl,
-                                    contentDescription = null,
+                                Box(
                                     modifier = Modifier
                                         .padding(4.dp)
-                                        .height(200.dp),
-                                )
+                                        .clickable {
+                                            // Aquí navegas a la pantalla de descripción de la película
+                                            navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
+                                        }
+                                ) {
+                                    AsyncImage(
+                                        model = movie.posterUrl,
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .padding(4.dp)
+                                            .height(200.dp),
+                                    )
+                                }
                             }
                         }
                     }

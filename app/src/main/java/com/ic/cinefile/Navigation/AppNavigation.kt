@@ -1,9 +1,11 @@
 package com.ic.cinefile.Navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.ic.cinefile.screens.Buscador
 import com.ic.cinefile.screens.CrearCuenta
 import com.ic.cinefile.screens.CrearPerfil
@@ -13,6 +15,7 @@ import com.ic.cinefile.screens.HomeAppScreen
 import com.ic.cinefile.screens.Login
 import com.ic.cinefile.screens.contentAvatar
 import com.ic.cinefile.screens.contentGenero
+import com.ic.cinefile.screens.descripcionPeli
 import com.ic.cinefile.viewModel.userCreateViewModel
 
 @Composable
@@ -54,6 +57,18 @@ fun AppNavigation(
         }
         composable(route=screenRoute.Buscador.route){
             Buscador(viewModel,navController)
+        }
+        composable(
+            route = "${screenRoute.descripcionPeli.route}/{movieId}",
+                arguments = listOf(navArgument("movieId"){
+                    type= NavType.IntType
+                })
+
+        ) { backStackEntry ->
+            val movieId = backStackEntry.arguments?.getInt("movieId") ?: throw IllegalArgumentException("Movie ID missing")
+
+            descripcionPeli(
+               onClick = {}, viewModel,navController, movieId)
         }
 //        composable(
 //            route = "${screenRoute.Edit.route}/{code}",

@@ -6,7 +6,7 @@ data class homeUserResponse(
     @SerializedName("user")
     val user: User,
     @SerializedName("movies")
-    val movies: Map<String, List<Movies>>
+    val movies: Map<String, List<moviesResponse>>
 
 )
 
@@ -24,21 +24,3 @@ data class User(
 )
 
 
-data class Movies(
-    @SerializedName("id")
-    val id: Int,
-    @SerializedName("poster")
-    val posterUrl: String,
-    @SerializedName("title")
-    val title: String,
-    @SerializedName("duracion")
-    val duration: Int,
-    @SerializedName("fecha_lanzamiento")
-    val releaseDate: String,
-    @SerializedName("genero")
-    val genres: String,
-    @SerializedName("descripcion")
-    val description: String,
-    @SerializedName("trailer")
-    val trailerUrl: String
-)
