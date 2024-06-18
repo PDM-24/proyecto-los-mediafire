@@ -142,6 +142,7 @@ fun contentAvatar(viewModel: userCreateViewModel, navController : NavController)
             Spacer(modifier = Modifier.height(40.dp))
 
             val avatars = listOf(
+
                 R.drawable.avatar1 to "avatar1",
                 R.drawable.avatar2 to "avatar2",
                 R.drawable.avatar3 to "avatar3",

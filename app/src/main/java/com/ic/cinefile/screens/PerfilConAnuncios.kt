@@ -1,9 +1,11 @@
 package com.ic.cinefile.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,31 +35,63 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
+import coil.compose.rememberAsyncImagePainter
+import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.grisComment
 import com.ic.cinefile.ui.theme.light_red
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.UiState
+import com.ic.cinefile.viewModel.UserDataState
+import com.ic.cinefile.viewModel.userCreateViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PerfilAnuncios(
-
+    viewModel: userCreateViewModel,
+    navController: NavController
 ) {
-    var nombreUsuario = "Pepito Curioso"
-    var avatarUsuario = painterResource(id = R.drawable.reynolds)
+    val addScreenState = viewModel.uiState.collectAsState()
+    val userDataState by viewModel.userDataState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(addScreenState.value) {
+        when (addScreenState.value) {
+            is UiState.Error -> {
+                val message = (addScreenState.value as UiState.Error).msg
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.setStateToReady()
+            }
+            UiState.Loading -> {
+
+            }
+            UiState.Ready -> {}
+            is UiState.Success -> {
+                val token = (addScreenState.value as UiState.Success).token
+                viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
+                viewModel.setStateToReady()
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -92,17 +127,18 @@ fun PerfilAnuncios(
                                 tint = Color.White
                             )
                         }
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = {navController.navigate(screenRoute.Home.route)}) {
                             Icon(
                                 imageVector = Icons.Filled.Home,
                                 contentDescription = "Home",
                                 tint = white
                             )
                         }
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route)
+                        }) {
                             Icon(
                                 imageVector = Icons.Filled.Person,
-                                contentDescription = "Perfil",
+                                contentDescription = "User",
                                 tint = white
                             )
                         }
@@ -120,34 +156,57 @@ fun PerfilAnuncios(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            //FOTO DE PERFIL DEL USUARIO Y NOMBRE
-            Row(
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = avatarUsuario,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape)
-                )
-                Text(
-                    color = white,
-                    fontSize = 20.sp,
-                    text = nombreUsuario,
-                    modifier = Modifier
-                        .padding(start = 12.dp)
-                )
+            // FOTO DE PERFIL DEL USUARIO Y NOMBRE
+            when (userDataState) {
+                is UserDataState.Loading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black)
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+                }
+                is UserDataState.Success -> {
+                    val user = (userDataState as UserDataState.Success).userData.user
+                    val nombreUsuario = user.username
+                    val avatarUsuario = getAvatarResource(user.avatarUrl)
+
+                    Row(
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                            Image(
+                                painter = painterResource(id = avatarUsuario),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(CircleShape)
+                            )
+                        Text(
+                            color = white,
+                            fontSize = 20.sp,
+                            text = nombreUsuario,
+                            modifier = Modifier
+                                .padding(start = 12.dp)
+                        )
+                    }
+                }
+                else -> { /* Manejar otros estados si es necesario */ }
             }
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            //BOTON PARA QUITAR ANUCIOS
+            // BOTÓN PARA QUITAR ANUNCIOS
             Button(
                 onClick = { /*lo de quitar anuncios y actualizar el peril sin anuncios*/ },
                 colors = ButtonDefaults.buttonColors(containerColor = grisComment),
@@ -169,22 +228,22 @@ fun PerfilAnuncios(
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            //LISTAS
-            Column (
+            // LISTAS
+            Column(
                 modifier = Modifier.padding(10.dp)
-            ){
-                //LISTA DE DESEOS
+            ) {
+                // LISTA DE DESEOS
                 Spacer(modifier = Modifier.height(20.dp))
                 Section(
                     title = "Lista de deseos",
                     movies = listOf(R.drawable.deadpoll)
                 )
 
-                //LISTA DE CALIFICADAS
+                // LISTA DE CALIFICADAS
                 Spacer(modifier = Modifier.height(40.dp))
                 Section(
                     title = "Calificadas",
-                    movies = listOf(R.drawable.deadpoll,R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll,R.drawable.deadpoll, R.drawable.deadpoll)
+                    movies = listOf(R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll)
                 )
             }
         }
@@ -227,8 +286,19 @@ fun Poster(imageRes: Int) {
     )
 }
 
-@Preview
-@Composable
-fun perfilAnunciosPreview() {
-    PerfilAnuncios()
+fun getAvatarResource(avatarName: String): Int {
+    return when (avatarName) {
+        "avatar1" -> R.drawable.avatar1
+        "avatar2" -> R.drawable.avatar2
+        "avatar3" -> R.drawable.avatar3
+        "avatar4" -> R.drawable.avatar4
+        "avatar5" -> R.drawable.avatar5
+        "avatar6" -> R.drawable.avatar6
+        else -> R.drawable.avatar4 // Imagen por defecto si el nombre del avatar no coincide
+    }
 }
+//@Preview
+//@Composable
+//fun perfilAnunciosPreview() {
+//    PerfilAnuncios()
+//}

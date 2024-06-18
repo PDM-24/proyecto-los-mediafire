@@ -13,6 +13,7 @@ import com.ic.cinefile.screens.ElegirGeneros
 import com.ic.cinefile.screens.Home
 import com.ic.cinefile.screens.HomeAppScreen
 import com.ic.cinefile.screens.Login
+import com.ic.cinefile.screens.PerfilAnuncios
 import com.ic.cinefile.screens.contentAvatar
 import com.ic.cinefile.screens.contentGenero
 import com.ic.cinefile.screens.descripcionPeli
@@ -69,6 +70,9 @@ fun AppNavigation(
 
             descripcionPeli(
                onClick = {}, viewModel,navController, movieId)
+        }
+        composable(route=screenRoute.PerfilAnuncios.route){
+            PerfilAnuncios(viewModel,navController)
         }
 //        composable(
 //            route = "${screenRoute.Edit.route}/{code}",

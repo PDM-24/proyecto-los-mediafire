@@ -1,5 +1,7 @@
 package com.ic.cinefile.components.seccComentarios
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +30,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,24 +50,59 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ic.cinefile.R
+import com.ic.cinefile.data.accountLoginData
+import com.ic.cinefile.data.commentData
+import com.ic.cinefile.screens.getAvatarResource
 import com.ic.cinefile.ui.theme.grisComment
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.CommentListState
+import com.ic.cinefile.viewModel.CommentPostState
+import com.ic.cinefile.viewModel.UiState
+import com.ic.cinefile.viewModel.UserDataState
+import com.ic.cinefile.viewModel.userCreateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun comentarios(
-    id: String,
-    imagePainter: Painter,
-    description: String
+    viewModel: userCreateViewModel,
+    movieId: Int
+
+
 ) {
     //mostrar más comentarios
     var showComments by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState()
     //imagen del usuario
     val painter = painterResource(id = R.drawable.conejo)
-    //comentario textfield
-    var miComentario by remember { mutableStateOf("") }
+    val sendComment by viewModel.postCommentState
 
+    var commentText by remember { mutableStateOf(sendComment.commentText) }
+    val addScreenState = viewModel.uiState.collectAsState()
+    val userDataState by viewModel.userDataState.collectAsState()
+    val commentState by viewModel.commentsState.collectAsState()
+    val context = LocalContext.current
+    LaunchedEffect(addScreenState.value) {
+        when (addScreenState.value) {
+            is UiState.Error -> {
+                val message = (addScreenState.value as UiState.Error).msg
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.setStateToReady()
+            }
+            UiState.Loading -> {
+
+            }
+            UiState.Ready -> {}
+            is UiState.Success -> {
+                val token = (addScreenState.value as UiState.Success).token
+                viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
+                viewModel.setStateToReady()
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.getComments(movieId) // Llamada para obtener los comentarios de la película
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -116,15 +156,26 @@ fun comentarios(
                         .padding(16.dp)
                 ) {
 
-                    //lista de comentarios de la peli
-                    items(3) { comentarios ->
-                        unComentario(
-                            id = "1",
-                            description = "siiiiiiiiiiiiiiiiiiiiiii",
-                            imagePainter = painter
-                        )
-                    }
+                    when (commentState) {
+                        is CommentListState.Success -> {
+                            val comments = (commentState as CommentListState.Success).comments
 
+                            items(comments.size) { index ->
+                                val comentario = comments[index]
+                                unComentario(
+                                    id = comentario.id,
+                                    username=comentario.user.username,
+                                    description = comentario.commentText,
+                                    createdAt = comentario.createdAt, // Pasar fecha y hora de creación
+
+                                    imagePainter = painterResource(id = getAvatarResource(comentario.user.avatar)),
+                                )
+                            }
+                        }
+                        else -> {
+                            // Manejar otros estados si es necesario
+                        }
+                }
                     item {
                         Divider(Modifier.padding(bottom = 6.dp))
                         Row(
@@ -135,23 +186,30 @@ fun comentarios(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
 
-                            //Avatar del usuario
-                            Image(
-                                painter = painterResource(id = R.drawable.reynolds),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                            )
 
+                            when (userDataState) {
+                                is UserDataState.Success -> {
+                                    val user =
+                                        (userDataState as UserDataState.Success).userData.user
+                                    val avatarUsuario = getAvatarResource(user.avatarUrl)
+                                    //Avatar del usuario
+                                    Image(
+                                        painter = painterResource(id = avatarUsuario),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                    )
+                                }else-> {}
+                            }
                             Spacer(modifier = Modifier.width(10.dp))
 
                             //Campo para escribir el comentario
                             TextField(
                                 modifier = Modifier.fillMaxWidth(0.9f),
-                                value = miComentario,
-                                onValueChange = { miComentario = it },
+                                value = commentText,
+                                onValueChange = { commentText = it },
                                 colors = TextFieldDefaults.colors(
                                     unfocusedContainerColor = grisComment,
                                     focusedContainerColor = grisComment,
@@ -172,7 +230,17 @@ fun comentarios(
                                 }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
-                            IconButton(onClick = { /*Para subir el comentario*/ }
+                            IconButton(onClick = {
+
+                                val userData = commentData(
+                                    movieId=movieId,
+                                commentText=commentText
+                                )
+
+                                viewModel.postComment(movieId,userData)
+                                Log.d("activity","userData:$userData")
+
+                            }
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.baseline_send_24),
@@ -182,11 +250,12 @@ fun comentarios(
                             }
                         }
                     }
+                    }
                 }
             }
+            }
         }
-    }
-}
+
 
 /*@Preview
 @Composable

@@ -42,17 +42,35 @@ import androidx.compose.ui.unit.sp
 import com.ic.cinefile.R
 import com.ic.cinefile.ui.theme.grisComment
 import com.ic.cinefile.ui.theme.white
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun unComentario(
     id: String,
+    username:String,
     description: String,
     imagePainter: Painter,
+    createdAt: String, // Fecha y hora de creación del comentario
 ) {
     var showResponses by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState()
     var respuesta by remember { mutableStateOf("") }
+
+
+    // Formato de entrada para parsear la fecha y hora
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+
+    // Formato de salida para mostrar la fecha y hora en un formato legible
+    val outputFormat = SimpleDateFormat("dd 'de' MMMM 'de' yyyy hh:mm a", Locale.getDefault())
+
+    // Parsear la fecha y hora del comentario
+    val parsedDate = inputFormat.parse(createdAt)
+    val formattedDateTime = outputFormat.format(parsedDate)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -71,9 +89,20 @@ fun unComentario(
                     .clip(CircleShape)
             )
             Text(
+                text = username, // Mostrar el nombre de usuario
+                fontWeight = FontWeight.Bold,
+                color = white
+            )
+            Text(
                 text = description,
                 modifier = Modifier.padding(start = 10.dp)
             )
+            Text(
+                text = "Publicado el $formattedDateTime", // Mostrar fecha y hora de publicación
+                style = TextStyle(fontSize = 12.sp, color = white)
+                )
+
+
         }
 
         IconButton(
