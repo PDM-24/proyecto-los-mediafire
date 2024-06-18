@@ -320,7 +320,7 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "¿Has olvidado la contraseña?",
+            text = "¿No tienes cuenta?Crea una aca",
             style = TextStyle(
                 color = Color.White,
                 fontSize = 15.sp,
@@ -328,12 +328,7 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
                 textAlign = TextAlign.Center,
             ),
             modifier = Modifier.clickable {
-//
-//                val intent = Intent(context, LoginCuentaReCuenta::class.java)
-//                intent.putExtra("indexItem", 0)
-//                context.startActivity(intent)
-
-                //ir a otra pantalla
+                                    navController.navigate(screenRoute.CrearCuenta.route)
             }
         )
         Spacer(modifier = Modifier.height(10.dp))

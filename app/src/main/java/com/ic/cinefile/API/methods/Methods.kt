@@ -1,14 +1,17 @@
 package com.ic.cinefile.API.methods
 
+import com.ic.cinefile.API.Model.movies.getCommentResponse
 import com.ic.cinefile.API.Model.movies.homeUserResponse
 import com.ic.cinefile.API.Model.movies.mostViewMoviesResponse
 import com.ic.cinefile.API.Model.movies.moviesResponse
+import com.ic.cinefile.API.Model.movies.postCommentResponse
 import com.ic.cinefile.API.Model.movies.recentMoviesResponse
 import com.ic.cinefile.API.Model.movies.searchMoviesResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.Model.users.accountCreateResponse
 import com.ic.cinefile.data.accountLoginData
 import com.ic.cinefile.data.accountRegisterData
+import com.ic.cinefile.data.commentData
 import com.ic.cinefile.data.searchMoviesData
 
 //import okhttp3.Response
@@ -65,8 +68,24 @@ interface Methods {
     @Headers("Content-Type: application/json")
     @GET("api/movies/moviesId/{id}")
     suspend fun getMovieById(
-//        @Header("Authorization") authorization: String,
+       @Header("Authorization") authorization: String,
         @Path("id") movieId: Int
     ): Response<moviesResponse>
+
+
+    @Headers("Content-Type: application/json")
+    @POST("api/movies/moviesId/{id}/postComment")
+    suspend fun postComment(
+        @Header("Authorization") authorization: String,
+        @Path("id") movieId: Int,
+        @Body commentData: commentData // Asegúrate de tener tu modelo de datos para el cuerpo del comentario definido
+    ): Response<postCommentResponse>
+
+    @Headers("Content-Type: application/json")
+    @GET("api/movies/moviesId/{id}/comments")
+    suspend fun getComments(
+        @Header("Authorization") authorization: String,
+        @Path("id") movieId: Int
+    ): Response<List<getCommentResponse>>
 
 }

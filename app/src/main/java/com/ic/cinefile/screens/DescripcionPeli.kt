@@ -62,11 +62,12 @@ import com.ic.cinefile.viewModel.userCreateViewModel
 @Composable
 fun descripcionPeli(
     onClick: () -> Unit,
-    viewModel: userCreateViewModel, navController: NavController,
+    viewModel: userCreateViewModel,
+    navController: NavController,
     movieId: Int,
-    id: String,
-    imagePainter: Painter,
-    description: String
+//    id: String,
+//    imagePainter: Painter,
+//    description: String
 ) {
 
 
@@ -337,10 +338,9 @@ fun descripcionPeli(
                         //COMENTARIOS
                         item {
                             Spacer(modifier = Modifier.height(20.dp))
-                            comentarios(
-                                id = id,
-                                description = description,
-                                imagePainter = imagePainter
+                           comentarios(
+                               viewModel = viewModel,
+                               movieId = movieId
                             )
                         }
                     }

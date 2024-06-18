@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -60,14 +61,18 @@ import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserDataState
 import com.ic.cinefile.viewModel.userCreateViewModel
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+
+
 fun Home(viewModel: userCreateViewModel, navController: NavController) {
     var buscador by remember { mutableStateOf("") }
     val context = LocalContext.current
     val addScreenState = viewModel.uiState.collectAsState()
     val userDataState by viewModel.userDataState.collectAsState()
+    var showReloadButton by remember { mutableStateOf(false) }
 
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
@@ -77,12 +82,12 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                 viewModel.setStateToReady()
             }
             UiState.Loading -> {
-                // Mostrar un diálogo de carga o algún indicador de progreso
-            }
+
+                }
             UiState.Ready -> {}
             is UiState.Success -> {
                 val token = (addScreenState.value as UiState.Success).token
-                viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
+                    viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
                 viewModel.setStateToReady()
             }
         }
@@ -91,7 +96,8 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.padding(0.dp)
+                modifier = Modifier
+                    .padding(0.dp)
                     .height(50.dp),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = black
@@ -131,17 +137,18 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                                 tint = Color.White
                             )
                         }
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = {navController.navigate(screenRoute.Home.route)}) {
                             Icon(
                                 imageVector = Icons.Filled.Home,
                                 contentDescription = "Home",
                                 tint = white
                             )
                         }
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route)
+                        }) {
                             Icon(
                                 imageVector = Icons.Filled.Person,
-                                contentDescription = "",
+                                contentDescription = "User",
                                 tint = white
                             )
                         }
@@ -167,7 +174,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                     shape = RoundedCornerShape(24.dp),
                     modifier = Modifier.padding(6.dp)
                 ) {
-                    Row (
+                    Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
@@ -214,7 +221,6 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         }
 
 
-
                     }
                 }
 
@@ -228,6 +234,8 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
             }
 
             when (userDataState) {
+
+
                 is UserDataState.Success -> {
                     val movieCategories = (userDataState as UserDataState.Success).userData.movies
                     movieCategories.forEach { (category, movies) ->
@@ -267,12 +275,54 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         }
                     }
                 }
+
                 is UserDataState.Loading -> {
                     // Aquí puedes mostrar un diálogo de carga o un indicador de progreso
                     LoadingProgressDialog()
+
+                    showReloadButton = true
+
+
                 }
+
                 else -> {}
             }
         }
+        if (showReloadButton) {
+            IconButton(
+                onClick = {
+                    val token = (addScreenState.value as UiState.Success).token
+                    viewModel.fetchUserData(token)
+                },
+                modifier = Modifier
+                    .padding(vertical = 16.dp),
+
+            )
+            {
+                Icon(
+                    painter = painterResource(id = R.drawable.reynolds),
+                    contentDescription = "Recargar",
+                    tint = Color.White
+                )
+            }
+        }
+    }
+    }
+
+
+
+@Composable
+fun LoadingAnimation() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = Color.White,
+            modifier = Modifier.size(36.dp)
+        )
     }
 }

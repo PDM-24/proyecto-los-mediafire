@@ -17,10 +17,12 @@ drawable avatar4
 drawable avatar5
 drawable avatar6
 drawable baseline_calendar_24
+drawable baseline_comment_24
 drawable baseline_mode_24
 drawable baseline_notifications_24
 drawable baseline_play_arrow_24
 drawable baseline_search_24
+drawable baseline_send_24
 drawable baseline_star_rate_24
 drawable baseline_time_24
 drawable bookmark_24
@@ -31,11 +33,13 @@ drawable dunc
 drawable garfield
 drawable godzilla
 drawable googlee
+drawable hide_source_24
 drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable kungfupanda
 drawable logo
 drawable migration
+drawable navigate_next_24
 drawable reynolds
 drawable theideaofyou
 font montserrat_black
