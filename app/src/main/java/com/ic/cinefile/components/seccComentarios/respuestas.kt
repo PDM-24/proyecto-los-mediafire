@@ -15,7 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.ic.cinefile.ui.theme.white
 
 @Composable
 fun respuestas(idComentario: String?, imagePainter: Painter?, description: String?) {
@@ -42,10 +46,29 @@ fun respuestas(idComentario: String?, imagePainter: Painter?, description: Strin
                 )
             }
             if (description != null) {
-                Text(
-                    text = description,
-                    modifier = Modifier.padding(start = 10.dp)
-                )
+                Column {
+                    /*Text(
+                        text = username, // Mostrar el nombre de usuario
+                        fontWeight = FontWeight.Bold,
+                        color = white,
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                    )*/
+                    Text(
+                        text = description,
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                    )
+                    /*Text(
+                        text = "Publicado el $formattedDateTime", // Mostrar fecha y hora de publicación
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            color = white
+                        ),
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                    )*/
+                }
             }
 
         }

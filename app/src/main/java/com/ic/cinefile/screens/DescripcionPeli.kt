@@ -38,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -314,7 +313,7 @@ fun descripcionPeli(
                                         } else {
                                             // Mostrar la imagen de reemplazo si no hay URL de imagen
                                             val placeholderActorImage =
-                                                painterResource(id = R.drawable.reynolds)
+                                                painterResource(id = R.drawable.sin_foto)
                                             Image(
                                                 painter = placeholderActorImage,
                                                 contentDescription = null,

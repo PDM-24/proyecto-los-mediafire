@@ -73,7 +73,6 @@ fun comentarios(
     var showComments by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState()
     //imagen del usuario
-    val painter = painterResource(id = R.drawable.conejo)
     val sendComment by viewModel.postCommentState
 
     var commentText by remember { mutableStateOf(sendComment.commentText) }
@@ -167,7 +166,6 @@ fun comentarios(
                                     username=comentario.user.username,
                                     description = comentario.commentText,
                                     createdAt = comentario.createdAt, // Pasar fecha y hora de creación
-
                                     imagePainter = painterResource(id = getAvatarResource(comentario.user.avatar)),
                                 )
                             }

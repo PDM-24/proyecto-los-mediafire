@@ -51,7 +51,7 @@ import java.util.Locale
 @Composable
 fun unComentario(
     id: String,
-    username:String,
+    username: String,
     description: String,
     imagePainter: Painter,
     createdAt: String, // Fecha y hora de creación del comentario
@@ -88,19 +88,29 @@ fun unComentario(
                     .size(40.dp)
                     .clip(CircleShape)
             )
-            Text(
-                text = username, // Mostrar el nombre de usuario
-                fontWeight = FontWeight.Bold,
-                color = white
-            )
-            Text(
-                text = description,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-            Text(
-                text = "Publicado el $formattedDateTime", // Mostrar fecha y hora de publicación
-                style = TextStyle(fontSize = 12.sp, color = white)
+            Column {
+                Text(
+                    text = username, // Mostrar el nombre de usuario
+                    fontWeight = FontWeight.Bold,
+                    color = white,
+                    modifier = Modifier
+                        .padding(start = 12.dp)
                 )
+                Text(
+                    text = description,
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                )
+                Text(
+                    text = "Publicado el $formattedDateTime", // Mostrar fecha y hora de publicación
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        color = white
+                    ),
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                )
+            }
 
 
         }

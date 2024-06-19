@@ -41,6 +41,7 @@ drawable logo
 drawable migration
 drawable navigate_next_24
 drawable reynolds
+drawable sin_foto
 drawable theideaofyou
 font montserrat_black
 font montserrat_bold
