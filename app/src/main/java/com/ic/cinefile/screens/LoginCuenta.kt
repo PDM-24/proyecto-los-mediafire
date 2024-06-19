@@ -101,8 +101,7 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
             viewModel.setStateToReady()
         }
         UiState.Loading -> {
-            LoadingProgressDialog()
-
+            LoadingAnimation()
         }
         UiState.Ready -> {}
         is UiState.Success -> {
