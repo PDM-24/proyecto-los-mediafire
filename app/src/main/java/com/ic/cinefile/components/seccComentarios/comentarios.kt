@@ -162,11 +162,18 @@ fun comentarios(
                             items(comments.size) { index ->
                                 val comentario = comments[index]
                                 unComentario(
+                                    movieId=movieId,
+                                    viewModel = viewModel,
                                     id = comentario.id,
                                     username=comentario.user.username,
                                     description = comentario.commentText,
                                     createdAt = comentario.createdAt, // Pasar fecha y hora de creación
                                     imagePainter = painterResource(id = getAvatarResource(comentario.user.avatar)),
+                                    onReply = { parentId, replyText ->
+                                        val userData = commentData(commentText = replyText)
+                                        viewModel.postComment(movieId, userData, parentId)
+                                    }
+
                                 )
                             }
                         }
