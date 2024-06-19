@@ -350,66 +350,25 @@ fun getMovieById( movieId: Int) {
 
 
 
-    //publicar comentario
     // Función para publicar un comentario
-    fun postComment(movieId:Int,commentData: commentData) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try{
-                    _uiState.value=UiState.Loading
-                val response = apiServer.methods.postComment("Bearer $authToken",movieId, commentData)
-                if (response.isSuccessful) {
-//                    response.body()?.let { commentResponse ->
-//                            _postCommentState.value = CommentPostState.Success(commentResponse.message)
-//                        // Después de publicar el comentario con éxito, actualizamos la lista de comentarios
-//                        getComments(movieId)
-//                    } ?: run {
-//                        _postCommentState.value = CommentPostState.Error("Error: Comentario no creado")
-//                    }
-                                           getComments(movieId)
-
-                    _uiState2.value = UiState2.Success("Enviado correctamente")
-
-                } else {
-                    _uiState2.value = UiState2.Error("No se pudo enviar")
-                }
-            } catch (e: Exception) {
-                when (e) {
-                    is HttpException -> {
-                        Log.e("comentario", e.message())
-                        _uiState2.value = UiState2.Error("Error con esto")
-                    }
-                    else -> {
-                        Log.e("UserCreateViewModel", e.toString())
-                        _uiState2.value = UiState2.Error("No se pudo enviar")
-                    }
-                }
-            }
-        }
-    }
-
-
-
-
-    // Método para obtener los comentarios
-    fun getComments(movieId: Int) {
+    fun postComment(movieId: Int, commentData: commentData, parentId: String? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _commentsState.value = CommentListState.Loading
-                val response = apiServer.methods.getComments("Bearer $authToken", movieId)
+                val response = apiServer.methods.postComment("Bearer $authToken", movieId, parentId ?: "", commentData)
                 if (response.isSuccessful) {
-                    val comments = response.body()
-                    _commentsState.value = comments?.let {
-                        CommentListState.Success(it)
-                    } ?: CommentListState.Error("Error al obtener los comentarios")
+                    getComments(movieId) // Después de publicar el comentario con éxito, actualizamos la lista de comentarios
+                    _commentsState.value = CommentListState.Success(emptyList()) // Puedes actualizar el estado según tu lógica de UI
                 } else {
                     _commentsState.value = CommentListState.Error("Error: ${response.message()}")
                 }
             } catch (e: Exception) {
                 when (e) {
                     is HttpException -> {
+                        Log.e("userCreateViewModel", "Error HTTP: ${e.message()}")
                         _commentsState.value = CommentListState.Error("Error HTTP: ${e.message()}")
                     }
                     else -> {
+                        Log.e("userCreateViewModel", "Error: ${e.message}")
                         _commentsState.value = CommentListState.Error("Error: ${e.message}")
                     }
                 }
@@ -417,6 +376,33 @@ fun getMovieById( movieId: Int) {
         }
     }
 
+
+
+
+    fun getComments(movieId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = apiServer.methods.getComments("Bearer $authToken", movieId)
+                if (response.isSuccessful) {
+                    val comments = response.body()
+                    _commentsState.value = CommentListState.Success(comments ?: emptyList())
+                } else {
+                    _commentsState.value = CommentListState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        Log.e("userCreateViewModel", "Error HTTP: ${e.message()}")
+                        _commentsState.value = CommentListState.Error("Error HTTP: ${e.message()}")
+                    }
+                    else -> {
+                        Log.e("userCreateViewModel", "Error: ${e.message}")
+                        _commentsState.value = CommentListState.Error("Error: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
 
 
 
