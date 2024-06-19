@@ -160,9 +160,9 @@ class userCreateViewModel: ViewModel() {
 
 
 
-            fetchUserData(authToken) // Obtener información del usuario utilizando el token
+                fetchUserData(authToken) // Obtener información del usuario utilizando el token
                 getRecentMoviesData(authToken)
-                    getMostViewMoviesData(authToken)
+                getMostViewMoviesData(authToken)
             }catch (e:Exception){
                 when (e) {
                     is HttpException -> {
@@ -192,29 +192,29 @@ class userCreateViewModel: ViewModel() {
 
 
 
-//manejar token
-fun fetchUserData(token: String) {
-    viewModelScope.launch(Dispatchers.IO) {
-        try {
-            _userDataState.value = UserDataState.Loading
-            val response = apiServer.methods.getUserHome("Bearer $token")
-            if (response.isSuccessful) {
-                val userData = response.body()
-                _userDataState.value = userData?.let { UserDataState.Success(it) } ?: UserDataState.Error("Error: Datos del usuario no encontrados")
-            } else {
-                _userDataState.value = UserDataState.Error("Error: ${response.message()}")
-            }
-        } catch (e: Exception) {
-            when (e) {
-                is HttpException -> {
-                    Log.i("userCreateViewModel", e.message())
-                    _userDataState.value = UserDataState.Error(e.message())
+    //manejar token
+    fun fetchUserData(token: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _userDataState.value = UserDataState.Loading
+                val response = apiServer.methods.getUserHome("Bearer $token")
+                if (response.isSuccessful) {
+                    val userData = response.body()
+                    _userDataState.value = userData?.let { UserDataState.Success(it) } ?: UserDataState.Error("Error: Datos del usuario no encontrados")
+                } else {
+                    _userDataState.value = UserDataState.Error("Error: ${response.message()}")
                 }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        Log.i("userCreateViewModel", e.message())
+                        _userDataState.value = UserDataState.Error(e.message())
+                    }
 
+                }
             }
         }
     }
-}
 
 
     //obtener peliculas recientes
@@ -316,71 +316,30 @@ fun fetchUserData(token: String) {
     }
 
 
-//obtener por id
-fun getMovieById( movieId: Int) {
-    viewModelScope.launch(Dispatchers.IO) {
-        try {
-            _movieState.value = MovieState.Loading
-            val response = apiServer.methods.getMovieById("Bearer $authToken", movieId)
-            if (response.isSuccessful) {
-                response.body()?.let { movie ->
-                    _movieState.value = MovieState.Success(movie)
-                } ?: run {
-                    _movieState.value = MovieState.Error("Movie not found")
-                }
-            } else {
-                _movieState.value = MovieState.Error("Error fetching movie: ${response.message()}")
-            }
-        } catch (e: Exception) {
-            when (e) {
-                is HttpException -> {
-                    Log.e("UserCreateViewModel", e.message())
-                    _movieState.value = MovieState.Error("Error fetching movie: ${e.message()}")
-                }
-                else -> {
-                    Log.e("UserCreateViewModel", e.toString())
-                    _movieState.value = MovieState.Error("Error fetching movie: ${e.message}")
-                }
-            }
-        }
-    }
-}
-
-
-
-
-
-    //publicar comentario
-    // Función para publicar un comentario
-    fun postComment(movieId:Int,commentData: commentData) {
+    //obtener por id
+    fun getMovieById( movieId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            try{
-                    _uiState.value=UiState.Loading
-                val response = apiServer.methods.postComment("Bearer $authToken",movieId, commentData)
+            try {
+                _movieState.value = MovieState.Loading
+                val response = apiServer.methods.getMovieById("Bearer $authToken", movieId)
                 if (response.isSuccessful) {
-//                    response.body()?.let { commentResponse ->
-//                            _postCommentState.value = CommentPostState.Success(commentResponse.message)
-//                        // Después de publicar el comentario con éxito, actualizamos la lista de comentarios
-//                        getComments(movieId)
-//                    } ?: run {
-//                        _postCommentState.value = CommentPostState.Error("Error: Comentario no creado")
-//                    }
-                                           getComments(movieId)
-
-                    _uiState2.value = UiState2.Success("Enviado correctamente")
-
+                    response.body()?.let { movie ->
+                        _movieState.value = MovieState.Success(movie)
+                    } ?: run {
+                        _movieState.value = MovieState.Error("Movie not found")
+                    }
                 } else {
-                    _uiState2.value = UiState2.Error("No se pudo enviar")
+                    _movieState.value = MovieState.Error("Error fetching movie: ${response.message()}")
                 }
             } catch (e: Exception) {
                 when (e) {
                     is HttpException -> {
-                        Log.e("comentario", e.message())
-                        _uiState2.value = UiState2.Error("Error con esto")
+                        Log.e("UserCreateViewModel", e.message())
+                        _movieState.value = MovieState.Error("Error fetching movie: ${e.message()}")
                     }
                     else -> {
                         Log.e("UserCreateViewModel", e.toString())
-                        _uiState2.value = UiState2.Error("No se pudo enviar")
+                        _movieState.value = MovieState.Error("Error fetching movie: ${e.message}")
                     }
                 }
             }
@@ -390,26 +349,26 @@ fun getMovieById( movieId: Int) {
 
 
 
-    // Método para obtener los comentarios
-    fun getComments(movieId: Int) {
+
+    // Función para publicar un comentario
+    fun postComment(movieId: Int, commentData: commentData, parentId: String? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _commentsState.value = CommentListState.Loading
-                val response = apiServer.methods.getComments("Bearer $authToken", movieId)
+                val response = apiServer.methods.postComment("Bearer $authToken", movieId, parentId ?: "", commentData)
                 if (response.isSuccessful) {
-                    val comments = response.body()
-                    _commentsState.value = comments?.let {
-                        CommentListState.Success(it)
-                    } ?: CommentListState.Error("Error al obtener los comentarios")
+                    getComments(movieId) // Después de publicar el comentario con éxito, actualizamos la lista de comentarios
+                    _commentsState.value = CommentListState.Success(emptyList()) // Puedes actualizar el estado según tu lógica de UI
                 } else {
                     _commentsState.value = CommentListState.Error("Error: ${response.message()}")
                 }
             } catch (e: Exception) {
                 when (e) {
                     is HttpException -> {
+                        Log.e("userCreateViewModel", "Error HTTP: ${e.message()}")
                         _commentsState.value = CommentListState.Error("Error HTTP: ${e.message()}")
                     }
                     else -> {
+                        Log.e("userCreateViewModel", "Error: ${e.message}")
                         _commentsState.value = CommentListState.Error("Error: ${e.message}")
                     }
                 }
@@ -417,6 +376,33 @@ fun getMovieById( movieId: Int) {
         }
     }
 
+
+
+
+    fun getComments(movieId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = apiServer.methods.getComments("Bearer $authToken", movieId)
+                if (response.isSuccessful) {
+                    val comments = response.body()
+                    _commentsState.value = CommentListState.Success(comments ?: emptyList())
+                } else {
+                    _commentsState.value = CommentListState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        Log.e("userCreateViewModel", "Error HTTP: ${e.message()}")
+                        _commentsState.value = CommentListState.Error("Error HTTP: ${e.message()}")
+                    }
+                    else -> {
+                        Log.e("userCreateViewModel", "Error: ${e.message}")
+                        _commentsState.value = CommentListState.Error("Error: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
 
 
 

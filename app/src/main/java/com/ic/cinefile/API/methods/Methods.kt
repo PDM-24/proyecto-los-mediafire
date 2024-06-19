@@ -68,7 +68,7 @@ interface Methods {
     @Headers("Content-Type: application/json")
     @GET("api/movies/moviesId/{id}")
     suspend fun getMovieById(
-       @Header("Authorization") authorization: String,
+        @Header("Authorization") authorization: String,
         @Path("id") movieId: Int
     ): Response<moviesResponse>
 
@@ -78,6 +78,7 @@ interface Methods {
     suspend fun postComment(
         @Header("Authorization") authorization: String,
         @Path("id") movieId: Int,
+        @Query("parentId") parentId: String?, // Puede ser nulo si no hay parentId
         @Body commentData: commentData // Asegúrate de tener tu modelo de datos para el cuerpo del comentario definido
     ): Response<postCommentResponse>
 
@@ -85,7 +86,9 @@ interface Methods {
     @GET("api/movies/moviesId/{id}/comments")
     suspend fun getComments(
         @Header("Authorization") authorization: String,
-        @Path("id") movieId: Int
+        @Path("id") movieId: Int,
+        @Query("parentId") parentId: String? = null // parentId es opcional y puede ser nulo
+
     ): Response<List<getCommentResponse>>
 
 }

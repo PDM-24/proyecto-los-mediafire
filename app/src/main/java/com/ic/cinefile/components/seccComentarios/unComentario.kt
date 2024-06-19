@@ -1,5 +1,6 @@
 package com.ic.cinefile.components.seccComentarios
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +25,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,14 +37,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ic.cinefile.R
+import com.ic.cinefile.screens.getAvatarResource
 import com.ic.cinefile.ui.theme.grisComment
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.UiState
+import com.ic.cinefile.viewModel.UserDataState
+import com.ic.cinefile.viewModel.userCreateViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -50,16 +58,23 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun unComentario(
+    movieId:Int,
     id: String,
     username: String,
     description: String,
     imagePainter: Painter,
-    createdAt: String, // Fecha y hora de creación del comentario
+    createdAt: String, // Fecha y hora de creación del comentario,
+    onReply: (String, String) -> Unit,
+    viewModel: userCreateViewModel
 ) {
     var showResponses by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState()
     var respuesta by remember { mutableStateOf("") }
+    val userDataState by viewModel.userDataState.collectAsState()
+    val sendComment by viewModel.postCommentState
 
+    var commentText by remember { mutableStateOf(sendComment.commentText) }
+    val commentState by viewModel.commentsState.collectAsState()
 
     // Formato de entrada para parsear la fecha y hora
     val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
@@ -70,6 +85,31 @@ fun unComentario(
     // Parsear la fecha y hora del comentario
     val parsedDate = inputFormat.parse(createdAt)
     val formattedDateTime = outputFormat.format(parsedDate)
+
+    val addScreenState = viewModel.uiState.collectAsState()
+
+//    LaunchedEffect(Unit) {
+//        viewModel.getComments(movieId) // Llamada para obtener los comentarios de la película
+//    }
+    val context = LocalContext.current
+    LaunchedEffect(addScreenState.value) {
+        when (addScreenState.value) {
+            is UiState.Error -> {
+                val message = (addScreenState.value as UiState.Error).msg
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.setStateToReady()
+            }
+            UiState.Loading -> {
+
+            }
+            UiState.Ready -> {}
+            is UiState.Success -> {
+                val token = (addScreenState.value as UiState.Success).token
+                viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
+                viewModel.setStateToReady()
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -182,6 +222,8 @@ fun unComentario(
                         }
                     }
 
+
+
                     //Agregar una respuesta
                     item {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -195,15 +237,26 @@ fun unComentario(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
 
+
+
+                                when (userDataState) {
+                                    is UserDataState.Success -> {
+                                        val user =
+                                            (userDataState as UserDataState.Success).userData.user
+                                        val avatarUsuario = getAvatarResource(user.avatarUrl)
+                                        //Avatar del usuario
+                                        Image(
+                                            painter = painterResource(id = avatarUsuario),
+                                            contentDescription = null,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .size(40.dp)
+                                                .clip(CircleShape)
+                                        )
+                                    }else-> {}
+                                }
                                 //Avatar del usuario
-                                Image(
-                                    painter = painterResource(id = R.drawable.reynolds),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(CircleShape)
-                                )
+
 
                                 Spacer(modifier = Modifier.width(10.dp))
 
@@ -232,7 +285,7 @@ fun unComentario(
                                     }
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
-                                IconButton(onClick = { /*Para subir el comentario*/ }
+                                IconButton(onClick = { onReply(id, respuesta) }
                                 ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.baseline_send_24),
