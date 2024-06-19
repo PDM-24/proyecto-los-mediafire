@@ -158,26 +158,24 @@ class userCreateViewModel: ViewModel() {
                 authToken = token
                 _uiState.value = UiState.Success(authToken)
 
-
-
-            fetchUserData(authToken) // Obtener información del usuario utilizando el token
+                fetchUserData(authToken) // Obtener información del usuario utilizando el token
                 getRecentMoviesData(authToken)
-                    getMostViewMoviesData(authToken)
-            }catch (e:Exception){
+                getMostViewMoviesData(authToken)
+            } catch (e: Exception) {
                 when (e) {
                     is HttpException -> {
                         Log.i("userCreateViewModel", e.message())
-                        _uiState.value = UiState.Error( e.message())
+                        _uiState.value = UiState.Error(e.message())
                     }
                     else -> {
                         Log.i("userCreateViewModel", e.toString())
-                        _uiState.value = UiState.Error( "Verifica su conexion, Intentalo mas tarde")
-
+                        _uiState.value = UiState.Error("Verifica su conexion, Intentalo mas tarde")
                     }
                 }
             }
         }
     }
+
 
     private fun setErrorMessage(message: String) {
         _errorMessage.value = message
