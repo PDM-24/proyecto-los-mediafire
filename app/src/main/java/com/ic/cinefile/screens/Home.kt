@@ -49,9 +49,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.components.LoadingProgressDialog
@@ -81,13 +83,15 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 viewModel.setStateToReady()
             }
+
             UiState.Loading -> {
 
-                }
+            }
+
             UiState.Ready -> {}
             is UiState.Success -> {
                 val token = (addScreenState.value as UiState.Success).token
-                    viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
+                viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
                 viewModel.setStateToReady()
             }
         }
@@ -137,14 +141,15 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                                 tint = Color.White
                             )
                         }
-                        IconButton(onClick = {navController.navigate(screenRoute.Home.route)}) {
+                        IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
                             Icon(
                                 imageVector = Icons.Filled.Home,
                                 contentDescription = "Home",
                                 tint = white
                             )
                         }
-                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route)
+                        IconButton(onClick = {
+                            navController.navigate(screenRoute.PerfilAnuncios.route)
                         }) {
                             Icon(
                                 imageVector = Icons.Filled.Person,
@@ -161,73 +166,75 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color.Black)
+                .background(black)
                 .verticalScroll(rememberScrollState())
         ) {
 
             Row(
-                modifier = Modifier.padding(start = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                Surface(
-                    color = Color.White,
-                    shape = RoundedCornerShape(24.dp),
-                    modifier = Modifier.padding(6.dp)
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+                    Box(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .height(48.dp)
+                            .background(Color.LightGray, shape = RoundedCornerShape(15.dp))
+                            .clickable {
+                                navController.navigate(screenRoute.Buscador.route)
+                            },
+                        contentAlignment = Alignment.CenterStart
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    navController.navigate(screenRoute.Buscador.route)
-                                }
-                        ) {
-                            Icon(
-                                modifier = Modifier.padding(6.dp),
-                                painter = painterResource(id = R.drawable.baseline_search_24),
-                                contentDescription = "Lupa"
-                            )
+                        Icon(
+                            modifier = Modifier.padding(start = 8.dp, top = 2.dp),
+                            painter = painterResource(id = R.drawable.baseline_search_24),
+                            contentDescription = "Lupa",
+                            tint = black
+                        )
+                        TextField(
+                            value = buscador,
+                            onValueChange = { newBuscador -> buscador = newBuscador },
 
-
-                            TextField(
-                                value = buscador,
-                                onValueChange = { newBuscador -> buscador = newBuscador },
-
-                                colors = TextFieldDefaults.colors(
-                                    unfocusedContainerColor = Color.Transparent,
-                                    focusedContainerColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent
-                                ),
-                                placeholder = {
-                                    Text(
-                                        text = "Buscar",
-                                        style = TextStyle(
-                                            color = Color.Gray,
-                                            fontSize = 15.sp,
-                                            letterSpacing = 0.1.em,
-                                            fontWeight = FontWeight.Normal
-                                        )
+                            colors = TextFieldDefaults.colors(
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent
+                            ),
+                            placeholder = {
+                                Text(
+                                    text = "Buscar",
+                                    style = TextStyle(
+                                        color = Color.Gray,
+                                        fontSize = 15.sp,
+                                        letterSpacing = 0.1.em,
+                                        fontWeight = FontWeight.Normal
                                     )
-                                },
-                                textStyle = TextStyle(color = Color.Black),
-                                singleLine = true
+                                )
+                            },
+                            shape = RoundedCornerShape(15.dp),
+                            textStyle = TextStyle(color = black),
+                            singleLine = true,
+                            modifier = Modifier.padding(start = 25.dp)
 
-                            )
-
-                        }
-
+                        )
 
                     }
+
+
                 }
 
                 IconButton(onClick = {}) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_notifications_24),
-                        tint = Color.White,
+                        tint = white,
                         contentDescription = "notificaciones"
                     )
                 }
@@ -297,7 +304,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                 modifier = Modifier
                     .padding(vertical = 16.dp),
 
-            )
+                )
             {
                 Icon(
                     painter = painterResource(id = R.drawable.reynolds),
@@ -307,8 +314,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
             }
         }
     }
-    }
-
+}
 
 
 @Composable
@@ -325,4 +331,12 @@ fun LoadingAnimation() {
             modifier = Modifier.size(36.dp)
         )
     }
+}
+
+@Preview
+@Composable
+fun HomePreview() {
+    val viewModel = userCreateViewModel()
+    val navController = rememberNavController()
+    Home(viewModel = viewModel, navController = navController)
 }

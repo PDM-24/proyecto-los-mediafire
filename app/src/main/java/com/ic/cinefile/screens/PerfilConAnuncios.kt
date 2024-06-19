@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -81,9 +82,11 @@ fun PerfilAnuncios(
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 viewModel.setStateToReady()
             }
+
             UiState.Loading -> {
 
             }
+
             UiState.Ready -> {}
             is UiState.Success -> {
                 val token = (addScreenState.value as UiState.Success).token
@@ -127,14 +130,15 @@ fun PerfilAnuncios(
                                 tint = Color.White
                             )
                         }
-                        IconButton(onClick = {navController.navigate(screenRoute.Home.route)}) {
+                        IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
                             Icon(
                                 imageVector = Icons.Filled.Home,
                                 contentDescription = "Home",
                                 tint = white
                             )
                         }
-                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route)
+                        IconButton(onClick = {
+                            navController.navigate(screenRoute.PerfilAnuncios.route)
                         }) {
                             Icon(
                                 imageVector = Icons.Filled.Person,
@@ -172,10 +176,13 @@ fun PerfilAnuncios(
                         )
                     }
                 }
+
                 is UserDataState.Success -> {
                     val user = (userDataState as UserDataState.Success).userData.user
                     val nombreUsuario = user.username
                     val avatarUsuario = getAvatarResource(user.avatarUrl)
+                    val generoUsuario = user.gender
+                    val fechaNacimiento = user.yearOfBirth
 
                     Row(
                         modifier = Modifier
@@ -184,24 +191,42 @@ fun PerfilAnuncios(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                            Image(
-                                painter = painterResource(id = avatarUsuario),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(80.dp)
-                                    .clip(CircleShape)
-                            )
-                        Text(
-                            color = white,
-                            fontSize = 20.sp,
-                            text = nombreUsuario,
+                        Image(
+                            painter = painterResource(id = avatarUsuario),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .padding(start = 12.dp)
+                                .size(80.dp)
+                                .clip(CircleShape)
                         )
+                        Column {
+                            Text(
+                                color = white,
+                                fontSize = 20.sp,
+                                text = nombreUsuario,
+                                modifier = Modifier
+                                    .padding(start = 12.dp)
+                            )
+                            Text(
+                                color = white,
+                                fontSize = 14.sp,
+                                text = generoUsuario,
+                                modifier = Modifier
+                                    .padding(start = 12.dp)
+                            )
+                            Text(
+                                color = white,
+                                fontSize = 12.sp,
+                                text = "fecha de nacimiento: $fechaNacimiento",
+                                modifier = Modifier
+                                    .padding(start = 12.dp)
+                            )
+                        }
                     }
                 }
-                else -> { /* Manejar otros estados si es necesario */ }
+
+                else -> { /* Manejar otros estados si es necesario */
+                }
             }
 
             Spacer(modifier = Modifier.height(15.dp))
@@ -229,22 +254,38 @@ fun PerfilAnuncios(
             Spacer(modifier = Modifier.height(15.dp))
 
             // LISTAS
-            Column(
+            LazyColumn (
                 modifier = Modifier.padding(10.dp)
-            ) {
-                // LISTA DE DESEOS
-                Spacer(modifier = Modifier.height(20.dp))
-                Section(
-                    title = "Lista de deseos",
-                    movies = listOf(R.drawable.deadpoll)
-                )
+            ){
+                //LISTA DE DESEOS
+                item {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(
+                        text = "Lista de deseos",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = white,
+                        modifier = Modifier
+                            .padding(start = 15.dp)
+                            .clickable { /*que abra la lista de todas las pelis en lista de deseos*/ }
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Section(movies = listOf(R.drawable.deadpoll))
 
-                // LISTA DE CALIFICADAS
-                Spacer(modifier = Modifier.height(40.dp))
-                Section(
-                    title = "Calificadas",
-                    movies = listOf(R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll)
-                )
+                    //LISTA DE CALIFICADAS
+                    Spacer(modifier = Modifier.height(40.dp))
+                    Text(
+                        text = "Calificadas",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = white,
+                        modifier = Modifier
+                            .padding(start = 15.dp)
+                            .clickable { /*que abra la lista de todas las pelis calificadas*/ }
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Section(movies = listOf(R.drawable.deadpoll,R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll,R.drawable.deadpoll, R.drawable.deadpoll))
+                }
             }
         }
     }
@@ -252,15 +293,8 @@ fun PerfilAnuncios(
 
 //para iterar los posters de pelis
 @Composable
-fun Section(title: String, movies: List<Int>) {
-    Column () {
-        Text(
-            text = title,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = white,
-            modifier = Modifier.padding(start = 15.dp)
-        )
+fun Section(movies: List<Int>) {
+    Column() {
         Spacer(modifier = Modifier.height(10.dp))
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
@@ -280,8 +314,8 @@ fun Poster(imageRes: Int) {
         painter = painterResource(id = imageRes),
         contentDescription = null,
         modifier = Modifier
-            .size(100.dp, 150.dp)
-            .clip(RoundedCornerShape(8.dp)),
+            .size(150.dp, 230.dp)
+            .clickable { /*que te lleve a la descripcion de esa peli */ },
         contentScale = ContentScale.Crop
     )
 }
