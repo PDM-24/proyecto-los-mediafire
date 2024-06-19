@@ -1,40 +1,18 @@
 package com.ic.cinefile.screens
 
-//import androidx.navigation.compose.rememberNavController
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,40 +20,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.ic.cinefile.R
-//import com.ic.cinefile.viewModel.userViewModel
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.navigation.NavController
+import com.ic.cinefile.R
 import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.components.LoadingProgressDialog
 import com.ic.cinefile.data.accountLoginData
-import com.ic.cinefile.data.accountRegisterData
+import com.ic.cinefile.ui.theme.LoadingAnimation
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.userCreateViewModel
 
-//import kotlin.coroutines.jvm.internal.CompletedContinuation.context
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-
-fun Login(viewModel: userCreateViewModel,navController: NavController) {
-//    val email: MutableState<String> = remember{ mutableStateOf("") }
-//    val password: MutableState<String> = remember{ mutableStateOf("") }
-
+fun Login(viewModel: userCreateViewModel, navController: NavController) {
     val context = LocalContext.current
-
-
 
     val showErrorToast by viewModel.showErrorToast.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
@@ -85,36 +48,28 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
         viewModel.hideErrorToast() // Oculta el Toast después de mostrarlo
     }
 
-
     val accountLoginData by viewModel.accountLoginAPIData
     var email by remember { mutableStateOf(accountLoginData.email) }
     var password by remember { mutableStateOf(accountLoginData.password) }
-
-
     var passwordVisible by remember { mutableStateOf(false) } // Estado para mostrar u ocultar la contraseña
 
     val addScreenState = viewModel.uiState.collectAsState()
-    when(addScreenState.value){
+    when (addScreenState.value) {
         is UiState.Error -> {
             val message = (addScreenState.value as UiState.Error).msg
             Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()
             viewModel.setStateToReady()
         }
         UiState.Loading -> {
-            LoadingProgressDialog()
-
+            LoadingAnimation() // Llamada a la animación de carga
         }
         UiState.Ready -> {}
         is UiState.Success -> {
-            showMessage(context,"Token: ${(addScreenState.value as UiState.Success).token}")
+            showMessage(context, "Token: ${(addScreenState.value as UiState.Success).token}")
             navController.navigate(screenRoute.Home.route)
             viewModel.setStateToReady()
-
         }
     }
-
-
-
 
     Column(
         modifier = Modifier
@@ -123,8 +78,6 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-
-
     ) {
         Text(
             text = "¡Bienvenido \n de nuevo!",
@@ -141,14 +94,12 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
 
         TextField(
             value = email,
-            onValueChange ={email= it},
+            onValueChange = { email = it },
             colors = TextFieldDefaults.textFieldColors(
-
                 unfocusedIndicatorColor = Color.White,
                 focusedIndicatorColor = Color.White,
                 cursorColor = Color.Gray,
-
-                ),
+            ),
             placeholder = {
                 Text(
                     text = "Correo",
@@ -160,22 +111,20 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
                     ),
                 )
             },
-
             modifier = Modifier.width(300.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Email
             ),
-
             keyboardActions = KeyboardActions(
                 onDone = {
                     // Lógica cuando se presiona Done
                 },
-
-                )
-
+            )
         )
+
         Spacer(modifier = Modifier.height(15.dp))
+
         TextField(
             value = password,
             onValueChange = {
@@ -184,7 +133,6 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
                 }
             },
             colors = TextFieldDefaults.textFieldColors(
-
                 unfocusedIndicatorColor = Color.White,
                 focusedIndicatorColor = Color.White,
                 cursorColor = Color.Gray,
@@ -200,14 +148,11 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
                     ),
                 )
             },
-
             modifier = Modifier.width(300.dp),
-
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Password
             ),
-
             visualTransformation = if (passwordVisible) {
                 VisualTransformation.None // Mostrar la contraseña
             } else {
@@ -218,13 +163,10 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
                     hideKeyboard(context)
                 },
             ),
-
-
-
-
-            )
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
+
         TextButton(
             onClick = { passwordVisible = !passwordVisible },
             modifier = Modifier
@@ -244,6 +186,7 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
         }
 
         Spacer(modifier = Modifier.height(20.dp))
+
         Button(
             onClick = {
                 if (email.isNotEmpty() && password.isNotEmpty()) {
@@ -254,7 +197,7 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
                         )
 
                         viewModel.loginUser(userData)
-                        Log.d("activity","userData:$userData")
+                        Log.d("activity", "userData:$userData")
 
                     } else {
                         Toast.makeText(context, "Formato de correo incorrecto", Toast.LENGTH_SHORT)
@@ -267,17 +210,15 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-
             },
-            modifier = Modifier
-                .width(300.dp),
+            modifier = Modifier.width(300.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.White,
                 contentColor = Color.Black
             ),
         ) {
             Text(
-                text = "Inicio sesion",
+                text = "Inicio sesión",
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -291,10 +232,8 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
         Button(
             onClick = {
                 // Acción para iniciar sesión con Google
-
             },
-            modifier = Modifier
-                .width(300.dp),
+            modifier = Modifier.width(300.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.White,
                 contentColor = Color.Black
@@ -320,7 +259,7 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "¿No tienes cuenta?Crea una aca",
+            text = "¿No tienes cuenta? Crea una acá",
             style = TextStyle(
                 color = Color.White,
                 fontSize = 15.sp,
@@ -328,14 +267,12 @@ fun Login(viewModel: userCreateViewModel,navController: NavController) {
                 textAlign = TextAlign.Center,
             ),
             modifier = Modifier.clickable {
-                                    navController.navigate(screenRoute.CrearCuenta.route)
+                navController.navigate(screenRoute.CrearCuenta.route)
             }
         )
         Spacer(modifier = Modifier.height(10.dp))
-
     }
 }
-
 
 fun hideKeyboard(current: Context) {
     val inputMethodManager =
@@ -343,17 +280,6 @@ fun hideKeyboard(current: Context) {
     inputMethodManager.hideSoftInputFromWindow((current as Activity).window.decorView.windowToken, 0)
 }
 
-//@Preview(showSystemUi = true)
-//@Composable
-//fun PreviewLoginCuentaScreen() {
-//    Login()
-//}
-
-fun showMessage(
-    context: Context,
-    msg: String
-){
-    Toast.makeText(context,
-        msg,
-        Toast.LENGTH_SHORT).show()
+fun showMessage(context: Context, msg: String) {
+    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
 }
