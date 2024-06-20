@@ -1,4 +1,4 @@
-package com.ic.cinefile.screens
+package com.ic.cinefile.screens.Administrador
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -18,10 +18,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -219,6 +222,31 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                             painter = painterResource(id = R.drawable.baseline_notifications_24),
                             tint = Color.White,
                             contentDescription = "notificaciones"
+                        )
+                    }
+                }
+
+                //Para agregar una peli
+                Button(
+                    onClick = { /*NAVEGAR A AGREGARPELI*/ },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent
+                    )
+                ) {
+                    Row {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription =null,
+                            tint = white
+                        )
+                        Text(
+                            text = "Agregar película",
+                            style = TextStyle(
+                                color = white,
+                                fontSize = 18.sp,
+                                textAlign = TextAlign.Left,
+                                fontWeight = FontWeight.Normal
+                            )
                         )
                     }
                 }
