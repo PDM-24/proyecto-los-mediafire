@@ -67,6 +67,7 @@ fun descripcionPeli(
 //    id: String,
 //    imagePainter: Painter,
 //    description: String
+
 ) {
 
 
@@ -339,7 +340,8 @@ fun descripcionPeli(
                             Spacer(modifier = Modifier.height(20.dp))
                            comentarios(
                                viewModel = viewModel,
-                               movieId = movieId
+                               movieId = movieId,
+
                             )
                         }
                     }

@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun respuestas(
+fun respuestas2(
     movieId: Int,
     id: String,
     parentId:String?,
@@ -33,6 +33,7 @@ fun respuestas(
     description: String,
     imagePainter: Painter,
     createdAt: String, // Fecha y hora de creación del comentario,
+    viewModel: userCreateViewModel,
 
 
 ) {

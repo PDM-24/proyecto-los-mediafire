@@ -8,6 +8,10 @@ data class commentData(
     val movieId: Int=0,
 
     @SerializedName(value= "commentText")
-    val commentText: String=""
+    val commentText: String="",
+
+
+    @SerializedName(value= "parentId")
+val parentId: String? = null  // Puede ser nullable si no siempre se envía
 
 )
