@@ -1,5 +1,6 @@
 package com.ic.cinefile.API.methods
 
+import com.ic.cinefile.API.Model.movies.ReplyComment
 import com.ic.cinefile.API.Model.movies.getCommentResponse
 import com.ic.cinefile.API.Model.movies.homeUserResponse
 import com.ic.cinefile.API.Model.movies.mostViewMoviesResponse
@@ -68,7 +69,7 @@ interface Methods {
     @Headers("Content-Type: application/json")
     @GET("api/movies/moviesId/{id}")
     suspend fun getMovieById(
-       @Header("Authorization") authorization: String,
+        @Header("Authorization") authorization: String,
         @Path("id") movieId: Int
     ): Response<moviesResponse>
 
@@ -87,8 +88,16 @@ interface Methods {
     suspend fun getComments(
         @Header("Authorization") authorization: String,
         @Path("id") movieId: Int,
-        @Query("parentId") parentId: String? = null // parentId es opcional y puede ser nulo
 
-    ): Response<List<getCommentResponse>>
+        ): Response<List<getCommentResponse>>
+
+
+    @Headers("Content-Type: application/json")
+    @GET("api/movies/moviesId/{id}/comments/{parentId}")
+    suspend fun getRepliesToComment(
+        // @Header("Authorization") authorization: String,
+        @Path("id") movieId: Int,
+        @Path("parentId") parentId: String
+    ): Response<List<ReplyComment>>  // Se espera una lista de respuestas a comentarios
 
 }

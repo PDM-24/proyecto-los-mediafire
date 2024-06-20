@@ -16,9 +16,9 @@ router.get("/recentMovies", authenticate, movieController.getMostRecentMovies);
 
 // Nueva ruta para buscar películas por título (protegida por autenticación)
 router.get("/search/:title", authenticate, movieController.searchMovieByTitle);
-// router.get("/moviesId/:id", authenticate, movieController.getMovieById);
 router.get("/moviesId/:id", movieController.getMovieById);
 router.post("/moviesId/:id/postComment", authenticate, commentController.postComment);
 router.get("/moviesId/:id/comments", authenticate,commentController.getComments);
+router.get("/moviesId/:id/comments/:parentId", commentController.getRepliesToComment);
 
 module.exports = router;
