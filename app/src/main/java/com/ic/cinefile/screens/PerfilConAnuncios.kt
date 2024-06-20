@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -184,6 +185,20 @@ fun PerfilAnuncios(
                     val generoUsuario = user.gender
                     val fechaNacimiento = user.yearOfBirth
 
+                    //ICONO QUE LLEVA A PANEL DE CONFIGURACIONES
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(end = 20.dp)
+                            .clickable { /*NAVEGAR A CONFIGRACIONES*/ }
+                    ){
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = null,
+                            tint = white
+                        )
+                    }
+                    
                     Row(
                         modifier = Modifier
                             .padding(10.dp)
