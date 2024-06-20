@@ -162,15 +162,16 @@ fun descripcionPeli(
                                 Text(
                                     text = movie.title, // Mostrar el nombre de la película seleccionada
                                     fontSize = 28.sp,
-                                    color = Color.White
+                                    color = Color.White,
+                                    modifier = Modifier.fillMaxWidth(0.85f)
                                 )
-                                Spacer(modifier = Modifier.width(200.dp))
                                 //guardado o no
                                 botonGuardar(
                                     onClick = {
                                         isBookmarked = !isBookmarked
                                     },
-                                    isBookmarked = isBookmarked
+                                    isBookmarked = isBookmarked,
+                                    modifier = Modifier.align(Alignment.Top)
                                 )
                             }
                         }

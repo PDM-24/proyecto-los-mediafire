@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.ic.cinefile.R
@@ -16,10 +17,12 @@ import com.ic.cinefile.ui.theme.light_yellow
 @Composable
 fun botonGuardar(
     onClick: () -> Unit,
-    isBookmarked: Boolean
+    isBookmarked: Boolean,
+    modifier: Modifier = Modifier
 ) {
     IconButton(
         onClick = onClick,
+        modifier = modifier
     ) {
         Box() {
             if (isBookmarked)
