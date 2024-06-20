@@ -20,10 +20,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.userCreateViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
-fun respuestas(idComentario: String?, imagePainter: Painter?, description: String?) {
+fun respuestas(
+    movieId: Int,
+    id: String,
+    parentId:String?,
+    username: String,
+    description: String,
+    imagePainter: Painter,
+    createdAt: String, // Fecha y hora de creación del comentario,
+
+
+) {
     //val comment = "Comentario $idComentario"
+    // Formato de entrada para parsear la fecha y hora
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+
+    // Formato de salida para mostrar la fecha y hora en un formato legible
+    val outputFormat = SimpleDateFormat("dd 'de' MMMM 'de' yyyy hh:mm a", Locale.getDefault())
+
+    // Parsear la fecha y hora del comentario
+    val parsedDate = inputFormat.parse(createdAt)
+    val formattedDateTime = outputFormat.format(parsedDate)
 
     //El comentario que se responde
     Column(
@@ -35,40 +57,38 @@ fun respuestas(idComentario: String?, imagePainter: Painter?, description: Strin
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (imagePainter != null) {
-                Image(
-                    painter = imagePainter,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
+
+            Image(
+                painter = imagePainter,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+            )
+
+            Column {
+                Text(
+                    text = username, // Mostrar el nombre de usuario
+                    fontWeight = FontWeight.Bold,
+                    color = white,
                     modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
+                        .padding(start = 12.dp)
                 )
-            }
-            if (description != null) {
-                Column {
-                    /*Text(
-                        text = username, // Mostrar el nombre de usuario
-                        fontWeight = FontWeight.Bold,
-                        color = white,
-                        modifier = Modifier
-                            .padding(start = 12.dp)
-                    )*/
-                    Text(
-                        text = description,
-                        modifier = Modifier
-                            .padding(start = 12.dp)
-                    )
-                    /*Text(
-                        text = "Publicado el $formattedDateTime", // Mostrar fecha y hora de publicación
-                        style = TextStyle(
-                            fontSize = 12.sp,
-                            color = white
-                        ),
-                        modifier = Modifier
-                            .padding(start = 12.dp)
-                    )*/
-                }
+                Text(
+                    text = description,
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                )
+                Text(
+                    text = "Publicado el $formattedDateTime", // Mostrar fecha y hora de publicación
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        color = white
+                    ),
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                )
             }
 
         }
