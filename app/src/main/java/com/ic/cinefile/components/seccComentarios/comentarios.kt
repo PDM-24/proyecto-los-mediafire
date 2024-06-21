@@ -245,6 +245,7 @@ fun comentarios(
                                 viewModel.postComment(movieId,userData)
                                 Log.d("activity","userData:$userData")
 
+
                             }
                             ) {
                                 Icon(

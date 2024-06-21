@@ -8,6 +8,8 @@ import com.ic.cinefile.API.Model.movies.moviesResponse
 import com.ic.cinefile.API.Model.movies.postCommentResponse
 import com.ic.cinefile.API.Model.movies.recentMoviesResponse
 import com.ic.cinefile.API.Model.movies.searchMoviesResponse
+import com.ic.cinefile.API.Model.users.MarkAsReadResponse
+import com.ic.cinefile.API.Model.users.NotificationResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.Model.users.accountCreateResponse
 import com.ic.cinefile.data.accountLoginData
@@ -22,6 +24,7 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
+import retrofit2.http.PATCH
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -95,9 +98,23 @@ interface Methods {
     @Headers("Content-Type: application/json")
     @GET("api/movies/moviesId/{id}/comments/{parentId}")
     suspend fun getRepliesToComment(
-        // @Header("Authorization") authorization: String,
+        @Header("Authorization") authorization: String,
         @Path("id") movieId: Int,
         @Path("parentId") parentId: String
     ): Response<List<ReplyComment>>  // Se espera una lista de respuestas a comentarios
+
+
+    @Headers("Content-Type: application/json")
+    @GET("api/account/user/notifications")
+    suspend fun getNotifications(
+        @Header("Authorization") authorization: String
+    ): Response<List<NotificationResponse>>  // Asegúrate de tener tu modelo de datos para la respuesta de notificaciones definido
+
+    @Headers("Content-Type: application/json")
+    @PATCH("api/account/user/notifications/{id}")
+    suspend fun markNotificationAsRead(
+        @Header("Authorization") authorization: String,
+        @Path("id") notificationId: String
+    ): Response<MarkAsReadResponse>  // Asegúrate de tener tu modelo de datos para la respuesta de marcado como leído definido
 
 }

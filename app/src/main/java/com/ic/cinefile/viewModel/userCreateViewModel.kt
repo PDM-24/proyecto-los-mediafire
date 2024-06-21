@@ -13,8 +13,10 @@ import com.ic.cinefile.API.Model.movies.mostViewMoviesResponse
 import com.ic.cinefile.API.Model.movies.moviesResponse
 import com.ic.cinefile.API.Model.movies.recentMoviesResponse
 import com.ic.cinefile.API.Model.movies.searchMoviesResponse
+import com.ic.cinefile.API.Model.users.NotificationResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.apiServer
+import com.ic.cinefile.data.NotificationData
 import com.ic.cinefile.data.accountLoginData
 import com.ic.cinefile.data.accountRegisterData
 import com.ic.cinefile.data.commentData
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import java.time.LocalDateTime
 import java.util.Locale.Category
 
 class userCreateViewModel: ViewModel() {
@@ -82,6 +85,12 @@ class userCreateViewModel: ViewModel() {
     private val _commentsState = MutableStateFlow<CommentListState>(CommentListState.Ready)
     val commentsState: StateFlow<CommentListState> = _commentsState
 
+    private val _notificationState = MutableStateFlow<NotificationState>(NotificationState.Ready)
+    val notificationState: StateFlow<NotificationState> = _notificationState
+
+    private val _markNotificationState = MutableStateFlow<MarkNotificationState>(MarkNotificationState.Ready)
+    val markNotificationState: StateFlow<MarkNotificationState> = _markNotificationState
+
 
     private var authToken: String = "" // Propiedad para almacenar el token de autenticación
 
@@ -122,6 +131,58 @@ class userCreateViewModel: ViewModel() {
                         Log.i("userCreateViewModel", e.toString())
                         _uiState2.value = UiState2.Error( "Error. Contacte con el servicio de soporte")
 
+                    }
+                }
+            }
+        }
+
+
+        fun getNotifications() {
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    _notificationState.value = NotificationState.Loading
+                    val response = apiServer.methods.getNotifications("Bearer $authToken")
+                    if (response.isSuccessful) {
+                        val notifications = response.body()
+                        _notificationState.value = NotificationState.Success(notifications ?: emptyList())
+                    } else {
+                        _notificationState.value = NotificationState.Error("Error: ${response.message()}")
+                    }
+                } catch (e: Exception) {
+                    when (e) {
+                        is HttpException -> {
+                            Log.e("UserCreateViewModel", "Error HTTP: ${e.message()}")
+                            _notificationState.value = NotificationState.Error("Error HTTP: ${e.message()}")
+                        }
+                        else -> {
+                            Log.e("UserCreateViewModel", "Error: ${e.message}")
+                            _notificationState.value = NotificationState.Error("Error: ${e.message}")
+                        }
+                    }
+                }
+            }
+        }
+
+        fun markNotificationAsRead(notificationId: String) {
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    _markNotificationState.value = MarkNotificationState.Loading
+                    val response = apiServer.methods.markNotificationAsRead("Bearer $authToken", notificationId)
+                    if (response.isSuccessful) {
+                        _markNotificationState.value = MarkNotificationState.Success("Notification marked as read")
+                    } else {
+                        _markNotificationState.value = MarkNotificationState.Error("Error: ${response.message()}")
+                    }
+                } catch (e: Exception) {
+                    when (e) {
+                        is HttpException -> {
+                            Log.e("UserCreateViewModel", "Error HTTP: ${e.message()}")
+                            _markNotificationState.value = MarkNotificationState.Error("Error HTTP: ${e.message()}")
+                        }
+                        else -> {
+                            Log.e("UserCreateViewModel", "Error: ${e.message}")
+                            _markNotificationState.value = MarkNotificationState.Error("Error: ${e.message}")
+                        }
                     }
                 }
             }
@@ -410,7 +471,7 @@ class userCreateViewModel: ViewModel() {
             try {
                 _repliesToCommentState.value = RepliesToCommentState.Loading
                 //val response = apiServer.methods.getRepliesToComment("Bearer $authToken", movieId, parentId?: "" )
-                val response = apiServer.methods.getRepliesToComment( movieId, parentId?: "" )
+                val response = apiServer.methods.getRepliesToComment("Bearer $authToken", movieId, parentId?: "" )
 
                 if (response.isSuccessful) {
                     val replies = response.body()
@@ -434,10 +495,60 @@ class userCreateViewModel: ViewModel() {
     }
 
 
+    // Enviar notificaciones
 
 
+    fun getNotifications() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _notificationState.value = NotificationState.Loading
+                val response = apiServer.methods.getNotifications("Bearer $authToken")
+                if (response.isSuccessful) {
+                    val notifications = response.body()
+                    _notificationState.value = NotificationState.Success(notifications ?: emptyList())
+                } else {
+                    _notificationState.value = NotificationState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        Log.e("UserCreateViewModel", "Error HTTP: ${e.message()}")
+                        _notificationState.value = NotificationState.Error("Error HTTP: ${e.message()}")
+                    }
+                    else -> {
+                        Log.e("UserCreateViewModel", "Error: ${e.message}")
+                        _notificationState.value = NotificationState.Error("Error: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
 
-
+    fun markNotificationAsRead(notificationId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _markNotificationState.value = MarkNotificationState.Loading
+                val response = apiServer.methods.markNotificationAsRead("Bearer $authToken", notificationId)
+                if (response.isSuccessful) {
+                    _markNotificationState.value = MarkNotificationState.Success("Notification marked as read")
+                    getNotifications() // Refresh notifications after marking as read
+                } else {
+                    _markNotificationState.value = MarkNotificationState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        Log.e("UserCreateViewModel", "Error HTTP: ${e.message()}")
+                        _markNotificationState.value = MarkNotificationState.Error("Error HTTP: ${e.message()}")
+                    }
+                    else -> {
+                        Log.e("UserCreateViewModel", "Error: ${e.message}")
+                        _markNotificationState.value = MarkNotificationState.Error("Error: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
 
 
 
@@ -521,4 +632,19 @@ sealed class RepliesToCommentState {
     object Ready : RepliesToCommentState()
     data class Success(val replies: List<ReplyComment>) : RepliesToCommentState()
     data class Error(val message: String) : RepliesToCommentState()
+}
+
+
+sealed class NotificationState {
+    object Loading : NotificationState()
+    object Ready : NotificationState()
+    data class Success(val notifications: List<NotificationResponse>) : NotificationState()
+    data class Error(val message: String) : NotificationState()
+}
+
+sealed class MarkNotificationState {
+    object Loading : MarkNotificationState()
+    object Ready : MarkNotificationState()
+    data class Success(val message: String) : MarkNotificationState()
+    data class Error(val message: String) : MarkNotificationState()
 }
