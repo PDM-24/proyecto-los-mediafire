@@ -212,23 +212,15 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                                 )
                             }
                         }
-
-
-                        IconButton(onClick = {
-
-                            navController.navigate(route = screenRoute.Notificaciones.route)
-
-
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_notifications_24),
-                                tint = Color.White,
-                                contentDescription = "notificaciones"
-                            )
-                        }
                     }
 
-
+                    IconButton(onClick = {}) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_notifications_24),
+                            tint = Color.White,
+                            contentDescription = "notificaciones"
+                        )
+                    }
                 }
 
                 when (userDataState) {

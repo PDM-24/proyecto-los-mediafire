@@ -54,6 +54,7 @@ import com.ic.cinefile.components.verTrailer
 import com.ic.cinefile.ui.theme.light_yellow
 import com.ic.cinefile.ui.theme.sky_blue
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.AverageRatingState
 import com.ic.cinefile.viewModel.MovieState
 import com.ic.cinefile.viewModel.userCreateViewModel
 
@@ -96,9 +97,12 @@ fun descripcionPeli(
 //        }
 //    }
 
+    val averageRating by viewModel.averageRatingState.collectAsState()
 
     LaunchedEffect(movieId) {
         viewModel.getMovieById(movieId)
+        viewModel.getAverageRating(movieId)
+
     }
 
 
@@ -201,7 +205,12 @@ fun descripcionPeli(
                                     tint = light_yellow
                                 )
                                 Text(
-                                    text = "4",
+                                    text = when(val state = averageRating) {
+                                        is AverageRatingState.Success -> {
+                                            state.averageRating?.takeIf { it != 0.0 }?.let { String.format("%.2f", it) } ?: "0.0"
+                                        }
+                                        else -> "0.0"
+                                    },
                                     color = white,
                                     fontSize = 16.sp,
                                     modifier = Modifier
@@ -276,7 +285,12 @@ fun descripcionPeli(
                                 modifier = Modifier
                                     .padding(bottom = 8.dp)
                             )
-                            ratingStars(rating = 1)
+                            ratingStars(
+                                rating = 1,
+                                onRatingChanged = { rating ->
+                                    viewModel.rateMovie(movieId, rating.toDouble())
+                                }
+                            )
                         }
 
                         //ACTORES

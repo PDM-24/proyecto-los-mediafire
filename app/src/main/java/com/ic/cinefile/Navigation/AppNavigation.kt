@@ -75,16 +75,21 @@ fun AppNavigation(
         composable(route=screenRoute.PerfilAnuncios.route){
             PerfilAnuncios(viewModel,navController)
         }
-        composable(route=screenRoute.Notificaciones.route){
+        composable(route = screenRoute.Notificaciones.route){
             Notificaciones(
                 viewModel = viewModel,
                 navController = navController,
                 onNotificationClick = { notification ->
-                    // Lógica para manejar la acción al hacer clic en una notificación
-                    // Por ejemplo, navegar a una pantalla específica relacionada con la notificación
+                    // Navegar a la pantalla del comentario
+                    navController.navigate("comentarioScreen/${notification.id}")
                 }
             )
+
+
+
         }
+
+    }
 //        composable(
 //            route = "${screenRoute.Edit.route}/{code}",
 //            arguments = listOf(
@@ -96,4 +101,3 @@ fun AppNavigation(
 //            EditScreen(viewModel, navController, backStackEntry.arguments?.getString("code"))
 //        }
     }
-}
