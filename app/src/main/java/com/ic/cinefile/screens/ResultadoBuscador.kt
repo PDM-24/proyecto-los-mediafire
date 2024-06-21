@@ -103,13 +103,6 @@ fun Resultadobuscador() {
                     ) {
                         IconButton(onClick = {}) {
                             Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White
-                            )
-                        }
-                        IconButton(onClick = {}) {
-                            Icon(
                                 imageVector = Icons.Filled.Home,
                                 contentDescription = "Home",
                                 tint = Color.White
@@ -136,7 +129,8 @@ fun Resultadobuscador() {
         ) {
             Row(
                 modifier = Modifier
-                    .padding(start = 12.dp),
+                    .padding(start = 12.dp)
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(

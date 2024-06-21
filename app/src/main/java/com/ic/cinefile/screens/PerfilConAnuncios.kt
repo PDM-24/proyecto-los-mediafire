@@ -124,13 +124,6 @@ fun PerfilAnuncios(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White
-                            )
-                        }
                         IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
                             Icon(
                                 imageVector = Icons.Filled.Home,

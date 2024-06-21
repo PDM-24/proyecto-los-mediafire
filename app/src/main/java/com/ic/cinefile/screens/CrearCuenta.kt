@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
+import com.ic.cinefile.ui.theme.black
+import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.userCreateViewModel
 import java.util.regex.Pattern
 
@@ -67,18 +69,23 @@ fun CrearCuenta(viewModel: userCreateViewModel, navController: NavController) {
         Spacer(modifier = Modifier.height(70.dp))
 
         TextField(
+            modifier = Modifier.width(300.dp),
             value = email,
             onValueChange = { email = it },
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color(R.color.white),
-                unfocusedLabelColor = Color(R.color.white),
-                cursorColor = Color(R.color.white)
+                unfocusedContainerColor = black,
+                focusedContainerColor = black,
+                unfocusedLabelColor = white,
+                focusedLabelColor = white,
+                focusedIndicatorColor = white,
+                cursorColor = white,
+                focusedTextColor = white
             ),
             placeholder = {
                 Text(
                     text = "Correo (ejemplo@dominio.com )",
                     style = androidx.compose.ui.text.TextStyle(
-                        color = Color.White,
+                        color = white,
                         fontSize = 15.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
@@ -93,6 +100,7 @@ fun CrearCuenta(viewModel: userCreateViewModel, navController: NavController) {
         Spacer(modifier = Modifier.height(15.dp))
 
         TextField(
+            modifier = Modifier.width(300.dp),
             value = password,
             onValueChange = {
                 if (it.length <= 8) {
@@ -100,15 +108,19 @@ fun CrearCuenta(viewModel: userCreateViewModel, navController: NavController) {
                 }
             },
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color(R.color.black),
-                unfocusedLabelColor = Color(R.color.white),
-                cursorColor = Color(R.color.white)
+                unfocusedContainerColor = black,
+                focusedContainerColor = black,
+                unfocusedLabelColor = white,
+                focusedLabelColor = white,
+                focusedIndicatorColor = white,
+                cursorColor = white,
+                focusedTextColor = white
             ),
             placeholder = {
                 Text(
                     text = "Contraseña (máximo 8 caracteres)",
                     style = androidx.compose.ui.text.TextStyle(
-                        color = Color.White,
+                        color = white,
                         fontSize = 15.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
@@ -149,8 +161,8 @@ fun CrearCuenta(viewModel: userCreateViewModel, navController: NavController) {
             },
             modifier = Modifier.width(300.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
+                containerColor = white,
+                contentColor = black
             ),
         ) {
             Text(
