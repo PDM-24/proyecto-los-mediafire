@@ -5,7 +5,16 @@
       <entry key="ConfiguracionPreview">
         <State />
       </entry>
+      <entry key="ViewConteinerBuscador">
+        <State />
+      </entry>
       <entry key="app">
+        <State />
+      </entry>
+      <entry key="calificadasPreview">
+        <State />
+      </entry>
+      <entry key="deseosPreview">
         <State />
       </entry>
     </value>

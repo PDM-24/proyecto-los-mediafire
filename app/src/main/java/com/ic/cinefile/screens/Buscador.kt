@@ -489,3 +489,5 @@ fun SearchHistoryScreen(onBackClick: () -> Unit) {
         }
     }
 }
+
+
