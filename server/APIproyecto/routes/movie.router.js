@@ -19,6 +19,6 @@ router.get("/search/:title", authenticate, movieController.searchMovieByTitle);
 router.get("/moviesId/:id", movieController.getMovieById);
 router.post("/moviesId/:id/postComment", authenticate, commentController.postComment);
 router.get("/moviesId/:id/comments", authenticate,commentController.getComments);
-router.get("/moviesId/:id/comments/:parentId", commentController.getRepliesToComment);
+router.get("/moviesId/:id/comments/:parentId", authenticate,commentController.getRepliesToComment);
 
 module.exports = router;

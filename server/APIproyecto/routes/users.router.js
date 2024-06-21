@@ -15,7 +15,7 @@ const {
 const authorization = require("../middlewares/authorization.middlewares");
 const authenticate = require("../middlewares/authorization.middlewares");
 const userLoginController = require('../controllers/userLogin.controller');
-
+const notificationController =require('../controllers/commentUser.controller')
 //api/account/register
 router.post(
   "/register",
@@ -34,4 +34,6 @@ router.post(
 );
 router.get('/user/Home',authenticate,userLoginController.getUserData)
 
+router.get('/user/notifications', authenticate, notificationController.getNotifications);
+router.patch('/user/notifications/:id', authenticate, notificationController.markAsRead);
 module.exports = router;

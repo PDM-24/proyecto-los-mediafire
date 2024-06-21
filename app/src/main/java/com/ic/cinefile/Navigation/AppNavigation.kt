@@ -13,6 +13,7 @@ import com.ic.cinefile.screens.ElegirGeneros
 import com.ic.cinefile.screens.Home
 import com.ic.cinefile.screens.HomeAppScreen
 import com.ic.cinefile.screens.Login
+import com.ic.cinefile.screens.Notificaciones
 import com.ic.cinefile.screens.PerfilAnuncios
 import com.ic.cinefile.screens.contentAvatar
 import com.ic.cinefile.screens.contentGenero
@@ -73,6 +74,16 @@ fun AppNavigation(
         }
         composable(route=screenRoute.PerfilAnuncios.route){
             PerfilAnuncios(viewModel,navController)
+        }
+        composable(route=screenRoute.Notificaciones.route){
+            Notificaciones(
+                viewModel = viewModel,
+                navController = navController,
+                onNotificationClick = { notification ->
+                    // Lógica para manejar la acción al hacer clic en una notificación
+                    // Por ejemplo, navegar a una pantalla específica relacionada con la notificación
+                }
+            )
         }
 //        composable(
 //            route = "${screenRoute.Edit.route}/{code}",
