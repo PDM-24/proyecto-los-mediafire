@@ -105,19 +105,6 @@ const getGenreId = (genreName) => {
   };
   
 
-
-
-// const getMoviesCategory = async (categoryName, limit = 10) => {
-//   try {
-//       const categoryId = getGenreId(categoryName);
-//       const response = await axios.get(`${BASE_URL_API}discover/movie?api_key=${API_KEY}&language=es-ES&with_genres=${categoryId}&page=1&include_adult=false&sort_by=popularity.desc&vote_count.gte=1000&vote_average.gte=5&with_watch_monetization_types=flatrate`);
-//       const movies = response.data.results.slice(0, limit); // Limitar las películas al número especificado
-//       return movies.sort(() => Math.random() - 0.5); // Reordenar aleatoriamente las películas
-//   } catch (error) {
-//       throw new Error("No se ha podido encontrar dicha categoría.");
-//   }
-// };
-
 const getMoviesCategory = async (categoryName, limit = 10) => {
   try {
     const categoryId = getGenreId(categoryName);
@@ -256,6 +243,25 @@ const getMoviesBySortType = async (sortType, limit = 10) => {
     }
   };
 
+
+  const getMovieAverageRating = async (movieId) => {
+    try {
+      const users = await User.find({ 'ratings.movieId': movieId });
+      const ratings = users.map(user => {
+        const ratingObj = user.ratings.find(r => r.movieId === movieId);
+        return ratingObj ? ratingObj.rating : null;
+      }).filter(r => r !== null);
+  
+      if (ratings.length === 0) return null;
+  
+      const averageRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+      return averageRating;
+    } catch (error) {
+      throw new Error("Error occurred while calculating the average rating. Please try again.");
+    }
+  };
+  
+
 // se exportan como se deven son variables por asi asi
 module.exports={
     getMoviesAPI:getMovies,
@@ -263,5 +269,6 @@ module.exports={
       getMostViewedMoviesAPI: getMostViewedMovies,
   getMostRecentMoviesAPI: getMostRecentMovies,
   searchMovieByTitleAPI: searchMovieByTitle,
-  fetchMovieByIdAPI:fetchMovieById
+  fetchMovieByIdAPI:fetchMovieById,
+  getMovieAverageRatingAPI:getMovieAverageRating
 }

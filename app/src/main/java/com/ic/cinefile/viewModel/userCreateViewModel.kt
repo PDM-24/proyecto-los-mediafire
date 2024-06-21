@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.annotations.SerializedName
+import com.ic.cinefile.API.Model.movies.AverageRatingResponse
 import com.ic.cinefile.API.Model.movies.ReplyComment
 import com.ic.cinefile.API.Model.movies.getCommentResponse
 import com.ic.cinefile.API.Model.movies.homeUserResponse
@@ -17,6 +18,7 @@ import com.ic.cinefile.API.Model.users.NotificationResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.apiServer
 import com.ic.cinefile.data.NotificationData
+import com.ic.cinefile.data.RatingData
 import com.ic.cinefile.data.accountLoginData
 import com.ic.cinefile.data.accountRegisterData
 import com.ic.cinefile.data.commentData
@@ -92,6 +94,13 @@ class userCreateViewModel: ViewModel() {
     val markNotificationState: StateFlow<MarkNotificationState> = _markNotificationState
 
 
+    // Estados que gestionan el estado de la interfaz para calificaciones
+    private val _rateMovieState = MutableStateFlow<RateMovieState>(RateMovieState.Ready)
+    val rateMovieState: StateFlow<RateMovieState> = _rateMovieState
+
+    private val _averageRatingState = MutableStateFlow<AverageRatingState>(AverageRatingState.Ready)
+    val averageRatingState: StateFlow<AverageRatingState> get() = _averageRatingState
+
     private var authToken: String = "" // Propiedad para almacenar el token de autenticación
 
 
@@ -108,9 +117,6 @@ class userCreateViewModel: ViewModel() {
         )
         Log.i("userCreateViewModel", "Updated data: ${_accountCreateAPI.value.movieGenereList}")
     }
-
-
-
     fun createAccountUser(userregisterData: accountRegisterData){
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -436,9 +442,6 @@ class userCreateViewModel: ViewModel() {
         }
     }
 
-
-
-
     fun getComments(movieId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -553,6 +556,70 @@ class userCreateViewModel: ViewModel() {
 
 
 
+
+    //calificar
+    // Método para calificar una película
+    fun rateMovie(movieId: Int, rating: Double) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _rateMovieState.value = RateMovieState.Loading
+                val ratingData = RatingData(movieId, rating)
+                val response = apiServer.methods.rateMovie("Bearer $authToken", movieId, ratingData)
+                if (response.isSuccessful) {
+                    val message = response.body()?.message ?: "Movie rated successfully"
+                    _rateMovieState.value = RateMovieState.Success(message)
+                    getAverageRating(movieId)
+                } else {
+                    _rateMovieState.value = RateMovieState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        Log.e("userCreateViewModel", "Error HTTP: ${e.message()}")
+                        _rateMovieState.value = RateMovieState.Error("Error HTTP: ${e.message()}")
+                    }
+
+                    else -> {
+                        Log.e("userCreateViewModel", "Error: ${e.message}")
+                        _rateMovieState.value = RateMovieState.Error("Error: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+    // Método para obtener la calificación promedio de una película
+    fun getAverageRating(movieId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _averageRatingState.value = AverageRatingState.Loading
+                val response = apiServer.methods.getMovieAverageRating("Bearer $authToken", movieId)
+                if (response.isSuccessful) {
+                    val averageRating = response.body()?.averageRating ?: 0.0
+                    _averageRatingState.value = AverageRatingState.Success(averageRating)
+                } else {
+                    _averageRatingState.value = AverageRatingState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        Log.e("userCreateViewModel", "Error HTTP: ${e.message()}")
+                        _averageRatingState.value = AverageRatingState.Error("Error HTTP: ${e.message()}")
+                    }
+                    else -> {
+                        Log.e("userCreateViewModel", "Error: ${e.message}")
+                        _averageRatingState.value = AverageRatingState.Error("Error: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
+
+
+
 }
 
 sealed class UiState2 {
@@ -647,4 +714,19 @@ sealed class MarkNotificationState {
     object Ready : MarkNotificationState()
     data class Success(val message: String) : MarkNotificationState()
     data class Error(val message: String) : MarkNotificationState()
+}
+
+
+sealed class RateMovieState {
+    object Loading : RateMovieState()
+    object Ready : RateMovieState()
+    data class Success(val message: String) : RateMovieState()
+    data class Error(val message: String) : RateMovieState()
+}
+
+sealed class AverageRatingState {
+    object Loading : AverageRatingState()
+    object Ready : AverageRatingState()
+    data class Success(val averageRating: Double) : AverageRatingState()
+    data class Error(val message: String) : AverageRatingState()
 }

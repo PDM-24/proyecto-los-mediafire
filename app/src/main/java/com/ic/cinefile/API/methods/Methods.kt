@@ -1,5 +1,7 @@
 package com.ic.cinefile.API.methods
 
+import com.ic.cinefile.API.Model.movies.AverageRatingResponse
+import com.ic.cinefile.API.Model.movies.RatingResponse
 import com.ic.cinefile.API.Model.movies.ReplyComment
 import com.ic.cinefile.API.Model.movies.getCommentResponse
 import com.ic.cinefile.API.Model.movies.homeUserResponse
@@ -12,6 +14,7 @@ import com.ic.cinefile.API.Model.users.MarkAsReadResponse
 import com.ic.cinefile.API.Model.users.NotificationResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.Model.users.accountCreateResponse
+import com.ic.cinefile.data.RatingData
 import com.ic.cinefile.data.accountLoginData
 import com.ic.cinefile.data.accountRegisterData
 import com.ic.cinefile.data.commentData
@@ -117,4 +120,21 @@ interface Methods {
         @Path("id") notificationId: String
     ): Response<MarkAsReadResponse>  // Asegúrate de tener tu modelo de datos para la respuesta de marcado como leído definido
 
+
+
+    //para calificar
+    @Headers("Content-Type: application/json")
+    @POST("api/movies/moviesId/{id}/rate")
+    suspend fun rateMovie(
+        @Header("Authorization") authorization: String,
+        @Path("id") movieId: Int,
+        @Body ratingData: RatingData
+    ): Response<RatingResponse>
+
+    @Headers("Content-Type: application/json")
+    @GET("api/movies/moviesId/{movieId}/average-rating")
+    suspend fun getMovieAverageRating(
+        @Header("Authorization") authorization: String,
+        @Path("movieId") movieId: Int
+    ): Response<AverageRatingResponse>
 }

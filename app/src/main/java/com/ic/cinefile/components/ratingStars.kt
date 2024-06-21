@@ -20,12 +20,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ic.cinefile.R
 import com.ic.cinefile.ui.theme.light_yellow
-
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ratingStars(
     modifier: Modifier = Modifier,
-    rating: Int
+    rating: Int,
+    onRatingChanged: (Int) -> Unit
 ){
     var ratingState by remember {
         mutableStateOf(rating)
@@ -51,6 +51,7 @@ fun ratingStars(
                             MotionEvent.ACTION_DOWN -> {
                                 selected = true
                                 ratingState = i
+                                onRatingChanged(i)
                             }
                             MotionEvent.ACTION_UP -> {
                                 selected = false
