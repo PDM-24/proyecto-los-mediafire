@@ -80,6 +80,7 @@ fun Lista_deseos(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Icon(
+                            modifier = Modifier.padding(end = 10.dp),
                             painter = painterResource(id = R.drawable.baseline_bookmark_24),
                             contentDescription = null,
                             tint = white

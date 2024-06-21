@@ -8,9 +8,6 @@
       <entry key="ConfiguracionPreview">
         <State />
       </entry>
-      <entry key="ViewConteinerBuscador">
-        <State />
-      </entry>
       <entry key="ViewConteinerResultados">
         <State />
       </entry>
@@ -21,6 +18,9 @@
         <State />
       </entry>
       <entry key="deseosPreview">
+        <State />
+      </entry>
+      <entry key="perfilOtroUsuario">
         <State />
       </entry>
     </value>
