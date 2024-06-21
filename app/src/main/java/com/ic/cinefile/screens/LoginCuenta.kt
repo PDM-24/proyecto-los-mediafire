@@ -32,6 +32,8 @@ import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.components.LoadingProgressDialog
 import com.ic.cinefile.data.accountLoginData
 import com.ic.cinefile.ui.theme.LoadingAnimation
+import com.ic.cinefile.ui.theme.black
+import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.userCreateViewModel
 
@@ -95,16 +97,20 @@ fun Login(viewModel: userCreateViewModel, navController: NavController) {
         TextField(
             value = email,
             onValueChange = { email = it },
-            colors = TextFieldDefaults.textFieldColors(
-                unfocusedIndicatorColor = Color.White,
-                focusedIndicatorColor = Color.White,
-                cursorColor = Color.Gray,
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = black,
+                focusedContainerColor = black,
+                unfocusedLabelColor = white,
+                focusedLabelColor = white,
+                focusedIndicatorColor = white,
+                cursorColor = white,
+                focusedTextColor = white
             ),
             placeholder = {
                 Text(
                     text = "Correo",
                     style = TextStyle(
-                        color = Color.Gray,
+                        color = white,
                         fontSize = 15.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
@@ -132,16 +138,20 @@ fun Login(viewModel: userCreateViewModel, navController: NavController) {
                     password = it
                 }
             },
-            colors = TextFieldDefaults.textFieldColors(
-                unfocusedIndicatorColor = Color.White,
-                focusedIndicatorColor = Color.White,
-                cursorColor = Color.Gray,
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = black,
+                focusedContainerColor = black,
+                unfocusedLabelColor = white,
+                focusedLabelColor = white,
+                focusedIndicatorColor = white,
+                cursorColor = white,
+                focusedTextColor = white
             ),
             placeholder = {
                 Text(
                     text = "Contraseña",
                     style = TextStyle(
-                        color = Color.Gray,
+                        color = white,
                         fontSize = 15.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
@@ -218,7 +228,7 @@ fun Login(viewModel: userCreateViewModel, navController: NavController) {
             ),
         ) {
             Text(
-                text = "Inicio sesión",
+                text = "Iniciar sesión",
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,

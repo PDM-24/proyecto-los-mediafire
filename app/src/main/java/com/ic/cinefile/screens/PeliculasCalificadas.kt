@@ -106,13 +106,6 @@ fun Calificadas(
                     ) {
                         IconButton(onClick = {}) {
                             Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White
-                            )
-                        }
-                        IconButton(onClick = {}) {
-                            Icon(
                                 imageVector = Icons.Filled.Home,
                                 contentDescription = "Home",
                                 tint = white
