@@ -15,6 +15,7 @@ import com.ic.cinefile.screens.HomeAppScreen
 import com.ic.cinefile.screens.Login
 import com.ic.cinefile.screens.Notificaciones
 import com.ic.cinefile.screens.PerfilAnuncios
+import com.ic.cinefile.screens.Resultadobuscador
 import com.ic.cinefile.screens.contentAvatar
 import com.ic.cinefile.screens.contentGenero
 import com.ic.cinefile.screens.descripcionPeli
@@ -39,9 +40,7 @@ fun AppNavigation(
         composable(route=screenRoute.Genero.route){
             contentGenero(viewModel,navController)
         }
-        composable(route=screenRoute.Genero.route){
-            contentGenero(viewModel,navController)
-        }
+
         composable(route=screenRoute.ElegirGeneros.route){
             ElegirGeneros(viewModel,navController)
         }
@@ -85,19 +84,41 @@ fun AppNavigation(
                 }
             )
 
+        }
+        composable(
+            route = "${screenRoute.ResultadoBuscador.route}/{title}",
+            arguments = listOf(navArgument("title") {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
 
-
+            Resultadobuscador(viewModel, navController, title)
         }
 
-    }
 //        composable(
-//            route = "${screenRoute.Edit.route}/{code}",
+//            route = screenRoute.ResultadoBuscador.route + "/{title}",
 //            arguments = listOf(
-//                navArgument("code"){
-//                    type = NavType.StringType
-//                }
+//                navArgument("title") { type = NavType.StringType }
 //            )
-//        ){ backStackEntry ->
-//            EditScreen(viewModel, navController, backStackEntry.arguments?.getString("code"))
+//        ) { backStackEntry ->
+//            val title = backStackEntry.arguments?.getString("title") ?: throw IllegalArgumentException("Title missing")
+//
+//            Resultadobuscador(
+//                viewModel ,
+//                navController,
+//                title
+//            )
 //        }
+
+
     }
+
+
+
+
+
+
+    }
+
+

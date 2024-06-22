@@ -88,7 +88,7 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-
+    var searchHistory by remember { mutableStateOf(listOf<String>()) }
 
 
     val context = LocalContext.current
@@ -103,20 +103,26 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 viewModel.setStateToReady()
             }
+
             UiState.Loading -> {
                 // Mostrar un diálogo de carga o algún indicador de progreso
             }
+
             UiState.Ready -> {}
             is UiState.Success -> {
                 val token = (addScreenState.value as UiState.Success).token
-                viewModel.getRecentMoviesData(token) // Llama a getUserData para obtener la información del usuario
+                viewModel.fetchUserData(token)
                 viewModel.setStateToReady()
+
             }
         }
     }
 
 
-
+LaunchedEffect(Unit){
+    viewModel.getRecentMoviesData() // Llama a getUserData para obtener la información del usuario
+    viewModel.getMostViewMoviesData()
+}
 
 
 
@@ -191,6 +197,8 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
                                 isSearching = true
                                 focusManager.clearFocus() // Liberar el enfoque del TextField y cerrar el teclado
                                 keyboardController?.hide() // Cerrar el teclado si está visible
+                                navController.navigate("${screenRoute.ResultadoBuscador.route}/$buscador")
+
                             }
                         ),
                         modifier = Modifier
@@ -242,7 +250,12 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
         ) {
             if (isSearching) {
                 // Mostrar la pantalla de historial de búsqueda dentro de la columna del Scaffold
-                SearchHistoryScreen(onBackClick = { isSearching = false })
+                SearchHistoryScreen(
+                    onBackClick = { isSearching = false },
+                    recentSearches = viewModel.recentSearches.collectAsState().value,
+                    navController = navController
+
+                )
             } else {
                 // Contenido principal
                 Column(
@@ -250,10 +263,6 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-
-
-
-
                     //peliculas recientes
                     when (recentMoviesState) {
                         is RecentMoviestState.Success -> {
@@ -311,22 +320,6 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
                             // Aquí puedes manejar el estado de preparación inicial si es necesario
                         }
                     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //mas visto
                     when (mostViewsMoviesState) {
                         is MostViewsMoviestState.Success -> {
@@ -384,6 +377,10 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
                         }
                     }
 
+<<<<<<< HEAD
+                    Box(modifier = Modifier.padding(8.dp) ){
+                        Text(text = "Valoracion 5 estrellas",
+=======
 
 
 
@@ -399,6 +396,7 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
                     ){
                         Text(
                             text = "Valoracion 5 estrellas",
+>>>>>>> 1782b6afa9716a4a49d2ec00bc920b61bc60989e
                             style = TextStyle(
                                 color = Color.White,
                                 textAlign =  TextAlign.Start,
@@ -463,7 +461,7 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
 }
 
 @Composable
-fun SearchHistoryScreen(onBackClick: () -> Unit) {
+fun SearchHistoryScreen(onBackClick: () -> Unit, recentSearches: List<String>, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -479,22 +477,29 @@ fun SearchHistoryScreen(onBackClick: () -> Unit) {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Historial de búsqueda quemado
-        val searchHistory = listOf("Animacion", "Rapidos y furiosos", "Panda")
-        for (search in searchHistory) {
+        // Mostrar el historial de búsqueda real
+        for (search in recentSearches) {
             Text(
                 text = search,
                 color = Color.Gray,
                 fontSize = 18.sp,
-                modifier = Modifier.padding(vertical = 4.dp)
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .clickable {
+                        // Navegar a la pantalla de resultados con el término de búsqueda seleccionado
+                        navController.navigate("${screenRoute.ResultadoBuscador.route}/$search")
+                    }
             )
         }
     }
 }
 
+<<<<<<< HEAD
+=======
 
 @Preview
 @Composable
 fun BuscadorPreview(){
     Buscador(viewModel = userCreateViewModel(), navController = rememberNavController())
 }
+>>>>>>> 1782b6afa9716a4a49d2ec00bc920b61bc60989e
