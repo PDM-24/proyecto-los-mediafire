@@ -1,6 +1,5 @@
-package com.ic.cinefile.screens
+package com.ic.cinefile.screens.Administrador
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,10 +11,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import com.ic.cinefile.API.Model.movies.moviesResponse
-
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,21 +22,18 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,8 +47,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -69,75 +60,38 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
-import com.ic.cinefile.components.seccComentarios.unComentario
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.dark_blue
+import com.ic.cinefile.ui.theme.dark_red
 import com.ic.cinefile.ui.theme.grisComment
 import com.ic.cinefile.ui.theme.light_yellow
 import com.ic.cinefile.ui.theme.montserratFamily
 import com.ic.cinefile.ui.theme.sky_blue
 import com.ic.cinefile.ui.theme.white
-import com.ic.cinefile.viewModel.AverageRatingState
-import com.ic.cinefile.viewModel.CommentListState
-import com.ic.cinefile.viewModel.MostViewsMoviestState
-import com.ic.cinefile.viewModel.RepliesToCommentState
-import com.ic.cinefile.viewModel.SearchState
-import com.ic.cinefile.viewModel.UiState
-import com.ic.cinefile.viewModel.userCreateViewModel
+
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavController, title: String) {
+fun Resultadobuscador() {
+
+    val peliculas: MutableList<Int> = remember { mutableListOf(R.drawable.garfield, R.drawable.godzilla, R.drawable.godzilla, R.drawable.godzilla) }
+    val calificacion: MutableList<Int> = remember { mutableListOf(5, 4, 6, 7) }
+    val titulo: MutableList<String> = remember { mutableListOf("Garfield", "Deadpool", "Deadpool", "Deadpool") }
+    val categoria: MutableList<String> = remember { mutableListOf("Accion", "Comedia", "Terror", "Alegria") }
+    val fechaLanzamiento: MutableList<String> = remember { mutableListOf("23/10/2012", "26/10/2012", "26/10/2012", "26/10/2012") }
     var buscador by remember { mutableStateOf("") }
-    val searchState by viewModel.searchState.collectAsState()
-    val averageRatingState by viewModel.averageRatingState.collectAsState()
 
     // Lista mutable para almacenar el estado de marcado de cada película
-    val bookmarkedStates: MutableList<Boolean> = remember { mutableStateListOf() }
-    var isSearching by remember { mutableStateOf(false) }
+    val bookmarkedStates: MutableList<Boolean> = remember { mutableStateListOf(false, false, false, false) }
 
     var isMenuExpanded by remember { mutableStateOf(false) }
     var isGenreMenuExpanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("") }
-
-    val context = LocalContext.current
-
-    val addScreenState = viewModel.uiState.collectAsState()
-
-    LaunchedEffect(addScreenState.value) {
-        when (addScreenState.value) {
-            is UiState.Error -> {
-                val message = (addScreenState.value as UiState.Error).msg
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                viewModel.setStateToReady()
-            }
-
-            UiState.Loading -> {
-                // Mostrar un diálogo de carga o algún indicador de progreso
-            }
-
-            UiState.Ready -> {}
-            is UiState.Success -> {
-                val token = (addScreenState.value as UiState.Success).token
-                viewModel.fetchUserData(token)
-                viewModel.setStateToReady()
-
-            }
-        }
-    }
-
-    LaunchedEffect(title) {
-        viewModel.searchMoviesByTitle(title)
-    }
 
     Scaffold(
         bottomBar = {
@@ -172,7 +126,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(Color.Black),
+                .background(black),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -217,23 +171,14 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                                 )
                             },
                             textStyle = TextStyle(color = Color.Black),
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions.Default.copy(
-                                imeAction = ImeAction.Search
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onSearch = {
-                                    isSearching = true
-
-                                    navController.navigate("${screenRoute.ResultadoBuscador.route}/$buscador")
-
-                                }
-                            )
+                            singleLine = true
                         )
                     }
                 }
 
-                Box {
+                Box (
+                    contentAlignment = Alignment.Center
+                ) {
                     IconButton(onClick = { isMenuExpanded = true }) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_checklist_24),
@@ -307,130 +252,74 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                 }
             }
 
-            // Mostrar los resultados de la búsqueda
-            when (searchState) {
-                is SearchState.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = Color.White,
-                            modifier = Modifier.size(50.dp)
-                        )
-                    }
-                }
-                is SearchState.Success -> {
-                    val movies = (searchState as SearchState.Success).data?.moviesSearch ?: emptyList()
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                            .padding(innerPadding)
-                            .background(Color.Black),
-                        verticalArrangement = Arrangement.Top,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        items(movies.size) { index ->
-                            val movie =movies[index]
-
-                            LaunchedEffect(key1 = movie.id) {
-                                viewModel.getAverageRating(movie.id)
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .clickable {
-                                        // Aquí navegas a la pantalla de descripción de la película
-                                        navController.navigate("${screenRoute.descripcionPeli.route}/${movie.id}")
-                                    }
-                            ) {
-                                Peli(
-                                    poster = movie.posterUrl,
-                                    titulo = movie.title,
-                                    fechaLanzamiento = movie.releaseDate,
-                                    categoria = movie.genres,
-                                    isBookmarked = bookmarkedStates.getOrNull(movies.indexOf(movie)) ?: false,
-                                    averageRating= averageRatingState // Pasar el estado completo aquí
-
-                                    )
-                                Spacer(modifier = Modifier.height(18.dp))
-                            }
-                        }
-                    }
-                }
-                is SearchState.Error -> {
-                    val message = (searchState as SearchState.Error).message
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Error: $message",
-                            color = Color.Red,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                }
-                else -> {
-                    // Mostrar un mensaje o indicador por defecto cuando no hay datos aún
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "No se encontraron resultados.",
-                            color = Color.Gray,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                }
+            Section(
+                peliculas,
+                calificacion,
+                titulo,
+                categoria,
+                fechaLanzamiento,
+                bookmarkedStates
+            ) { index, isBookmarked ->
+                // Actualizar el estado de marcado para la película específica
+                bookmarkedStates[index] = isBookmarked
             }
         }
     }
 }
+
 @Composable
-fun Peli(
-    poster: String,
-    titulo: String,
-    fechaLanzamiento: String,
-    categoria: String,
-    isBookmarked: Boolean,
-    averageRating: AverageRatingState,
+fun Section(
+    peliculas: List<Int>,
+    rating: List<Int>,
+    titulo: List<String>,
+    categoria: List<String>,
+    fecha: List<String>,
+    bookmarkedStates: MutableList<Boolean>,
+    onBookmarkClick: (Int, Boolean) -> Unit
 ) {
+    Column {
+        Spacer(modifier = Modifier.height(10.dp))
+        LazyColumn(
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            items(peliculas.size) { index ->
+                Peli(
+                    poster = peliculas[index],
+                    rating = rating[index],
+                    titulo = titulo[index],
+                    fechaLanzamiento = fecha[index],
+                    categoria = categoria[index],
+                    isBookmarked = bookmarkedStates[index],
+                    onBookmarkClick = { isBookmarked ->
+                        onBookmarkClick(index, isBookmarked)
+                    }
+                )
+                Spacer(modifier = Modifier.height(18.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun Peli(poster: Int, rating: Int, titulo: String, fechaLanzamiento: String, categoria: String,isBookmarked: Boolean,
+         onBookmarkClick: (Boolean) -> Unit) {
     Row(
         modifier = Modifier
             .background(black),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
-    ) {
+    ){
+        //Poster de la peli
         Box(
             modifier = Modifier
                 .size(100.dp, 150.dp)
-                .clickable {
-                    // Aquí puedes navegar a la pantalla de descripción de la película si es necesario
-                    // navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
-                }
         ) {
-            AsyncImage(
-                model = poster,
+            Image(
+                painter = painterResource(id = poster),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
-
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -438,7 +327,9 @@ fun Peli(
                         grisComment,
                         shape = RoundedCornerShape(bottomStart = 8.dp, topStart = 8.dp)
                     )
-                    .clickable { }
+                    .clickable {
+                        //navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
+                    }
                     .padding(4.dp)
             ) {
                 Row(
@@ -452,22 +343,7 @@ fun Peli(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = when (averageRating) {
-                            is AverageRatingState.Success -> {
-                                String.format("%.2f", (averageRating as AverageRatingState.Success).averageRating)
-
-//                                else {
-//                                    "0.0"
-//                                }
-                            }
-                            is AverageRatingState.Loading -> {
-                                "..."
-                            }
-                            is AverageRatingState.Error -> {
-                                "Error"
-                            }
-                            else -> "0.0"
-                        },
+                        text = rating.toString(),
                         color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -487,16 +363,19 @@ fun Peli(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                categoria.split(",").forEach { cat ->
+                //iteración de categorias dentro del row, están en repetición
+                repeat(2) { categoriaIndex ->
                     Card(
-                        modifier = Modifier.wrapContentSize(),
+                        modifier = Modifier
+                            .wrapContentSize(),
                         colors = CardDefaults.cardColors(containerColor = sky_blue)
                     ) {
                         Text(
-                            text = cat,
+                            text = categoria,
                             color = Color.Black,
                             modifier = Modifier.padding(6.dp)
                         )
@@ -519,14 +398,24 @@ fun Peli(
                     color = white,
                     fontSize = 14.sp
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_bookmark_24),
-                    contentDescription = null,
-                    tint = if (isBookmarked) Color.Yellow else Color.White,
-                    modifier = Modifier.size(16.dp)
-                )
+
+                IconButton(
+                    onClick = { /*ELIMINAR LA COMENTARIO*/ },
+                    modifier = Modifier.align(Alignment.Top)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = dark_red
+                    )
+                }
             }
         }
     }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun ViewConteinerResultados(){
+    Resultadobuscador()
 }

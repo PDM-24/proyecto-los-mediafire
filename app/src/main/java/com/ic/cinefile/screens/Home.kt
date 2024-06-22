@@ -123,13 +123,6 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White
-                            )
-                        }
                         IconButton(onClick = {navController.navigate(screenRoute.Home.route)}) {
                             Icon(
                                 imageVector = Icons.Filled.Home,
@@ -157,13 +150,15 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .background(Color.Black)
+                    .background(black)
                     .verticalScroll(rememberScrollState())
             ) {
 
                 Row(
-                    modifier = Modifier.padding(start = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     Surface(
                         color = Color.White,
@@ -175,10 +170,10 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
                                     .clickable {
                                         navController.navigate(screenRoute.Buscador.route)
-                                    }
+                                    },
+                                contentAlignment = Alignment.CenterStart
                             ) {
                                 Icon(
                                     modifier = Modifier.padding(6.dp),
@@ -207,8 +202,9 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                                             )
                                         )
                                     },
-                                    textStyle = TextStyle(color = Color.Black),
-                                    singleLine = true
+                                    textStyle = TextStyle(color = black),
+                                    singleLine = true,
+                                    modifier = Modifier.padding(start = 20.dp)
                                 )
                             }
                         }

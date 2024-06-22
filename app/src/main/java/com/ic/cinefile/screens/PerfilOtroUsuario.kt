@@ -55,7 +55,6 @@ import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.white
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PerfilOtroUsuario() {
@@ -92,13 +91,6 @@ fun PerfilOtroUsuario() {
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White
-                            )
-                        }
                         IconButton(onClick = { }) {
                             Icon(
                                 imageVector = Icons.Filled.Home,
@@ -140,39 +132,35 @@ fun PerfilOtroUsuario() {
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .size(90.dp)
+                        .size(80.dp)
                         .clip(CircleShape)
                 )
                 Column {
                     Text(
                         color = white,
-                        fontSize = 30.sp,
+                        fontSize = 20.sp,
                         text = "pepe",
                         modifier = Modifier
-                            .padding(start = 40.dp)
+                            .padding(start = 12.dp)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         color = white,
-                        fontSize = 20.sp,
+                        fontSize = 14.sp,
                         text = "Hombre",
                         modifier = Modifier
-                            .padding(start = 40.dp)
+                            .padding(start = 12.dp)
                     )
 
                 }
             }
 
-
+            Spacer(modifier = Modifier.height(15.dp))
 
             // LISTAS
-            LazyColumn (
-
-            ){
-
-
-
-
+            LazyColumn(
+                modifier = Modifier.padding(10.dp)
+            ) {
                 //LISTA DE DESEOS
                 item {
                     Spacer(modifier = Modifier.height(20.dp))
@@ -200,7 +188,16 @@ fun PerfilOtroUsuario() {
                             .clickable { /*que abra la lista de todas las pelis calificadas*/ }
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    SectionSinanuncios(movies = listOf(R.drawable.deadpoll,R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll,R.drawable.deadpoll, R.drawable.deadpoll))
+                    SectionSinanuncios(
+                        movies = listOf(
+                            R.drawable.deadpoll,
+                            R.drawable.deadpoll,
+                            R.drawable.deadpoll,
+                            R.drawable.deadpoll,
+                            R.drawable.deadpoll,
+                            R.drawable.deadpoll
+                        )
+                    )
                 }
             }
         }
@@ -209,7 +206,7 @@ fun PerfilOtroUsuario() {
 
 //para iterar los posters de pelis
 @Composable
-fun SectionOtroUsuario (movies: List<Int>) {
+fun SectionOtroUsuario(movies: List<Int>) {
     Column() {
         Spacer(modifier = Modifier.height(10.dp))
         LazyRow(

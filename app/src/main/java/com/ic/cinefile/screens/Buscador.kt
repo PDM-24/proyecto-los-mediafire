@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,7 +63,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
@@ -132,12 +135,11 @@ LaunchedEffect(Unit){
                 shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
                     .padding(6.dp)
-                    .padding(12.dp)
+                    .padding(10.dp)
                     .fillMaxWidth()
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(6.dp)
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (isSearching) {
                         // Mostrar la flecha hacia atrás solo si estamos en modo de búsqueda
@@ -219,13 +221,6 @@ LaunchedEffect(Unit){
                             horizontalArrangement = Arrangement.SpaceEvenly,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            IconButton(onClick = {}) {
-                                Icon(
-                                    imageVector = Icons.Default.Menu,
-                                    contentDescription = "Menu",
-                                    tint = Color.White
-                                )
-                            }
                             IconButton(onClick = {}) {
                                 Icon(
                                     imageVector = Icons.Filled.Home,
@@ -382,20 +377,42 @@ LaunchedEffect(Unit){
                         }
                     }
 
+<<<<<<< HEAD
                     Box(modifier = Modifier.padding(8.dp) ){
                         Text(text = "Valoracion 5 estrellas",
+=======
+
+
+
+
+
+
+
+
+
+
+                    Box(
+                        modifier = Modifier.padding(8.dp)
+                    ){
+                        Text(
+                            text = "Valoracion 5 estrellas",
+>>>>>>> 1782b6afa9716a4a49d2ec00bc920b61bc60989e
                             style = TextStyle(
                                 color = Color.White,
                                 textAlign =  TextAlign.Start,
                                 fontFamily = montserratFamily,
                                 fontWeight = FontWeight.Medium,
-                                fontSize = 20.sp
+                                fontSize = 16.sp
 
-                            )
+                            ),
+                            modifier = Modifier.padding(start = 15.dp)
                         )
                     }
 
-                    LazyRow {
+                    LazyRow (
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ){
 
                         item {
                             Image(
@@ -477,3 +494,12 @@ fun SearchHistoryScreen(onBackClick: () -> Unit, recentSearches: List<String>, n
     }
 }
 
+<<<<<<< HEAD
+=======
+
+@Preview
+@Composable
+fun BuscadorPreview(){
+    Buscador(viewModel = userCreateViewModel(), navController = rememberNavController())
+}
+>>>>>>> 1782b6afa9716a4a49d2ec00bc920b61bc60989e

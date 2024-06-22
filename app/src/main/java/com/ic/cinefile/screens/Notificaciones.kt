@@ -234,7 +234,7 @@ viewModel.getNotifications()
                 },
                 navigationIcon = {
                     Icon(
-                        modifier = Modifier.clickable { /* navController.popBackStack() para volver atrás */ },
+                        modifier = Modifier.clickable { navController.popBackStack()  },
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = "",
                         tint = white
@@ -244,7 +244,6 @@ viewModel.getNotifications()
         }
     ) { innerPadding ->
         when (notificationState) {
-
 
             is NotificationState.Loading -> {
                 Box(
@@ -344,7 +343,7 @@ fun NotificationItem(
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(45.dp)
                     .clip(CircleShape)
             )
             Text(

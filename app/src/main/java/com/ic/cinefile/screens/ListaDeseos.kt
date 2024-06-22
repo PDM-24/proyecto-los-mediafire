@@ -75,7 +75,7 @@ fun Lista_deseos(
                 ),
                 title = {
                     Row(
-                        modifier = Modifier.padding(start = 100.dp),
+                        modifier = Modifier.padding(start = 70.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -107,13 +107,6 @@ fun Lista_deseos(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White
-                            )
-                        }
                         IconButton(onClick = {}) {
                             Icon(
                                 imageVector = Icons.Filled.Home,
