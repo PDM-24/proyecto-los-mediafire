@@ -111,6 +111,7 @@ controller.getMostRecentMovies = async (req, res, next) => {
 
 
 
+
 controller.searchMovieByTitle = async (req, res, next) => {
   try {
     const userId = req.user._id;
@@ -122,16 +123,18 @@ controller.searchMovieByTitle = async (req, res, next) => {
     }
 
     const { title } = req.params;
+    const { sortBy, genre } = req.query;
 
-    // Buscar películas según el título proporcionado
-    const movies = await MoviesService.searchMovieByTitleAPI(title, userId);
+    // Buscar películas según el título proporcionado con filtros adicionales
+    const movies = await MoviesService.searchMovieByTitleAPI(title, userId, sortBy, genre);
 
     if (!movies || movies.length === 0) {
       throw httpError(404, "No se encontraron películas con el título especificado.");
     }
 
     // Devolver las películas encontradas como respuesta
-    return res.status(200).json({ movies} );
+        return res.status(200).json({ moviesA:movies} );
+
   } catch (error) {
     next(error);
   }
@@ -219,6 +222,14 @@ controller.getMovieById = async (req, res, next) => {
 // Obtener promedio de películas:
 controller.getMovieAverageRating = async (req, res, next) => {
   try {
+    const userId = req.user._id;
+
+    // Buscar al usuario en la base de datos
+    const user = await User.findById(userId);
+    if (!user) {
+      throw httpError(404, 'Usuario no encontrado');
+    }
+
     const { movieId } = req.params;
     console.log(`Buscando calificaciones para la película con ID: ${movieId}`);
     

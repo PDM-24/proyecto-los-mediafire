@@ -65,11 +65,11 @@ interface Methods {
     ): Response<recentMoviesResponse>
 
     @Headers("Content-Type: application/json")
-    @GET("api/movies/search/")
+    @GET("api/movies/search/{title}")
     suspend fun searchMovies(
         @Header("Authorization") authorization: String,
-        @Query("title") title: String
-    ): Response<searchMoviesResponse>
+        @Path("title") title: String
+    ): Response <searchMoviesResponse>
 
 
     @Headers("Content-Type: application/json")

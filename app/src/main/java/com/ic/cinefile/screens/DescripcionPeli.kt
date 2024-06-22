@@ -56,6 +56,7 @@ import com.ic.cinefile.ui.theme.sky_blue
 import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.AverageRatingState
 import com.ic.cinefile.viewModel.MovieState
+import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.userCreateViewModel
 
 
@@ -78,26 +79,28 @@ fun descripcionPeli(
 
     val movieState by viewModel.movieState.collectAsState()
 
-//    LaunchedEffect(addScreenState.value) {
-//        when (addScreenState.value) {
-//            is UiState.Error -> {
-//                val message = (addScreenState.value as UiState.Error).msg
-//                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-//                viewModel.setStateToReady()
-//            }
-//            UiState.Loading -> {
-//                // Mostrar un diálogo de carga o algún indicador de progreso
-//            }
-//            UiState.Ready -> {}
-//            is UiState.Success -> {
-//                val token = (addScreenState.value as UiState.Success).token
-//                viewModel.getMovieById(movieId) // Llama a getUserData para obtener la información del usuario
-//                viewModel.setStateToReady()
-//            }
-//        }
-//    }
 
     val averageRating by viewModel.averageRatingState.collectAsState()
+
+    LaunchedEffect(addScreenState.value) {
+        when (addScreenState.value) {
+            is UiState.Error -> {
+                val message = (addScreenState.value as UiState.Error).msg
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.setStateToReady()
+            }
+            UiState.Loading -> {
+                // Puedes agregar algún indicador de carga general aquí si es necesario
+            }
+            UiState.Ready -> {}
+            is UiState.Success -> {
+                val token = (addScreenState.value as UiState.Success).token
+                viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
+                viewModel.setStateToReady()
+            }
+        }
+    }
+
 
     LaunchedEffect(movieId) {
         viewModel.getMovieById(movieId)

@@ -21,4 +21,6 @@ sealed class screenRoute(var route: String) {
 
     object unComentario:screenRoute("unComentario")
 
+    object ResultadoBuscador:screenRoute("ResultadoBuscador")
+
 }

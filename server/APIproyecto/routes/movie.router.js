@@ -16,6 +16,8 @@ router.get("/recentMovies", authenticate, movieController.getMostRecentMovies);
 
 // Nueva ruta para buscar películas por título (protegida por autenticación)
 router.get("/search/:title", authenticate, movieController.searchMovieByTitle);
+
+//OBTENER PELICULA POR ID
 router.get("/moviesId/:id", movieController.getMovieById);
 
 //rutas para comentar y obtener comentarios

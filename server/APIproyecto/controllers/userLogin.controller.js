@@ -15,11 +15,10 @@ controller.getUserData = async (req, res, next) => {
     if (!user.hasSeenRandomMovies) {
       const genres = user.movie_genere;
       for (const genre of genres) {
-        const movies = await MoviesService.getMoviesCategoryAPI(genre, 20);
+        const movies = await MoviesService.getMoviesCategoryAPI(genre, 10);
         moviesByGenre[genre] = movies;
       }
-      user.hasSeenRandomMovies = true;
-      await user.save();
+     
     }
 
     res.status(200).json({

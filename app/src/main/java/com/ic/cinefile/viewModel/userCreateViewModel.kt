@@ -62,37 +62,35 @@ class userCreateViewModel: ViewModel() {
     private val _mostViewsMoviesState = MutableStateFlow<MostViewsMoviestState>(MostViewsMoviestState.Ready)
     val mostViewsMoviesState: StateFlow<MostViewsMoviestState> = _mostViewsMoviesState
 
-    // Estado para manejar las busquedas
-
-    private val _moviesSearchState = MutableStateFlow<MoviesSearchState>(MoviesSearchState.Ready)
-    val moviesSearchState: StateFlow<MoviesSearchState> = _moviesSearchState
-
-
-    private val _recentSearches = MutableStateFlow<List<searchMoviesResponse>>(emptyList())
-    val recentSearches: StateFlow<List<searchMoviesResponse>> = _recentSearches
-
     // Estado para manejar los detalles de la película
     private val _movieState = MutableStateFlow<MovieState>(MovieState.Ready)
     val movieState: StateFlow<MovieState> = _movieState
 
-
+    //Estado para manejar las los comentarios  enviados
     private val _postCommentState = mutableStateOf(commentData())
     val postCommentState: State<commentData> = _postCommentState
 
+    //Estado para manejar las respuestas de los comentarios
     private val _repliesToCommentState = MutableStateFlow<RepliesToCommentState>(RepliesToCommentState.Ready)
     val repliesToCommentState: StateFlow<RepliesToCommentState> = _repliesToCommentState
-
 
     // Estado para manejar los comentarios obtenidos
     private val _commentsState = MutableStateFlow<CommentListState>(CommentListState.Ready)
     val commentsState: StateFlow<CommentListState> = _commentsState
+
+    // Estado de busquedas recientes
+    private val _recentSearches = MutableStateFlow<List<String>>(emptyList())
+    val recentSearches: StateFlow<List<String>> = _recentSearches
+
+    //estado de buscar pelicula por el titulo
+    private val _searchState = MutableStateFlow<SearchState>(SearchState.Ready)
+    val searchState: StateFlow<SearchState> = _searchState
 
     private val _notificationState = MutableStateFlow<NotificationState>(NotificationState.Ready)
     val notificationState: StateFlow<NotificationState> = _notificationState
 
     private val _markNotificationState = MutableStateFlow<MarkNotificationState>(MarkNotificationState.Ready)
     val markNotificationState: StateFlow<MarkNotificationState> = _markNotificationState
-
 
     // Estados que gestionan el estado de la interfaz para calificaciones
     private val _rateMovieState = MutableStateFlow<RateMovieState>(RateMovieState.Ready)
@@ -198,15 +196,9 @@ class userCreateViewModel: ViewModel() {
     }
 
 
-
-
-
-
     fun setStateToReady() {
         _uiState.value = UiState.Ready
     }
-
-
 
     //iniciar sesion
     private val _showErrorToast = MutableStateFlow(false)
@@ -226,8 +218,6 @@ class userCreateViewModel: ViewModel() {
                 _uiState.value = UiState.Success(authToken)
 
                 fetchUserData(authToken) // Obtener información del usuario utilizando el token
-                getRecentMoviesData(authToken)
-                getMostViewMoviesData(authToken)
             } catch (e: Exception) {
                 when (e) {
                     is HttpException -> {
@@ -252,10 +242,6 @@ class userCreateViewModel: ViewModel() {
     fun hideErrorToast() {
         _showErrorToast.value = false
     }
-
-
-
-
 
     //manejar token
     fun fetchUserData(token: String) {
@@ -283,11 +269,11 @@ class userCreateViewModel: ViewModel() {
 
 
     //obtener peliculas recientes
-    fun getRecentMoviesData(token: String) {
+    fun getRecentMoviesData() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _recentMoviesState.value = RecentMoviestState.Loading
-                val response = apiServer.methods.getRecentMovies("Bearer $token")
+                val response = apiServer.methods.getRecentMovies("Bearer $authToken")
                 if (response.isSuccessful) {
                     val data = response.body()
                     val uniqueMovies = data?.moviesRecent?.distinctBy { it.id } // Filtra duplicados por ID
@@ -311,11 +297,11 @@ class userCreateViewModel: ViewModel() {
 
 
     //obtener peliculas mas vistas
-    fun getMostViewMoviesData(token: String) {
+    fun getMostViewMoviesData() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _mostViewsMoviesState.value = MostViewsMoviestState.Loading
-                val response = apiServer.methods.getMostViewMovies("Bearer $token")
+                val response = apiServer.methods.getMostViewMovies("Bearer $authToken")
                 if (response.isSuccessful) {
                     val data = response.body()
                     val uniqueMovies = data?.moviesMostViews?.distinctBy { it.id } // Filtra duplicados por ID
@@ -334,50 +320,6 @@ class userCreateViewModel: ViewModel() {
                 }
             }
         }
-    }
-
-
-
-
-    // Buscar películas por título
-    fun searchMovie(token: String, titleMovie: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                _moviesSearchState.value = MoviesSearchState.Loading
-                val response = apiServer.methods.searchMovies("Bearer $token", titleMovie)
-                if (response.isSuccessful) {
-                    val searchData = response.body()
-                    _moviesSearchState.value =
-                        searchData?.let { MoviesSearchState.Success(it) }
-                            ?: MoviesSearchState.Error("Error: Datos de búsqueda de películas no encontrados")
-                    searchData?.let { updateRecentSearches(it) } // Actualiza las búsquedas recientes
-
-
-                } else {
-                    _moviesSearchState.value = MoviesSearchState.Error("Error: ${response.message()}")
-                }
-            } catch (e: Exception) {
-                when (e) {
-                    is HttpException -> {
-                        Log.i("userCreateViewModel", e.message())
-                        _mostViewsMoviesState.value = MostViewsMoviestState.Error(e.message())
-                    }
-
-                }
-            }
-        }
-    }
-
-
-
-
-
-
-
-    fun updateRecentSearches(searchResult: searchMoviesResponse) {
-        val currentList = _recentSearches.value.toMutableList()
-        currentList.add(0, searchResult) // Agrega el nuevo resultado al inicio de la lista
-        _recentSearches.value = currentList.take(5) // Limita la lista a un máximo de resultados
     }
 
 
@@ -411,8 +353,55 @@ class userCreateViewModel: ViewModel() {
         }
     }
 
+ //buscar pelicula
+ fun searchMoviesByTitle(title: String) {
+     viewModelScope.launch(Dispatchers.IO) {
+         try {
+             _searchState.value = SearchState.Loading
+             val response = apiServer.methods.searchMovies("Bearer $authToken", title)
+             if (response.isSuccessful) {
+                 val responseBody = response.body()
+                 if (responseBody != null) {
+                     if (responseBody is searchMoviesResponse) {
+
+                         val searchResult = responseBody as searchMoviesResponse
+                         _searchState.value = SearchState.Success(searchResult)
+                         updateRecentSearches(title) // Pasar solo el título
+                     } else {
+                         _searchState.value = SearchState.Error("Error: Expected a movie object but received something else.")
+                     }
+                 } else {
+                     _searchState.value = SearchState.Error("Error: Empty response body.")
+                 }
+             } else {
+                 _searchState.value = SearchState.Error("Error: ${response.message()}")
+             }
+         } catch (e: Exception) {
+             when (e) {
+                 is HttpException -> {
+                     Log.e("UserCreateViewModel", "Error HTTP: ${e.message()}")
+                     _searchState.value = SearchState.Error("Error HTTP: ${e.message()}")
+                 }
+                 else -> {
+                     Log.e("UserCreateViewModel", "Error: ${e.message}")
+                     _searchState.value = SearchState.Error("Error: ${e.message}")
+                 }
+             }
+         }
+     }
+ }
 
 
+
+
+
+    private fun updateRecentSearches(title: String) {
+        val currentList = _recentSearches.value.toMutableList()
+        if (!currentList.contains(title)) {
+            currentList.add(0, title) // Agregar solo el título
+            _recentSearches.value = currentList.take(5) // Limitar a los últimos 5 títulos
+        }
+    }
 
 
     //publicar comentario
@@ -497,10 +486,7 @@ class userCreateViewModel: ViewModel() {
         }
     }
 
-
     // Enviar notificaciones
-
-
     fun getNotifications() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -588,9 +574,6 @@ class userCreateViewModel: ViewModel() {
         }
     }
 
-
-
-
     // Método para obtener la calificación promedio de una película
     fun getAverageRating(movieId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -618,7 +601,10 @@ class userCreateViewModel: ViewModel() {
         }
     }
 
-
+    // Función para resetear el estado a Ready
+    fun setStateToReady1() {
+        _averageRatingState.value = AverageRatingState.Ready
+    }
 
 }
 
@@ -661,15 +647,6 @@ sealed class MostViewsMoviestState {
     data class Success(val data: mostViewMoviesResponse) : MostViewsMoviestState()
     data class Error(val msg: String) : MostViewsMoviestState()
 }
-
-
-sealed class MoviesSearchState {
-    object Loading : MoviesSearchState()
-    object Ready :  MoviesSearchState()
-    data class Success(val searchData: searchMoviesResponse) :  MoviesSearchState()
-    data class Error(val message: String) :  MoviesSearchState()
-}
-
 sealed class MovieState {
     object Loading : MovieState()
     object Ready :  MovieState()
@@ -730,3 +707,15 @@ sealed class AverageRatingState {
     data class Success(val averageRating: Double) : AverageRatingState()
     data class Error(val message: String) : AverageRatingState()
 }
+
+
+sealed class SearchState {
+    object Loading : SearchState()
+    object Ready : SearchState()
+    data class Success(val data: searchMoviesResponse) : SearchState()
+    data class Error(val message: String) : SearchState()
+}
+
+
+
+
