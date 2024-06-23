@@ -54,14 +54,17 @@ const accountSchema = SchemaUsers(
     },
  
     ratings: [{
-      movieId: { type: String, required: true },
-      rating: { type: Number, required: true, min: 1, max: 5 },
+      movieId: { type: String },
+      rating: { type: Number, min: 1, max: 5 },
+      title: { type: String},
+  poster: { type: String },
+  releaseDate: { type: String },
+  genre: { type: String }
     }],
     wishlist: [{
       movieId: { type: Number },
       title: { type: String },
       poster: { type: String },
-      
       dateAdded: { type: String, default: Date.now }
     }],
    

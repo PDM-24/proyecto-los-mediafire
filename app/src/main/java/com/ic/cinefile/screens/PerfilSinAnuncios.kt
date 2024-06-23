@@ -65,6 +65,7 @@ fun PerfilSinAnuncios(
     val addScreenState = viewModel.uiState.collectAsState()
     val userDataState by viewModel.userDataState.collectAsState()
     val context = LocalContext.current
+    val averageRating by viewModel.averageRatingState.collectAsState()
 
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {

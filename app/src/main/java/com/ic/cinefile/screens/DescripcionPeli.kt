@@ -218,6 +218,7 @@ fun descripcionPeli(
                                     text = when(val state = averageRating) {
                                         is AverageRatingState.Success -> {
                                             state.averageRating?.takeIf { it != 0.0 }?.let { String.format("%.2f", it) } ?: "0.0"
+
                                         }
                                         else -> "0.0"
                                     },

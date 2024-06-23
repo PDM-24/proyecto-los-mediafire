@@ -241,7 +241,7 @@ const getMoviesBySortType = async (sortType, limit = 10) => {
 
 
   //por id
-  const fetchMovieById = async (id) => {
+ const fetchMovieById = async (id) => {
     try {
       const response = await axios.get(`${BASE_URL_API}movie/${id}?api_key=${API_KEY}&language=es-MX&append_to_response=videos,credits`);
       const movie = response.data;
@@ -272,23 +272,86 @@ const getMoviesBySortType = async (sortType, limit = 10) => {
 
 
 //obtener por raiting
-  const getMovieAverageRating = async (movieId) => {
-    try {
-      const users = await User.find({ 'ratings.movieId': movieId });
-      const ratings = users.map(user => {
-        const ratingObj = user.ratings.find(r => r.movieId === movieId);
-        return ratingObj ? ratingObj.rating : null;
-      }).filter(r => r !== null);
-  
-      if (ratings.length === 0) return null;
-  
-      const averageRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-      return averageRating;
-    } catch (error) {
-      throw new Error("Error occurred while calculating the average rating. Please try again.");
-    }
-  };
+const getMovieAverageRating = async (movieId) => {
+  try {
+    const users = await User.find({ 'ratings.movieId': movieId });
+    const ratings = users.map(user => {
+      const ratingObj = user.ratings.find(r => r.movieId === movieId);
+      return ratingObj ? ratingObj.rating : null;
+    }).filter(r => r !== null);
 
+    if (ratings.length === 0) return null;
+
+    const averageRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+
+    // Obtener los detalles de la primera película encontrada (asumiendo que todos los detalles son los mismos)
+    const user = users.find(user => user.ratings.find(r => r.movieId === movieId));
+    const movieDetails = user ? user.ratings.find(r => r.movieId === movieId) : null;
+    return {
+      averageRating,
+      movieDetails
+    };
+  } catch (error) {
+    throw new Error("Error occurred while calculating the average rating. Please try again.");
+  }
+};
+
+
+
+//obtener peliculas ya calificadas
+const getMovieDetailsFromAPI = async (movieId) => {
+  try {
+    const response = await axios.get(`${BASE_URL_API}movie/${movieId}?api_key=${API_KEY}&language=es-MX`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching movie details for movieId ${movieId}:`, error);
+    return null;
+  }
+};
+
+const getRatedMovies = async () => {
+  try {
+    const users = await User.find({ 'ratings.0': { $exists: true } });
+
+    // Crear un objeto para evitar duplicados y almacenar las películas calificadas
+    const ratedMovies = {};
+
+    for (const user of users) {
+      for (const rating of user.ratings) {
+        if (!ratedMovies[rating.movieId]) {
+          const movieDetails = await getMovieDetailsFromAPI(rating.movieId);
+          if (movieDetails) {
+            ratedMovies[rating.movieId] = {
+              movieId: rating.movieId,
+              title: movieDetails.title,
+              poster: movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : null,
+              ratings: []
+            };
+          }
+        }
+        if (ratedMovies[rating.movieId]) {
+          ratedMovies[rating.movieId].ratings.push(rating.rating);
+        }
+      }
+    }
+
+    // Convertir el objeto a un array y calcular el promedio de calificaciones para cada película
+    const ratedMoviesArray = Object.values(ratedMovies).map(movie => {
+      const averageRating = movie.ratings.reduce((sum, rating) => sum + rating, 0) / movie.ratings.length;
+      return {
+        movieId: movie.movieId,
+        title: movie.title,
+        poster: movie.poster,
+        averageRating
+      };
+    });
+
+    return ratedMoviesArray;
+  } catch (error) {
+    console.error("Error in getRatedMovies:", error);
+    throw new Error("Error occurred while fetching rated movies. Please try again.");
+  }
+};
   
   //proxiomo a estrenar
   const getUpcomingMovies= async (limit = 10) => {
@@ -413,5 +476,6 @@ module.exports={
   getMovieAverageRatingAPI:getMovieAverageRating,
   getUpcomingMoviesAPI:getUpcomingMovies,
   addToWishlistAPI:addToWishlist,
-  getWishlistAPI:getWishlist
+  getWishlistAPI:getWishlist,
+  getRatedMoviesAPI:getRatedMovies
 }

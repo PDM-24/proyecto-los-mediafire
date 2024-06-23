@@ -8,6 +8,7 @@ import com.ic.cinefile.API.Model.movies.homeUserResponse
 import com.ic.cinefile.API.Model.movies.mostViewMoviesResponse
 import com.ic.cinefile.API.Model.movies.moviesResponse
 import com.ic.cinefile.API.Model.movies.postCommentResponse
+import com.ic.cinefile.API.Model.movies.rateMoveResponse
 import com.ic.cinefile.API.Model.movies.recentMoviesResponse
 import com.ic.cinefile.API.Model.movies.searchMoviesResponse
 import com.ic.cinefile.API.Model.movies.topMoviesResponse
@@ -164,6 +165,11 @@ interface Methods {
         @Header("Authorization") authorization: String
     ): Response<wishListResponse>
 
+
+    @GET("api/movies/ratedMovies")
+    suspend fun getRatedMovies(
+        @Header("Authorization") authorization: String
+    ): Response<rateMoveResponse>
 }
 
 

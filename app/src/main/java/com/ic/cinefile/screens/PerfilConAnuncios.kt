@@ -68,6 +68,7 @@ import com.ic.cinefile.ui.theme.grisComment
 import com.ic.cinefile.ui.theme.light_red
 import com.ic.cinefile.ui.theme.montserratFamily
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.MoviesReated
 import com.ic.cinefile.viewModel.RecentMoviestState
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserDataState
@@ -85,9 +86,11 @@ fun PerfilAnuncios(
     val userDataState by viewModel.userDataState.collectAsState()
     val context = LocalContext.current
     val wishlisGetState by viewModel.wishlisGetState.collectAsState()
-
+    val averageRating by viewModel.averageRatingState.collectAsState()
+    val moviesReatedState by viewModel.moviesReatedState.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.getWishlist()
+        viewModel.getMoviesReated()
     }
 
     LaunchedEffect(addScreenState.value) {
@@ -361,6 +364,69 @@ fun PerfilAnuncios(
 
                     //LISTA DE CALIFICADAS
                     Spacer(modifier = Modifier.height(40.dp))
+
+                    when (moviesReatedState) {
+                        is MoviesReated.Success -> {
+                            val movies =
+                                (moviesReatedState as MoviesReated.Success).data.ratedMovies
+                            Column {
+                                Text(
+                                    text = "Peliculas calificadas",
+                                    style = TextStyle(
+                                        color = Color.White,
+                                        textAlign = TextAlign.Start,
+                                        fontFamily = montserratFamily,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 20.sp
+                                    ),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+
+                                LazyRow {
+                                    items(movies.size) { index ->
+                                        val movie = movies[index]
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(4.dp)
+                                                .clickable {
+                                                    // Aquí navegas a la pantalla de descripción de la película
+                                                    navController.navigate("${screenRoute.descripcionPeli.route}/${movie.movieId}")
+                                                }
+                                        )
+                                        {
+                                            AsyncImage(
+                                                model = movie.poster,
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .padding(4.dp)
+                                                    .height(200.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        is MoviesReated.Loading -> {
+                            // Aquí puedes mostrar un diálogo de carga o un indicador de progreso
+                            LoadingProgressDialog()
+                        }
+
+                        is MoviesReated.Error -> {
+                            // Aquí puedes manejar el estado de error
+                            Text(
+                                text = "Error: ${(moviesReatedState as MoviesReated.Error).errorMessage}",
+                                color = Color.Red,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+                        is MoviesReated.Ready->{
+
+                        }
+
+                    }
+
+
                     Text(
                         text = "Calificadas",
                         fontSize = 16.sp,
@@ -371,7 +437,6 @@ fun PerfilAnuncios(
                             .clickable { /*que abra la lista de todas las pelis calificadas*/ }
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    Section(movies = listOf(R.drawable.deadpoll,R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll,R.drawable.deadpoll, R.drawable.deadpoll))
                 }
 
 
