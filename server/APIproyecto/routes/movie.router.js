@@ -34,4 +34,8 @@ router.get("/topRatedMovies", authenticate, movieController.getTopRatedMoviesOve
  
 router.post('/moviesId/:id/wishlist/add', authenticate,movieController.addToWishlist);
 router.get('/wishlist/',authenticate, movieController.getWishlist);
+
+//peliculas ya claificadas
+router.get("/ratedMovies", authenticate, movieController.getRatedMovies);
+
 module.exports = router;

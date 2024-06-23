@@ -12,6 +12,7 @@ import com.ic.cinefile.API.Model.movies.getCommentResponse
 import com.ic.cinefile.API.Model.movies.homeUserResponse
 import com.ic.cinefile.API.Model.movies.mostViewMoviesResponse
 import com.ic.cinefile.API.Model.movies.moviesResponse
+import com.ic.cinefile.API.Model.movies.rateMoveResponse
 import com.ic.cinefile.API.Model.movies.recentMoviesResponse
 import com.ic.cinefile.API.Model.movies.searchMoviesResponse
 import com.ic.cinefile.API.Model.movies.topMoviesResponse
@@ -115,6 +116,10 @@ class userCreateViewModel: ViewModel() {
     private val _wishListPostState = mutableStateOf(witchListData())
     val wishListPostState: State<witchListData> = _wishListPostState
 
+
+    private val _moviesReated = MutableStateFlow<MoviesReated>(MoviesReated.Ready)
+    val moviesReatedState : StateFlow<MoviesReated> = _moviesReated
+
     private var authToken: String = "" // Propiedad para almacenar el token de autenticación
 
 
@@ -157,31 +162,7 @@ class userCreateViewModel: ViewModel() {
         }
 
 
-        fun getNotifications() {
-            viewModelScope.launch(Dispatchers.IO) {
-                try {
-                    _notificationState.value = NotificationState.Loading
-                    val response = apiServer.methods.getNotifications("Bearer $authToken")
-                    if (response.isSuccessful) {
-                        val notifications = response.body()
-                        _notificationState.value = NotificationState.Success(notifications ?: emptyList())
-                    } else {
-                        _notificationState.value = NotificationState.Error("Error: ${response.message()}")
-                    }
-                } catch (e: Exception) {
-                    when (e) {
-                        is HttpException -> {
-                            Log.e("UserCreateViewModel", "Error HTTP: ${e.message()}")
-                            _notificationState.value = NotificationState.Error("Error HTTP: ${e.message()}")
-                        }
-                        else -> {
-                            Log.e("UserCreateViewModel", "Error: ${e.message}")
-                            _notificationState.value = NotificationState.Error("Error: ${e.message}")
-                        }
-                    }
-                }
-            }
-        }
+
 
         fun markNotificationAsRead(notificationId: String) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -724,7 +705,33 @@ class userCreateViewModel: ViewModel() {
 
 
 
-
+    fun getMoviesReated() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _moviesReated.value = MoviesReated.Loading
+                val response = apiServer.methods.getRatedMovies("Bearer $authToken")
+                if (response.isSuccessful) {
+                    val moviesReatedItems = response.body()
+                    moviesReatedItems?.let {
+                        _moviesReated.value = MoviesReated.Success(it)
+                    } ?: run {
+                        _moviesReated.value = MoviesReated.Error("Lista de deseos vacía")
+                    }
+                } else {
+                    _moviesReated.value = MoviesReated.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        _moviesReated.value = MoviesReated.Error("Error HTTP: ${e.message()}")
+                    }
+                    else -> {
+                        _moviesReated.value = MoviesReated.Error("Error: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
 
 //
 
@@ -860,4 +867,11 @@ sealed class WishlistGetState {
     object Ready :  WishlistGetState()
     data class Success(val data: wishListResponse) :  WishlistGetState()
     data class Error(val errorMessage: String) :  WishlistGetState()
+}
+
+sealed class MoviesReated {
+    object Loading :  MoviesReated()
+    object Ready :  MoviesReated()
+    data class Success(val data: rateMoveResponse) :  MoviesReated()
+    data class Error(val errorMessage: String) :  MoviesReated()
 }
