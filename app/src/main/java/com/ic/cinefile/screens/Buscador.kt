@@ -162,7 +162,7 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_search_24),
                             contentDescription = "Lupa",
-                            modifier = Modifier.padding(6.dp)
+                            modifier = Modifier.padding(start = 12.dp)
                         )
                     }
 
@@ -498,4 +498,11 @@ fun SearchHistoryScreen(onBackClick: () -> Unit, recentSearches: List<String>, n
             )
         }
     }
+}
+
+
+@Preview
+@Composable
+fun BuscadorPreview(){
+    Buscador(viewModel = userCreateViewModel(), navController = rememberNavController())
 }

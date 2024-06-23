@@ -124,7 +124,7 @@ fun PerfilAnuncios(
                 title = {},
                 navigationIcon = {
                     Icon(
-                        modifier = Modifier.clickable { /*navController.popBackStack() para volver atrás*/ },
+                        modifier = Modifier.clickable { navController.popBackStack() },
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = "",
                         tint = white
@@ -200,7 +200,7 @@ fun PerfilAnuncios(
                         modifier = Modifier
                             .align(Alignment.End)
                             .padding(end = 20.dp)
-                            .clickable { /*NAVEGAR A CONFIGRACIONES*/ }
+                            .clickable { navController.navigate(screenRoute.Configuraciones.route) }
                     ){
                         Icon(
                             imageVector = Icons.Default.Settings,
@@ -280,26 +280,11 @@ fun PerfilAnuncios(
 
             // LISTAS
             LazyColumn (
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(10.dp).fillMaxWidth()
             ){
-
-
-
-
-
                 //LISTA DE DESEOS
                 item {
                     Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        text = "Lista de deseos",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = white,
-                        modifier = Modifier
-                            .padding(start = 15.dp)
-                            .clickable { /*que abra la lista de todas las pelis en lista de deseos*/ }
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
                     when (wishlisGetState) {
                         is WishlistGetState.Success -> {
                             val movies =
@@ -425,33 +410,9 @@ fun PerfilAnuncios(
                         }
 
                     }
-
-
-                    Text(
-                        text = "Calificadas",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = white,
-                        modifier = Modifier
-                            .padding(start = 15.dp)
-                            .clickable { /*que abra la lista de todas las pelis calificadas*/ }
-                    )
                     Spacer(modifier = Modifier.height(10.dp))
                 }
-
-
-
-
-
-
-
-
-
             }
-
-
-
-
         }
     }
 }

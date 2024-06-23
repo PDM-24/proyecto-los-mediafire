@@ -1,6 +1,5 @@
-
-
 package com.ic.cinefile.components.seccComentarios
+
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import com.ic.cinefile.R
 import com.ic.cinefile.data.commentData
 import com.ic.cinefile.screens.getAvatarResource
+import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.grisComment
 import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.CommentListState
@@ -99,6 +99,7 @@ fun unComentario(
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 viewModel.setStateToReady()
             }
+
             UiState.Loading -> {}
             UiState.Ready -> {}
             is UiState.Success -> {
@@ -211,6 +212,7 @@ fun unComentario(
                                 }
                             }
                         }
+
                         is RepliesToCommentState.Success -> {
                             val replies = (repliesState as RepliesToCommentState.Success).replies
                             items(replies.size) { index ->
@@ -227,6 +229,7 @@ fun unComentario(
                                 )
                             }
                         }
+
                         is RepliesToCommentState.Error -> {
                             val errorMessage = (repliesState as RepliesToCommentState.Error).message
                             item {
@@ -240,6 +243,7 @@ fun unComentario(
                                 }
                             }
                         }
+
                         else -> {}
                     }
 
@@ -247,7 +251,7 @@ fun unComentario(
                     item {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Spacer(modifier = Modifier.height(16.dp))
-                            Divider(Modifier.fillMaxWidth(), thickness = 1.dp, color = Color.Gray)
+                            Divider(Modifier.fillMaxWidth(), thickness = 1.dp, color = black)
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
                                 text = "Responder",
@@ -255,28 +259,55 @@ fun unComentario(
                                 color = white
                             )
                             Spacer(modifier = Modifier.height(16.dp))
-                            TextField(
-                                value = commentText,
-                                onValueChange = { commentText = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                placeholder = {
-                                    Text(text = "Escribe tu comentario...")
-                                }
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(
-                                onClick = {
-                                    val userData = commentData(
-                                        movieId = movieId,
-                                        commentText = commentText,
-                                        parentId=id
-                                    )
-                                    viewModel.postComment(movieId, userData, parentId=id)
-                                    commentText = ""
-                                },
-                                modifier = Modifier.align(Alignment.End)
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(text = "Enviar")
+                                TextField(
+                                    value = commentText,
+                                    onValueChange = { commentText = it },
+                                    modifier = Modifier.fillMaxWidth(0.9f),
+                                    placeholder = {
+                                        Text(
+                                            text = "Agregar un comentario...",
+                                            style = TextStyle(
+                                                color = white,
+                                                fontWeight = FontWeight.Normal,
+                                            )
+                                        )
+                                    },
+                                    colors = TextFieldDefaults.colors(
+                                        unfocusedContainerColor = grisComment,
+                                        focusedContainerColor = grisComment,
+                                        unfocusedLabelColor = white,
+                                        focusedLabelColor = white,
+                                        focusedIndicatorColor = white,
+                                        cursorColor = white,
+                                        focusedTextColor = white
+                                    ),
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                IconButton(
+                                    onClick = {
+                                        val userData = commentData(
+                                            movieId = movieId,
+                                            commentText = commentText,
+                                            parentId = id
+                                        )
+                                        viewModel.postComment(movieId, userData, parentId = id)
+                                        commentText = ""
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.baseline_send_24),
+                                        contentDescription = null,
+                                        tint = white
+                                    )
+                                }
                             }
                         }
                     }

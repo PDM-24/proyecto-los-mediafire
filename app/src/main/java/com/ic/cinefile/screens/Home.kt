@@ -97,9 +97,11 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 viewModel.setStateToReady()
             }
+
             UiState.Loading -> {
                 // Puedes agregar algún indicador de carga general aquí si es necesario
             }
+
             UiState.Ready -> {}
             is UiState.Success -> {
                 val token = (addScreenState.value as UiState.Success).token
@@ -173,7 +175,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                     )
                 )
                 NavigationDrawerItem(
-                    label = { Text(text = "Lista de deseos", color = white,fontSize = 16.sp) },
+                    label = { Text(text = "Lista de deseos", color = white, fontSize = 16.sp) },
                     selected = false,
                     icon = {
                         Icon(
@@ -196,7 +198,13 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                     )
                 )
                 NavigationDrawerItem(
-                    label = { Text(text = "Políticas de privacidad", color = white,fontSize = 16.sp) },
+                    label = {
+                        Text(
+                            text = "Políticas de privacidad",
+                            color = white,
+                            fontSize = 16.sp
+                        )
+                    },
                     selected = false,
                     icon = {
                         Icon(
@@ -218,7 +226,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 NavigationDrawerItem(
-                    label = { Text(text = "Cerrar sesión", color = white,fontSize = 16.sp) },
+                    label = { Text(text = "Cerrar sesión", color = white, fontSize = 16.sp) },
                     selected = false,
                     icon = {
                         Icon(
@@ -241,7 +249,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
 
             }
         }
-    ){
+    ) {
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -277,7 +285,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                             horizontalArrangement = Arrangement.SpaceEvenly,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            IconButton(onClick = {navController.navigate(screenRoute.Home.route)}) {
+                            IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
                                 Icon(
                                     imageVector = Icons.Filled.Home,
                                     contentDescription = "Home",
@@ -313,88 +321,59 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Surface(
-                            color = Color.White,
-                            shape = RoundedCornerShape(24.dp),
-                            modifier = Modifier.padding(6.dp),
 
-                            ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .clickable {
-                                            if (!isFocused) {
-                                                navController.navigate(screenRoute.Buscador.route)
+                        Box(
+                            modifier = Modifier
+                                .clickable {
+                                    if (!isFocused) {
+                                        navController.navigate(screenRoute.Buscador.route)
 
-                                            }
-                                        },
-                                    contentAlignment = Alignment.CenterStart
-                                ) {
-                                    Icon(
-                                        modifier = Modifier.padding(6.dp),
-                                        painter = painterResource(id = R.drawable.baseline_search_24),
-                                        contentDescription = "Lupa"
-                                    )
-
-                                    TextField(
-                                        value = buscador,
-                                        onValueChange = { newBuscador -> buscador = newBuscador },
-                                        colors = TextFieldDefaults.colors(
-                                            unfocusedContainerColor = Color.Transparent,
-                                            focusedContainerColor = Color.Transparent,
-                                            unfocusedIndicatorColor = Color.Transparent,
-                                            focusedIndicatorColor = Color.Transparent,
-                                            disabledIndicatorColor = Color.Transparent
-                                        ),
-                                        placeholder = {
-                                            Text(
-                                                text = "Buscar",
-                                                style = TextStyle(
-                                                    color = Color.Gray,
-                                                    fontSize = 15.sp,
-                                                    letterSpacing = 0.1.em,
-                                                    fontWeight = FontWeight.Normal
-                                                )
-                                            )
-                                        },
-                                        textStyle = TextStyle(color = black),
-                                        singleLine = true,
-                                        modifier = Modifier.padding(start = 20.dp)
-                                            .onFocusChanged { focusState ->
-                                                isFocused = focusState.isFocused
-                                            }
-                                            .clickable {
-                                                if (!isFocused) {
-                                                    navController.navigate(screenRoute.Buscador.route)
-                                                }
-                                            }
-                                    )
+                                    }
                                 }
-                            }
-
-
-                            IconButton(onClick = {
-
-                                navController.navigate(route = screenRoute.Notificaciones.route)
-
-
-                            }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.baseline_notifications_24),
-                                    tint = Color.White,
-                                    contentDescription = "notificaciones"
+                                .padding(6.dp)
+                                .background(
+                                    color = white,
+                                    shape = RoundedCornerShape(24.dp)
                                 )
-                            }
+                                .fillMaxWidth(0.8f)
+                                .height(55.dp),
+                            contentAlignment = Alignment.CenterStart,
+
+                            ) {
+                            Icon(
+                                modifier = Modifier.padding(6.dp),
+                                painter = painterResource(id = R.drawable.baseline_search_24),
+                                contentDescription = "Lupa"
+                            )
+                            Text(
+                                text = "Buscar",
+                                style = TextStyle(
+                                    color = Color.Gray,
+                                    fontSize = 15.sp,
+                                    letterSpacing = 0.1.em,
+                                    fontWeight = FontWeight.Normal
+                                ),
+                                modifier = Modifier.padding(start = 50.dp)
+                            )
+
                         }
-
-
+                        IconButton(
+                            onClick = {
+                                navController.navigate(route = screenRoute.Notificaciones.route)
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_notifications_24),
+                                tint = Color.White,
+                                contentDescription = "notificaciones"
+                            )
+                        }
                     }
 
                     when (userDataState) {
                         is UserDataState.Success -> {
-                            val movieCategories = (userDataState as UserDataState.Success).userData.movies
+                            val movieCategories =
+                                (userDataState as UserDataState.Success).userData.movies
                             movieCategories.forEach { (category, movies) ->
                                 Box(modifier = Modifier.padding(8.dp)) {
                                     Text(
@@ -421,7 +400,8 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                                                     navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
                                                 }
                                         ) {
-                                            val painter = rememberAsyncImagePainter(model = movie.posterUrl)
+                                            val painter =
+                                                rememberAsyncImagePainter(model = movie.posterUrl)
                                             val painterState = painter.state
 
                                             Box(
@@ -449,10 +429,12 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                                 }
                             }
                         }
+
                         is UserDataState.Loading -> {
                             // Mostrar diálogo de carga o indicador de progreso
                             LoadingProgressDialog()
                         }
+
                         else -> {}
                     }
                 }
@@ -478,8 +460,8 @@ fun LoadingAnimation() {
 }
 
 
-@Preview
+/*@Preview
 @Composable
-fun HomePreview(){
+fun HomePreview() {
     Home(viewModel = userCreateViewModel(), navController = rememberNavController())
-}
+}*/
