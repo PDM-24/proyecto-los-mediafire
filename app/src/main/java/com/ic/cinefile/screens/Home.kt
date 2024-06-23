@@ -1,6 +1,7 @@
 package com.ic.cinefile.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextField
@@ -15,28 +16,42 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -59,6 +74,7 @@ import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserDataState
 import com.ic.cinefile.viewModel.userCreateViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +85,10 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
     val userDataState by viewModel.userDataState.collectAsState()
     var showReloadButton by remember { mutableStateOf(false) }
     var isFocused by remember { mutableStateOf(false) }
+    //Del menu hamburguesa
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val coroutineScope = rememberCoroutineScope()
+    val navigationController = rememberNavController()
 
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
@@ -89,220 +109,352 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                modifier = Modifier
-                    .padding(0.dp)
-                    .height(50.dp),
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = black
-                ),
-                title = {},
-                navigationIcon =
-                {
-                    IconButton(
-                        onClick = {
-
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = "",
-                            tint = white,
-                            modifier = Modifier.size(40.dp)
-                        )
-                    }
-                }
-            )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = Color.Black,
-                content = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(onClick = {navController.navigate(screenRoute.Home.route)}) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = "Home",
-                                tint = white
-                            )
-                        }
-                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route)
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = "User",
-                                tint = white
-                            )
-                        }
-                    }
-                }
-            )
-        }
-    ) { innerPadding ->
-        if (userDataState is UserDataState.Loading) {
-            LoadingAnimation()
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .background(black)
-                    .verticalScroll(rememberScrollState())
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = true,
+        drawerContent = {
+            ModalDrawerSheet(
+                drawerContainerColor = black
             ) {
-
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(40.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Surface(
-                        color = Color.White,
-                        shape = RoundedCornerShape(24.dp),
-                        modifier = Modifier.padding(6.dp),
-
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .clickable {
-                                        if (!isFocused) {
-                                            navController.navigate(screenRoute.Buscador.route)
-
-                                        }
-                                               },
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Icon(
-                                    modifier = Modifier.padding(6.dp),
-                                    painter = painterResource(id = R.drawable.baseline_search_24),
-                                    contentDescription = "Lupa"
-                                )
-
-                                TextField(
-                                    value = buscador,
-                                    onValueChange = { newBuscador -> buscador = newBuscador },
-                                    colors = TextFieldDefaults.colors(
-                                        unfocusedContainerColor = Color.Transparent,
-                                        focusedContainerColor = Color.Transparent,
-                                        unfocusedIndicatorColor = Color.Transparent,
-                                        focusedIndicatorColor = Color.Transparent,
-                                        disabledIndicatorColor = Color.Transparent
-                                    ),
-                                    placeholder = {
-                                        Text(
-                                            text = "Buscar",
-                                            style = TextStyle(
-                                                color = Color.Gray,
-                                                fontSize = 15.sp,
-                                                letterSpacing = 0.1.em,
-                                                fontWeight = FontWeight.Normal
-                                            )
-                                        )
-                                    },
-                                    textStyle = TextStyle(color = black),
-                                    singleLine = true,
-                                    modifier = Modifier.padding(start = 20.dp)
-                                        .onFocusChanged { focusState ->
-                                            isFocused = focusState.isFocused
-                                        }
-                                        .clickable {
-                                            if (!isFocused) {
-                                                navController.navigate(screenRoute.Buscador.route)
-                                            }
-                                        }
-                                )
-                            }
+                    //Avatar del usuario
+                    Image(
+                        painter = painterResource(id = R.drawable.reynolds),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                    )
+                    //Nombre del usuario
+                    Text(
+                        text = "usuario",
+                        color = white,
+                        modifier = Modifier
+                            .padding(start = 12.dp),
+                        fontSize = 20.sp
+                    )
+                }
+                Divider()
+                Spacer(modifier = Modifier.height(10.dp))
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            text = "Calificadas",
+                            color = white,
+                            fontSize = 16.sp
+                        )
+                    },
+                    selected = false,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = white
+                        )
+                    },
+                    onClick = {
+                        coroutineScope.launch {
+                            drawerState.close()
                         }
+                        navigationController.navigate(screenRoute.Calificadas.route) {
+                            popUpTo(0)
+                        }
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color.Transparent
+                    )
+                )
+                NavigationDrawerItem(
+                    label = { Text(text = "Lista de deseos", color = white,fontSize = 16.sp) },
+                    selected = false,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = white
+                        )
+                    },
+                    onClick = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+                        navigationController.navigate(screenRoute.ListaDeseos.route) {
+                            popUpTo(0)
+                        }
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color.Transparent
+                    )
+                )
+                NavigationDrawerItem(
+                    label = { Text(text = "Políticas de privacidad", color = white,fontSize = 16.sp) },
+                    selected = false,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = null,
+                            tint = white
+                        )
+                    },
+                    onClick = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+                        /*PARA IR A LAS POLITICAS DE PRIVACIDAD*/
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color.Transparent
+                    )
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                NavigationDrawerItem(
+                    label = { Text(text = "Cerrar sesión", color = white,fontSize = 16.sp) },
+                    selected = false,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.ExitToApp,
+                            contentDescription = null,
+                            tint = white
+                        )
+                    },
+                    onClick = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+                        /*LOGICA PA SALIR DE LA APP*/
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color.Transparent
+                    )
+                )
 
-
-                        IconButton(onClick = {
-
-                            navController.navigate(route = screenRoute.Notificaciones.route)
-
-
-                        }) {
+            }
+        }
+    ){
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = black
+                    ),
+                    title = {},
+                    navigationIcon =
+                    {
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    drawerState.open()
+                                }
+                            }
+                        ) {
                             Icon(
-                                painter = painterResource(id = R.drawable.baseline_notifications_24),
-                                tint = Color.White,
-                                contentDescription = "notificaciones"
+                                imageVector = Icons.Filled.Menu,
+                                contentDescription = "",
+                                tint = white,
+                                modifier = Modifier.size(40.dp)
                             )
                         }
                     }
-
-
-                }
-
-                when (userDataState) {
-                    is UserDataState.Success -> {
-                        val movieCategories = (userDataState as UserDataState.Success).userData.movies
-                        movieCategories.forEach { (category, movies) ->
-                            Box(modifier = Modifier.padding(8.dp)) {
-                                Text(
-                                    text = category,
-                                    style = TextStyle(
-                                        color = Color.White,
-                                        textAlign = TextAlign.Start,
-                                        fontFamily = montserratFamily,
-                                        fontWeight = FontWeight.Medium,
-                                        fontSize = 20.sp
-                                    )
+                )
+            },
+            bottomBar = {
+                BottomAppBar(
+                    containerColor = Color.Black,
+                    content = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(onClick = {navController.navigate(screenRoute.Home.route)}) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
                                 )
                             }
+                            IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = "User",
+                                    tint = white
+                                )
+                            }
+                        }
+                    }
+                )
+            }
+        ) { innerPadding ->
+            if (userDataState is UserDataState.Loading) {
+                LoadingAnimation()
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .background(black)
+                        .verticalScroll(rememberScrollState())
+                ) {
 
-                            LazyRow {
-                                items(movies.size) { index ->
-                                    val movie = movies[index]
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Surface(
+                            color = Color.White,
+                            shape = RoundedCornerShape(24.dp),
+                            modifier = Modifier.padding(6.dp),
 
-                                    Box(
-                                        modifier = Modifier
-                                            .padding(4.dp)
-                                            .clickable {
-                                                // Aquí navegas a la pantalla de descripción de la película
-                                                navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
+                            ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .clickable {
+                                            if (!isFocused) {
+                                                navController.navigate(screenRoute.Buscador.route)
+
                                             }
-                                    ) {
-                                        val painter = rememberAsyncImagePainter(model = movie.posterUrl)
-                                        val painterState = painter.state
+                                        },
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    Icon(
+                                        modifier = Modifier.padding(6.dp),
+                                        painter = painterResource(id = R.drawable.baseline_search_24),
+                                        contentDescription = "Lupa"
+                                    )
+
+                                    TextField(
+                                        value = buscador,
+                                        onValueChange = { newBuscador -> buscador = newBuscador },
+                                        colors = TextFieldDefaults.colors(
+                                            unfocusedContainerColor = Color.Transparent,
+                                            focusedContainerColor = Color.Transparent,
+                                            unfocusedIndicatorColor = Color.Transparent,
+                                            focusedIndicatorColor = Color.Transparent,
+                                            disabledIndicatorColor = Color.Transparent
+                                        ),
+                                        placeholder = {
+                                            Text(
+                                                text = "Buscar",
+                                                style = TextStyle(
+                                                    color = Color.Gray,
+                                                    fontSize = 15.sp,
+                                                    letterSpacing = 0.1.em,
+                                                    fontWeight = FontWeight.Normal
+                                                )
+                                            )
+                                        },
+                                        textStyle = TextStyle(color = black),
+                                        singleLine = true,
+                                        modifier = Modifier.padding(start = 20.dp)
+                                            .onFocusChanged { focusState ->
+                                                isFocused = focusState.isFocused
+                                            }
+                                            .clickable {
+                                                if (!isFocused) {
+                                                    navController.navigate(screenRoute.Buscador.route)
+                                                }
+                                            }
+                                    )
+                                }
+                            }
+
+
+                            IconButton(onClick = {
+
+                                navController.navigate(route = screenRoute.Notificaciones.route)
+
+
+                            }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_notifications_24),
+                                    tint = Color.White,
+                                    contentDescription = "notificaciones"
+                                )
+                            }
+                        }
+
+
+                    }
+
+                    when (userDataState) {
+                        is UserDataState.Success -> {
+                            val movieCategories = (userDataState as UserDataState.Success).userData.movies
+                            movieCategories.forEach { (category, movies) ->
+                                Box(modifier = Modifier.padding(8.dp)) {
+                                    Text(
+                                        text = category,
+                                        style = TextStyle(
+                                            color = Color.White,
+                                            textAlign = TextAlign.Start,
+                                            fontFamily = montserratFamily,
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 20.sp
+                                        )
+                                    )
+                                }
+
+                                LazyRow {
+                                    items(movies.size) { index ->
+                                        val movie = movies[index]
 
                                         Box(
                                             modifier = Modifier
-                                                .height(200.dp)
-                                                .width(150.dp)
+                                                .padding(4.dp)
+                                                .clickable {
+                                                    // Aquí navegas a la pantalla de descripción de la película
+                                                    navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
+                                                }
                                         ) {
-                                            if (painterState is AsyncImagePainter.State.Error) {
-                                                Text(
-                                                    text = "Error al cargar la imagen",
-                                                    color = Color.Red,
-                                                    modifier = Modifier.padding(16.dp)
-                                                )
-                                            } else {
-                                                AsyncImage(
-                                                    model = movie.posterUrl,
-                                                    contentDescription = null,
-                                                    contentScale = ContentScale.Crop,
-                                                    modifier = Modifier.fillMaxSize()
-                                                )
+                                            val painter = rememberAsyncImagePainter(model = movie.posterUrl)
+                                            val painterState = painter.state
+
+                                            Box(
+                                                modifier = Modifier
+                                                    .height(200.dp)
+                                                    .width(150.dp)
+                                            ) {
+                                                if (painterState is AsyncImagePainter.State.Error) {
+                                                    Text(
+                                                        text = "Error al cargar la imagen",
+                                                        color = Color.Red,
+                                                        modifier = Modifier.padding(16.dp)
+                                                    )
+                                                } else {
+                                                    AsyncImage(
+                                                        model = movie.posterUrl,
+                                                        contentDescription = null,
+                                                        contentScale = ContentScale.Crop,
+                                                        modifier = Modifier.fillMaxSize()
+                                                    )
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         }
+                        is UserDataState.Loading -> {
+                            // Mostrar diálogo de carga o indicador de progreso
+                            LoadingProgressDialog()
+                        }
+                        else -> {}
                     }
-                    is UserDataState.Loading -> {
-                        // Mostrar diálogo de carga o indicador de progreso
-                        LoadingProgressDialog()
-                    }
-                    else -> {}
                 }
             }
         }
