@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ic.cinefile.screens.Buscador
 import com.ic.cinefile.screens.Calificadas
+import com.ic.cinefile.screens.Configuraciones
 import com.ic.cinefile.screens.CrearCuenta
 import com.ic.cinefile.screens.CrearPerfil
 import com.ic.cinefile.screens.ElegirGeneros
@@ -118,6 +119,9 @@ fun AppNavigation(
         }
         composable(route=screenRoute.ListaDeseos.route){
             Lista_deseos()
+        }
+        composable(route=screenRoute.Configuraciones.route){
+            Configuraciones(navController)
         }
 
     }
