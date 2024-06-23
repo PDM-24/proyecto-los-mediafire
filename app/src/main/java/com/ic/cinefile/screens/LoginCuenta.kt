@@ -104,14 +104,15 @@ fun Login(viewModel: userCreateViewModel, navController: NavController) {
                 focusedLabelColor = white,
                 focusedIndicatorColor = white,
                 cursorColor = white,
-                focusedTextColor = white
+                focusedTextColor = white,
+                unfocusedTextColor = white
             ),
             placeholder = {
                 Text(
                     text = "Correo",
                     style = TextStyle(
                         color = white,
-                        fontSize = 15.sp,
+                        fontSize = 16.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
                     ),
@@ -145,14 +146,15 @@ fun Login(viewModel: userCreateViewModel, navController: NavController) {
                 focusedLabelColor = white,
                 focusedIndicatorColor = white,
                 cursorColor = white,
-                focusedTextColor = white
+                focusedTextColor = white,
+                unfocusedTextColor = white
             ),
             placeholder = {
                 Text(
                     text = "Contraseña",
                     style = TextStyle(
                         color = white,
-                        fontSize = 15.sp,
+                        fontSize = 16.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
                     ),

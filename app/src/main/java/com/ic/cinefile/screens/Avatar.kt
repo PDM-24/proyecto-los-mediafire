@@ -124,6 +124,7 @@ fun contentAvatar(viewModel: userCreateViewModel, navController : NavController)
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(innerPadding)
                 .background(Color.Black),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center

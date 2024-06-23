@@ -79,14 +79,15 @@ fun CrearCuenta(viewModel: userCreateViewModel, navController: NavController) {
                 focusedLabelColor = white,
                 focusedIndicatorColor = white,
                 cursorColor = white,
-                focusedTextColor = white
+                focusedTextColor = white,
+                unfocusedTextColor = white
             ),
             placeholder = {
                 Text(
                     text = "Correo (ejemplo@dominio.com )",
                     style = androidx.compose.ui.text.TextStyle(
                         color = white,
-                        fontSize = 15.sp,
+                        fontSize = 16.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
                     )
@@ -114,14 +115,15 @@ fun CrearCuenta(viewModel: userCreateViewModel, navController: NavController) {
                 focusedLabelColor = white,
                 focusedIndicatorColor = white,
                 cursorColor = white,
-                focusedTextColor = white
+                focusedTextColor = white,
+                unfocusedTextColor = white
             ),
             placeholder = {
                 Text(
                     text = "Contraseña (máximo 8 caracteres)",
                     style = androidx.compose.ui.text.TextStyle(
                         color = white,
-                        fontSize = 15.sp,
+                        fontSize = 16.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
                     ),
