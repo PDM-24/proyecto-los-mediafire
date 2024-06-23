@@ -7,11 +7,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ic.cinefile.screens.Buscador
+import com.ic.cinefile.screens.Calificadas
 import com.ic.cinefile.screens.CrearCuenta
 import com.ic.cinefile.screens.CrearPerfil
 import com.ic.cinefile.screens.ElegirGeneros
 import com.ic.cinefile.screens.Home
 import com.ic.cinefile.screens.HomeAppScreen
+import com.ic.cinefile.screens.Lista_deseos
 import com.ic.cinefile.screens.Login
 import com.ic.cinefile.screens.Notificaciones
 import com.ic.cinefile.screens.PerfilAnuncios
@@ -111,6 +113,12 @@ fun AppNavigation(
 //            )
 //        }
 
+        composable(route=screenRoute.Calificadas.route){
+            Calificadas()
+        }
+        composable(route=screenRoute.ListaDeseos.route){
+            Lista_deseos()
+        }
 
     }
 
