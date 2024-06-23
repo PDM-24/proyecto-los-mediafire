@@ -110,14 +110,15 @@ fun CrearPerfil(viewModel: userCreateViewModel,navController : NavController) {
                 focusedLabelColor = white,
                 focusedIndicatorColor = white,
                 cursorColor = white,
-                focusedTextColor = white
+                focusedTextColor = white,
+                unfocusedTextColor = white
             ),
             placeholder = {
                 Text(
                     text = "Nombre de usuario (máximo 15 caracteres)",
                     style = TextStyle(
                         color = white,
-                        fontSize = 15.sp,
+                        fontSize = 16.sp,
                         letterSpacing = 0.1.em,
                         fontWeight = FontWeight.Normal,
                     )

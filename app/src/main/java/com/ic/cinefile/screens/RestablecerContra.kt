@@ -125,14 +125,15 @@ fun RestablecerContra(context:Context) {
                     focusedLabelColor = white,
                     focusedIndicatorColor = white,
                     cursorColor = white,
-                    focusedTextColor = white
+                    focusedTextColor = white,
+                    unfocusedTextColor = white
                 ),
                 placeholder = {
                     Text(
                         text = "Correo",
                         style = androidx.compose.ui.text.TextStyle(
                             color = white,
-                            fontSize = 15.sp,
+                            fontSize = 16.sp,
                             letterSpacing = 0.1.em,
                             fontWeight = FontWeight.Normal,
                         )
