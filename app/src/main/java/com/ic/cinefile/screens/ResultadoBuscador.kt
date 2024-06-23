@@ -104,6 +104,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
     // Lista mutable para almacenar el estado de marcado de cada película
     val bookmarkedStates: MutableList<Boolean> = remember { mutableStateListOf() }
     var isSearching by remember { mutableStateOf(false) }
+    var selectedGenre by remember { mutableStateOf("") }
 
     var isMenuExpanded by remember { mutableStateOf(false) }
     var isGenreMenuExpanded by remember { mutableStateOf(false) }
@@ -259,6 +260,8 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                             onClick = {
                                 selectedOption = "Recientes"
                                 isMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de recientes
+                                viewModel.searchMoviesByTitle(title,sortBy="release_date.desc")
                             }
                         )
                         DropdownMenuItem(
@@ -266,6 +269,8 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                             onClick = {
                                 selectedOption = "Más viejas"
                                 isMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de más viejas
+                                viewModel.searchMoviesByTitle(title,sortBy="release_date.asc")
                             }
                         )
                         DropdownMenuItem(
@@ -277,33 +282,189 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                         )
                     }
 
+
                     DropdownMenu(
                         expanded = isGenreMenuExpanded,
                         onDismissRequest = { isGenreMenuExpanded = false },
                         modifier = Modifier.background(Color.White)
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Terror") },
+                            text = { Text("Acción") },
                             onClick = {
-                                selectedOption = "Terror"
+                                selectedOption = "Acción"
+                                selectedGenre = "accion"
                                 isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Acción
+                                viewModel.searchMoviesByTitle(title, genre = "accion")
                             }
                         )
+                        DropdownMenuItem(
+                            text = { Text("Aventura") },
+                            onClick = {
+                                selectedOption = "Aventura"
+                                selectedGenre = "aventura"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Aventura
+                                viewModel.searchMoviesByTitle(title, genre = "aventura")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Animación") },
+                            onClick = {
+                                selectedOption = "Animación"
+                                selectedGenre = "animacion"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Animación
+                                viewModel.searchMoviesByTitle(title, genre = "animacion")
+                            }
+                        )
+
+
                         DropdownMenuItem(
                             text = { Text("Comedia") },
                             onClick = {
                                 selectedOption = "Comedia"
+                                selectedGenre = "comedia"
                                 isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Comedia
+                                viewModel.searchMoviesByTitle(title, genre = "comedia")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Crimen") },
+                            onClick = {
+                                selectedOption = "Crimen"
+                                selectedGenre = "crimen"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Crimen
+                                viewModel.searchMoviesByTitle(title, genre = "crimen")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Documental") },
+                            onClick = {
+                                selectedOption = "Documental"
+                                selectedGenre = "documental"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Documental
+                                viewModel.searchMoviesByTitle(title, genre = "documental")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Drama") },
+                            onClick = {
+                                selectedOption = "Drama"
+                                selectedGenre = "drama"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Drama
+                                viewModel.searchMoviesByTitle(title, genre = "drama")
                             }
                         )
                         DropdownMenuItem(
                             text = { Text("Familia") },
                             onClick = {
                                 selectedOption = "Familia"
+                                selectedGenre = "familia"
                                 isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Familia
+                                viewModel.searchMoviesByTitle(title, genre = "familia")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Fantasía") },
+                            onClick = {
+                                selectedOption = "Fantasía"
+                                selectedGenre = "fantasia"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Fantasía
+                                viewModel.searchMoviesByTitle(title, genre = "fantasia")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Historia") },
+                            onClick = {
+                                selectedOption = "Historia"
+                                selectedGenre = "historia"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Historia
+                                viewModel.searchMoviesByTitle(title, genre = "historia")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Terror") },
+                            onClick = {
+                                selectedOption = "Terror"
+                                selectedGenre = "terror"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Terror
+                                viewModel.searchMoviesByTitle(title, genre = "terror")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Música") },
+                            onClick = {
+                                selectedOption = "Música"
+                                selectedGenre = "musica"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Música
+                                viewModel.searchMoviesByTitle(title, genre = "musica")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Misterio") },
+                            onClick = {
+                                selectedOption = "Misterio"
+                                selectedGenre = "misterio"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Misterio
+                                viewModel.searchMoviesByTitle(title, genre = "misterio")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Romance") },
+                            onClick = {
+                                selectedOption = "Romance"
+                                selectedGenre = "romance"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Romance
+                                viewModel.searchMoviesByTitle(title, genre = "romance")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Suspenso") },
+                            onClick = {
+                                selectedOption = "Suspenso"
+                                selectedGenre = "suspenso"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Suspenso
+                                viewModel.searchMoviesByTitle(title, genre = "suspenso")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Bélica") },
+                            onClick = {
+                                selectedOption = "Bélica"
+                                selectedGenre = "belica"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Bélica
+                                viewModel.searchMoviesByTitle(title, genre = "belica")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Western") },
+                            onClick = {
+                                selectedOption = "Western"
+                                selectedGenre = "western"
+                                isGenreMenuExpanded = false
+                                // Llamar función de búsqueda con filtro de género Western
+                                viewModel.searchMoviesByTitle(title, genre = "western")
                             }
                         )
                     }
+
+
+
+
                 }
             }
 
@@ -350,7 +511,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                                 Peli(
                                     poster = movie.posterUrl,
                                     titulo = movie.title,
-                                    fechaLanzamiento = movie.releaseDate,
+                                    fechaLanzamiento = movie.releaseDate ?: "sin fecha",
                                     categoria = movie.genres,
                                     isBookmarked = bookmarkedStates.getOrNull(movies.indexOf(movie)) ?: false,
                                     averageRating= averageRatingState // Pasar el estado completo aquí
@@ -403,16 +564,18 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
 }
 @Composable
 fun Peli(
-    poster: String,
+    poster: String?,
     titulo: String,
-    fechaLanzamiento: String,
+    fechaLanzamiento: String?,
     categoria: String,
     isBookmarked: Boolean,
     averageRating: AverageRatingState,
 ) {
+    val displayedFechaLanzamiento = fechaLanzamiento ?: "sin fecha"
+
     Row(
         modifier = Modifier
-            .background(black),
+            .background(Color.Black),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -424,18 +587,27 @@ fun Peli(
                     // navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
                 }
         ) {
-            AsyncImage(
-                model = poster,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+            if (poster != null) {
+                AsyncImage(
+                    model = poster,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                // Placeholder para imagen nula
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Gray)
+                )
+            }
 
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .background(
-                        grisComment,
+                        Color.Gray,
                         shape = RoundedCornerShape(bottomStart = 8.dp, topStart = 8.dp)
                     )
                     .clickable { }
@@ -448,17 +620,13 @@ fun Peli(
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_star_rate_24),
                         contentDescription = null,
-                        tint = light_yellow,
+                        tint = Color.Yellow,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
                         text = when (averageRating) {
                             is AverageRatingState.Success -> {
                                 String.format("%.2f", (averageRating as AverageRatingState.Success).averageRating)
-
-//                                else {
-//                                    "0.0"
-//                                }
                             }
                             is AverageRatingState.Loading -> {
                                 "..."
@@ -493,7 +661,7 @@ fun Peli(
                 categoria.split(",").forEach { cat ->
                     Card(
                         modifier = Modifier.wrapContentSize(),
-                        colors = CardDefaults.cardColors(containerColor = sky_blue)
+                        colors = CardDefaults.cardColors(containerColor = sky_blue                        )
                     ) {
                         Text(
                             text = cat,
@@ -515,8 +683,8 @@ fun Peli(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = fechaLanzamiento,
-                    color = white,
+                    text = displayedFechaLanzamiento,
+                    color = Color.White,
                     fontSize = 14.sp
                 )
                 Spacer(modifier = Modifier.width(8.dp))

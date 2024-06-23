@@ -75,6 +75,7 @@ import com.ic.cinefile.ui.theme.montserratFamily
 import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.MostViewsMoviestState
 import com.ic.cinefile.viewModel.RecentMoviestState
+import com.ic.cinefile.viewModel.TopMoviestState
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserDataState
 import com.ic.cinefile.viewModel.userCreateViewModel
@@ -95,7 +96,7 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
     val addScreenState = viewModel.uiState.collectAsState()
     val recentMoviesState by viewModel.recentMoviesState.collectAsState()
     val mostViewsMoviesState by viewModel.mostViewsMoviesState.collectAsState()
-
+    val topMoviesState by viewModel.topMoviesState.collectAsState()
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
             is UiState.Error -> {
@@ -119,10 +120,11 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
     }
 
 
-LaunchedEffect(Unit){
-    viewModel.getRecentMoviesData() // Llama a getUserData para obtener la información del usuario
-    viewModel.getMostViewMoviesData()
-}
+    LaunchedEffect(Unit) {
+        viewModel.getRecentMoviesData() // Llama a getUserData para obtener la información del usuario
+        viewModel.getMostViewMoviesData()
+        viewModel.TopMovies()
+    }
 
 
 
@@ -266,7 +268,8 @@ LaunchedEffect(Unit){
                     //peliculas recientes
                     when (recentMoviesState) {
                         is RecentMoviestState.Success -> {
-                            val movies = (recentMoviesState as RecentMoviestState.Success).data.moviesRecent
+                            val movies =
+                                (recentMoviesState as RecentMoviestState.Success).data.moviesRecent
                             Column {
                                 Text(
                                     text = "Películas Mas recientes",
@@ -292,22 +295,24 @@ LaunchedEffect(Unit){
                                                 }
                                         )
                                         {
-                                        AsyncImage(
-                                            model = movie.posterUrl,
-                                            contentDescription = null,
-                                            modifier = Modifier
-                                                .padding(4.dp)
-                                                .height(200.dp)
-                                        )
-                                    }
+                                            AsyncImage(
+                                                model = movie.posterUrl,
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .padding(4.dp)
+                                                    .height(200.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
+
                         is RecentMoviestState.Loading -> {
                             // Aquí puedes mostrar un diálogo de carga o un indicador de progreso
                             LoadingProgressDialog()
                         }
+
                         is RecentMoviestState.Error -> {
                             // Aquí puedes manejar el estado de error
                             Text(
@@ -316,6 +321,7 @@ LaunchedEffect(Unit){
                                 modifier = Modifier.padding(8.dp)
                             )
                         }
+
                         is RecentMoviestState.Ready -> {
                             // Aquí puedes manejar el estado de preparación inicial si es necesario
                         }
@@ -323,7 +329,8 @@ LaunchedEffect(Unit){
 //mas visto
                     when (mostViewsMoviesState) {
                         is MostViewsMoviestState.Success -> {
-                            val movies = (mostViewsMoviesState as MostViewsMoviestState.Success).data.moviesMostViews
+                            val movies =
+                                (mostViewsMoviesState as MostViewsMoviestState.Success).data.moviesMostViews
                             Column {
                                 Text(
                                     text = "Películas más vistas",
@@ -360,10 +367,12 @@ LaunchedEffect(Unit){
                                 }
                             }
                         }
+
                         is MostViewsMoviestState.Loading -> {
                             // Aquí puedes mostrar un diálogo de carga o un indicador de progreso
                             LoadingProgressDialog()
                         }
+
                         is MostViewsMoviestState.Error -> {
                             // Aquí puedes manejar el estado de error
                             Text(
@@ -372,93 +381,90 @@ LaunchedEffect(Unit){
                                 modifier = Modifier.padding(8.dp)
                             )
                         }
+
                         is MostViewsMoviestState.Ready -> {
                             // Aquí puedes manejar el estado de preparación inicial si es necesario
                         }
                     }
 
-<<<<<<< HEAD
-                    Box(modifier = Modifier.padding(8.dp) ){
-                        Text(text = "Valoracion 5 estrellas",
-=======
+
+                    when (topMoviesState) {
+                        is TopMoviestState.Loading -> {
+                            // Aquí puedes mostrar un diálogo de carga o un indicador de progreso
+                            LoadingProgressDialog()
+                        }
+                        is TopMoviestState.Success -> {
+                            val movies =
+                                (topMoviesState as TopMoviestState.Success).data.topRatedMovies
+                            Column {
+                                Text(
+                                    text = "Mejores calificadas",
+                                    style = TextStyle(
+                                        color = Color.White,
+                                        textAlign = TextAlign.Start,
+                                        fontFamily = montserratFamily,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 20.sp
+                                    ),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+
+                                LazyRow {
+                                    items(movies.size) { index ->
+                                        val movie = movies[index]
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(4.dp)
+                                                .clickable {
+                                                    // Aquí navegas a la pantalla de descripción de la película
+                                                    navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
+                                                }
+                                        ) {
+                                            AsyncImage(
+                                                model = movie.posterUrl,
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .padding(4.dp)
+                                                    .height(200.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
 
 
-
-
-
-
-
-
-
-                    Box(
-                        modifier = Modifier.padding(8.dp)
-                    ){
-                        Text(
-                            text = "Valoracion 5 estrellas",
->>>>>>> 1782b6afa9716a4a49d2ec00bc920b61bc60989e
-                            style = TextStyle(
-                                color = Color.White,
-                                textAlign =  TextAlign.Start,
-                                fontFamily = montserratFamily,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 16.sp
-
-                            ),
-                            modifier = Modifier.padding(start = 15.dp)
-                        )
-                    }
-
-                    LazyRow (
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ){
-
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.dunc),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(200.dp),
+                        is TopMoviestState.Error -> {
+                            // Aquí puedes manejar el estado de error
+                            Text(
+                                text = "Error: ${(topMoviesState as TopMoviestState.Error).msg}",
+                                color = Color.Red,
+                                modifier = Modifier.padding(8.dp)
                             )
                         }
 
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.godzilla),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(200.dp),
-                            )
-                        }
-
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.migration),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(200.dp),
-                            )
-                        }
-
-                        item {
-                            Image(
-                                painter = painterResource(id = R.drawable.garfield),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(200.dp),
-                            )
+                        is TopMoviestState.Ready -> {
+                            // Aquí puedes manejar el estado de preparación inicial si es necesario
                         }
                     }
+
+
+
+
+
+
+
+
+
                 }
             }
         }
     }
 }
+
+
+
 
 @Composable
 fun SearchHistoryScreen(onBackClick: () -> Unit, recentSearches: List<String>, navController: NavController) {
@@ -493,13 +499,3 @@ fun SearchHistoryScreen(onBackClick: () -> Unit, recentSearches: List<String>, n
         }
     }
 }
-
-<<<<<<< HEAD
-=======
-
-@Preview
-@Composable
-fun BuscadorPreview(){
-    Buscador(viewModel = userCreateViewModel(), navController = rememberNavController())
-}
->>>>>>> 1782b6afa9716a4a49d2ec00bc920b61bc60989e

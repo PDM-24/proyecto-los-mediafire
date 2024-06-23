@@ -10,6 +10,9 @@ import com.ic.cinefile.API.Model.movies.moviesResponse
 import com.ic.cinefile.API.Model.movies.postCommentResponse
 import com.ic.cinefile.API.Model.movies.recentMoviesResponse
 import com.ic.cinefile.API.Model.movies.searchMoviesResponse
+import com.ic.cinefile.API.Model.movies.topMoviesResponse
+import com.ic.cinefile.API.Model.movies.wishListResponse
+import com.ic.cinefile.API.Model.movies.wishPostResponse
 import com.ic.cinefile.API.Model.users.MarkAsReadResponse
 import com.ic.cinefile.API.Model.users.NotificationResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
@@ -19,6 +22,7 @@ import com.ic.cinefile.data.accountLoginData
 import com.ic.cinefile.data.accountRegisterData
 import com.ic.cinefile.data.commentData
 import com.ic.cinefile.data.searchMoviesData
+import com.ic.cinefile.data.witchListData
 
 //import okhttp3.Response
 import retrofit2.http.Body
@@ -68,8 +72,10 @@ interface Methods {
     @GET("api/movies/search/{title}")
     suspend fun searchMovies(
         @Header("Authorization") authorization: String,
-        @Path("title") title: String
-    ): Response <searchMoviesResponse>
+        @Path("title") title: String,
+        @Query("sortBy") sortBy: String?,
+        @Query("genre") genre: String?
+    ): Response<searchMoviesResponse>
 
 
     @Headers("Content-Type: application/json")
@@ -137,4 +143,28 @@ interface Methods {
         @Header("Authorization") authorization: String,
         @Path("movieId") movieId: Int
     ): Response<AverageRatingResponse>
+
+
+    @Headers("Content-Type: application/json")
+    @GET("api/movies/topRatedMovies")
+    suspend fun getTopRatedMovies(
+        @Header("Authorization") authorization: String
+    ): Response<topMoviesResponse>
+
+
+    @POST("api/movies/moviesId/{id}/wishlist/add")
+    suspend fun addToWishlist(
+        @Header("Authorization") authorization: String,
+       // @Path("id") movieId: Int,
+        @Body wishlistData: witchListData
+    ): Response<wishPostResponse>
+
+    @GET("api/movies/wishlist")
+    suspend fun getWishlist(
+        @Header("Authorization") authorization: String
+    ): Response<wishListResponse>
+
 }
+
+
+

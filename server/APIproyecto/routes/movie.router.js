@@ -29,6 +29,9 @@ router.get("/moviesId/:id/comments/:parentId", authenticate,commentController.ge
 
 router.post("/moviesId/:id/rate", authenticate, movieController.rateMovie);
 router.get("/moviesId/:movieId/average-rating", authenticate, movieController.getMovieAverageRating);
-
-
+router.get("/topRatedMovies", authenticate, movieController.getTopRatedMoviesOverall);
+//router.get("/getUpcomingMovies", authenticate, movieController.getUpcomingMovies);
+ 
+router.post('/moviesId/:id/wishlist/add', authenticate,movieController.addToWishlist);
+router.get('/wishlist/',authenticate, movieController.getWishlist);
 module.exports = router;

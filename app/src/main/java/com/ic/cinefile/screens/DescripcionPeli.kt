@@ -51,6 +51,7 @@ import com.ic.cinefile.components.botonGuardar
 import com.ic.cinefile.components.seccComentarios.comentarios
 import com.ic.cinefile.components.ratingStars
 import com.ic.cinefile.components.verTrailer
+import com.ic.cinefile.data.witchListData
 import com.ic.cinefile.ui.theme.light_yellow
 import com.ic.cinefile.ui.theme.sky_blue
 import com.ic.cinefile.ui.theme.white
@@ -78,6 +79,9 @@ fun descripcionPeli(
     val addScreenState = viewModel.uiState.collectAsState()
 
     val movieState by viewModel.movieState.collectAsState()
+
+    val witchListPostSate by viewModel.wishListPostState
+    var idMovie by remember { mutableStateOf(witchListPostSate.movieId) }
 
 
     val averageRating by viewModel.averageRatingState.collectAsState()
@@ -176,6 +180,9 @@ fun descripcionPeli(
                                 botonGuardar(
                                     onClick = {
                                         isBookmarked = !isBookmarked
+                                        val data= witchListData(movieId =movie.id)
+
+                                        viewModel.addToWishlist(data)
                                     },
                                     isBookmarked = isBookmarked,
                                     modifier = Modifier.align(Alignment.Top)
@@ -355,9 +362,9 @@ fun descripcionPeli(
                         //COMENTARIOS
                         item {
                             Spacer(modifier = Modifier.height(20.dp))
-                           comentarios(
-                               viewModel = viewModel,
-                               movieId = movieId
+                            comentarios(
+                                viewModel = viewModel,
+                                movieId = movieId
                             )
                         }
                     }
@@ -384,7 +391,3 @@ fun formatDuration(durationInMinutes: Int): String {
     val minutes = durationInMinutes % 60
     return "${hours}h ${minutes}min"
 }
-
-
-
-

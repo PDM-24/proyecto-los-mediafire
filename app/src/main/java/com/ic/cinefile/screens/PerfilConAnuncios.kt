@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,15 +55,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHost
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import com.ic.cinefile.API.Model.movies.wishListResponse
 import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
+import com.ic.cinefile.components.LoadingProgressDialog
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.grisComment
 import com.ic.cinefile.ui.theme.light_red
+import com.ic.cinefile.ui.theme.montserratFamily
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.RecentMoviestState
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserDataState
+import com.ic.cinefile.viewModel.WishlistGetState
 import com.ic.cinefile.viewModel.userCreateViewModel
 
 
@@ -75,6 +82,11 @@ fun PerfilAnuncios(
     val addScreenState = viewModel.uiState.collectAsState()
     val userDataState by viewModel.userDataState.collectAsState()
     val context = LocalContext.current
+    val wishlisGetState by viewModel.wishlisGetState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getWishlist()
+    }
 
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
@@ -191,7 +203,7 @@ fun PerfilAnuncios(
                             tint = white
                         )
                     }
-                    
+
                     Row(
                         modifier = Modifier
                             .padding(10.dp)
@@ -265,6 +277,11 @@ fun PerfilAnuncios(
             LazyColumn (
                 modifier = Modifier.padding(10.dp)
             ){
+
+
+
+
+
                 //LISTA DE DESEOS
                 item {
                     Spacer(modifier = Modifier.height(20.dp))
@@ -278,7 +295,67 @@ fun PerfilAnuncios(
                             .clickable { /*que abra la lista de todas las pelis en lista de deseos*/ }
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    Section(movies = listOf(R.drawable.deadpoll))
+                    when (wishlisGetState) {
+                        is WishlistGetState.Success -> {
+                            val movies =
+                                (wishlisGetState as WishlistGetState.Success).data.wishlist
+                            Column {
+                                Text(
+                                    text = "Lista de deseos",
+                                    style = TextStyle(
+                                        color = Color.White,
+                                        textAlign = TextAlign.Start,
+                                        fontFamily = montserratFamily,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 20.sp
+                                    ),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+
+                                LazyRow {
+                                    items(movies.size) { index ->
+                                        val movie = movies[index]
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(4.dp)
+                                                .clickable {
+                                                    // Aquí navegas a la pantalla de descripción de la película
+                                                    navController.navigate("${screenRoute.descripcionPeli.route}/${movie.movieId}")
+                                                }
+                                        )
+                                        {
+                                            AsyncImage(
+                                                model = movie.poster,
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .padding(4.dp)
+                                                    .height(200.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        is WishlistGetState.Loading -> {
+                            // Aquí puedes mostrar un diálogo de carga o un indicador de progreso
+                            LoadingProgressDialog()
+                        }
+
+                        is WishlistGetState.Error -> {
+                            // Aquí puedes manejar el estado de error
+                            Text(
+                                text = "Error: ${(wishlisGetState as WishlistGetState.Error).errorMessage}",
+                                color = Color.Red,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+                    is WishlistGetState.Ready->{
+
+                    }
+
+                    }
+
 
                     //LISTA DE CALIFICADAS
                     Spacer(modifier = Modifier.height(40.dp))
@@ -294,7 +371,20 @@ fun PerfilAnuncios(
                     Spacer(modifier = Modifier.height(10.dp))
                     Section(movies = listOf(R.drawable.deadpoll,R.drawable.deadpoll, R.drawable.deadpoll, R.drawable.deadpoll,R.drawable.deadpoll, R.drawable.deadpoll))
                 }
+
+
+
+
+
+
+
+
+
             }
+
+
+
+
         }
     }
 }
