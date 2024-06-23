@@ -57,6 +57,14 @@ const accountSchema = SchemaUsers(
       movieId: { type: String, required: true },
       rating: { type: Number, required: true, min: 1, max: 5 },
     }],
+    wishlist: [{
+      movieId: { type: Number },
+      title: { type: String },
+      poster: { type: String },
+      
+      dateAdded: { type: String, default: Date.now }
+    }],
+   
     recentSearches: [{
       query: String,
       timestamp: { type: Date, default: Date.now }

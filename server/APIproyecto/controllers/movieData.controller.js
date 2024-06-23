@@ -175,9 +175,7 @@ controller.getMostViewedMovies = async (req, res, next) => {
 
 
 controller.getMovieById = async (req, res, next) => {
-  try {
-
- 
+  try { 
 
     const { id } = req.params;
 
@@ -307,6 +305,98 @@ controller.getMovieAverageRating = async (req, res, next) => {
   };  
 
 
+  controller.getTopRatedMoviesOverall = async (req, res, next) => {
+    try {
+      // Obtener todas las calificaciones de todos los usuarios
+      const users = await User.find();
+      const movieRatings = {};
   
+      users.forEach(user => {
+        user.ratings.forEach(rating => {
+          if (!movieRatings[rating.movieId]) {
+            movieRatings[rating.movieId] = [];
+          }
+          movieRatings[rating.movieId].push(rating.rating);
+        });
+      });
+  
+      // Calcular el promedio de calificaciones para cada película
+      const averageRatings = Object.keys(movieRatings).map(movieId => {
+        const ratings = movieRatings[movieId];
+        const averageRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+        return { movieId, averageRating };
+      });
+  
+      // Ordenar las películas por calificación promedio de mayor a menor
+      averageRatings.sort((a, b) => b.averageRating - a.averageRating);
+  
+      // Limitar a las top N películas
+      const topN = 10; // Puedes ajustar este valor según tus necesidades
+      const topRatedMovieIds = averageRatings.slice(0, topN).map(item => item.movieId);
+  
+      // Obtener detalles de las películas mejor calificadas
+      const moviesWithDetails = await Promise.all(topRatedMovieIds.map(async (movieId) => {
+        const movieDetails = await MoviesService.fetchMovieByIdAPI(movieId);
+        const averageRating = averageRatings.find(rating => rating.movieId === movieId).averageRating;
+        return {
+          id: movieDetails.id,
+          poster: movieDetails.poster,
+          title: movieDetails.title,
+          duracion: movieDetails.duracion,
+          fecha_lanzamiento: movieDetails.fecha_lanzamiento,
+          genero: movieDetails.genero,
+          descripcion: movieDetails.descripcion,
+          trailer: movieDetails.trailer,
+          averageRating // Incluir el promedio de calificación
+        };
+      }));
+  
+      // Devolver las películas mejor calificadas por todos los usuarios
+      res.status(200).json({ topRatedMovies: moviesWithDetails });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+
+
+
+
+  controller.addToWishlist = async (req, res) => {
+    const userId = req.user.id;  // Obtener el userId del token de autenticación
+    const { movieId } = req.body;
+  
+    try {
+      const result = await MoviesService.addToWishlistAPI(userId, movieId);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+  // controller.getWishlist = async (req, res) => {
+  //   const userId = req.user.id;  // Obtener el userId del token de autenticación
+  
+  //   try {
+  //     const wishlist = await wishlistService.getWishlist(userId);
+  //     res.status(200).json({wishlist:wishlist});
+  //   } catch (error) {
+  //     res.status(500).json({ message: error.message });
+  //   }
+  // };
+  
+
+
+
+  controller.getWishlist = async (req, res) => {
+    const userId = req.user.id;  // Obtener el userId del token de autenticación
+  
+    try {
+      const wishlist = await MoviesService.getWishlistAPI(userId);
+      res.status(200).json({wishlist:wishlist});
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
 
 module.exports = controller;

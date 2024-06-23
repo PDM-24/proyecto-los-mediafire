@@ -14,6 +14,8 @@ import com.ic.cinefile.API.Model.movies.mostViewMoviesResponse
 import com.ic.cinefile.API.Model.movies.moviesResponse
 import com.ic.cinefile.API.Model.movies.recentMoviesResponse
 import com.ic.cinefile.API.Model.movies.searchMoviesResponse
+import com.ic.cinefile.API.Model.movies.topMoviesResponse
+import com.ic.cinefile.API.Model.movies.wishListResponse
 import com.ic.cinefile.API.Model.users.NotificationResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.apiServer
@@ -23,6 +25,7 @@ import com.ic.cinefile.data.accountLoginData
 import com.ic.cinefile.data.accountRegisterData
 import com.ic.cinefile.data.commentData
 import com.ic.cinefile.data.searchMoviesData
+import com.ic.cinefile.data.witchListData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -98,6 +101,19 @@ class userCreateViewModel: ViewModel() {
 
     private val _averageRatingState = MutableStateFlow<AverageRatingState>(AverageRatingState.Ready)
     val averageRatingState: StateFlow<AverageRatingState> get() = _averageRatingState
+
+    //top peliculas
+    private val _topMoviesState = MutableStateFlow<TopMoviestState>(TopMoviestState.Ready)
+    val topMoviesState: StateFlow<TopMoviestState> = _topMoviesState
+
+    private val _wishListGetState = MutableStateFlow<WishlistGetState>(WishlistGetState.Ready)
+    val wishlistState: StateFlow<WishlistGetState> = _wishListGetState
+
+    private val _wishlistState = MutableStateFlow<WishlistGetState>(WishlistGetState.Ready)
+    val wishlisGetState : StateFlow<WishlistGetState> = _wishlistState
+
+    private val _wishListPostState = mutableStateOf(witchListData())
+    val wishListPostState: State<witchListData> = _wishListPostState
 
     private var authToken: String = "" // Propiedad para almacenar el token de autenticación
 
@@ -353,43 +369,62 @@ class userCreateViewModel: ViewModel() {
         }
     }
 
- //buscar pelicula
- fun searchMoviesByTitle(title: String) {
-     viewModelScope.launch(Dispatchers.IO) {
-         try {
-             _searchState.value = SearchState.Loading
-             val response = apiServer.methods.searchMovies("Bearer $authToken", title)
-             if (response.isSuccessful) {
-                 val responseBody = response.body()
-                 if (responseBody != null) {
-                     if (responseBody is searchMoviesResponse) {
+    fun searchMoviesByTitle(title: String, sortBy: String? = null, genre: String? = null) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _searchState.value = SearchState.Loading
+                val response = apiServer.methods.searchMovies("Bearer $authToken", title, sortBy, genre)
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        if (responseBody is searchMoviesResponse) {
+                            var movies = responseBody.moviesSearch // Suponiendo que `movies` es una lista de películas
 
-                         val searchResult = responseBody as searchMoviesResponse
-                         _searchState.value = SearchState.Success(searchResult)
-                         updateRecentSearches(title) // Pasar solo el título
-                     } else {
-                         _searchState.value = SearchState.Error("Error: Expected a movie object but received something else.")
-                     }
-                 } else {
-                     _searchState.value = SearchState.Error("Error: Empty response body.")
-                 }
-             } else {
-                 _searchState.value = SearchState.Error("Error: ${response.message()}")
-             }
-         } catch (e: Exception) {
-             when (e) {
-                 is HttpException -> {
-                     Log.e("UserCreateViewModel", "Error HTTP: ${e.message()}")
-                     _searchState.value = SearchState.Error("Error HTTP: ${e.message()}")
-                 }
-                 else -> {
-                     Log.e("UserCreateViewModel", "Error: ${e.message}")
-                     _searchState.value = SearchState.Error("Error: ${e.message}")
-                 }
-             }
-         }
-     }
- }
+                            // Aplicar filtro por género si se especifica
+                            if (!genre.isNullOrEmpty()) {
+                                movies = movies.filter { movie ->
+                                    movie.genres.contains(genre)
+                                }
+                            }
+
+                            // Ordenar según el criterio seleccionado
+                            if (!sortBy.isNullOrEmpty()) {
+                                movies = when (sortBy.toLowerCase()) {
+                                    "recientes" -> movies.sortedByDescending { it.releaseDate ?: "1970-01-01" }
+                                    "masviejas" -> movies.sortedBy { it.releaseDate ?: "1970-01-01" }
+                                    else -> movies
+                                }
+                            }
+
+                            _searchState.value = SearchState.Success(searchMoviesResponse(movies))
+                            updateRecentSearches(title) // Actualizar búsquedas recientes
+                        } else {
+                            _searchState.value = SearchState.Error("Error: Expected a movie object but received something else.")
+                        }
+                    } else {
+                        _searchState.value = SearchState.Error("Error: Empty response body.")
+                    }
+                } else {
+                    _searchState.value = SearchState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is IOException -> {
+                        Log.e("UserCreateViewModel", "Error de red: ${e.message}")
+                        _searchState.value = SearchState.Error("Error de red: ${e.message}")
+                    }
+                    is HttpException -> {
+                        Log.e("UserCreateViewModel", "Error HTTP: ${e.message}")
+                        _searchState.value = SearchState.Error("Error HTTP: ${e.message}")
+                    }
+                    else -> {
+                        Log.e("UserCreateViewModel", "Error desconocido: ${e.message}")
+                        _searchState.value = SearchState.Error("Error desconocido: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
 
 
 
@@ -402,8 +437,6 @@ class userCreateViewModel: ViewModel() {
             _recentSearches.value = currentList.take(5) // Limitar a los últimos 5 títulos
         }
     }
-
-
     //publicar comentario
     // Función para publicar un comentario
     fun postComment(movieId: Int, commentData: commentData, parentId: String? = null) {
@@ -606,6 +639,95 @@ class userCreateViewModel: ViewModel() {
         _averageRatingState.value = AverageRatingState.Ready
     }
 
+    fun TopMovies() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _topMoviesState.value = TopMoviestState.Loading
+                val response = apiServer.methods.getTopRatedMovies("Bearer $authToken")
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    val uniqueMovies = data?.topRatedMovies?.distinctBy { it.id } // Filtra duplicados por ID
+                    _topMoviesState.value = uniqueMovies?.let { TopMoviestState.Success(
+                        topMoviesResponse(it)
+                    ) }
+                        ?:TopMoviestState.Error("Error: Películas no encontradas")
+                } else {
+                    _topMoviesState.value =TopMoviestState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        Log.e("UserCreateViewModel", "Error HTTP: ${e.message()}")
+                        _topMoviesState.value = TopMoviestState.Error("Error HTTP: ${e.message()}")
+                    }
+                    else -> {
+                        Log.e("UserCreateViewModel", "Error: ${e.message}")
+                        _topMoviesState.value = TopMoviestState.Error("Error: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
+
+
+    //agregar a witchList
+    // Método para añadir a la lista de deseos
+    fun addToWishlist(witchListData: witchListData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = apiServer.methods.addToWishlist("Bearer $authToken", witchListData)
+                if (response.isSuccessful) {
+                  //  _wishListGetState.value = WishlistGetState.Success("success") // Puedes actualizar el estado según tu lógica de UI
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        _wishListGetState.value = WishlistGetState.Error("Error HTTP: ${e.message()}")
+                    }
+                    else -> {
+                        _wishListGetState.value = WishlistGetState.Error("Error: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
+
+
+    // Método para obtener la lista de deseos
+    fun getWishlist() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _wishlistState.value = WishlistGetState.Loading
+                val response = apiServer.methods.getWishlist("Bearer $authToken")
+                if (response.isSuccessful) {
+                    val wishlistItems = response.body()
+                    wishlistItems?.let {
+                        _wishlistState.value = WishlistGetState.Success(it)
+                    } ?: run {
+                        _wishlistState.value = WishlistGetState.Error("Lista de deseos vacía")
+                    }
+                } else {
+                    _wishlistState.value = WishlistGetState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        _wishlistState.value = WishlistGetState.Error("Error HTTP: ${e.message()}")
+                    }
+                    else -> {
+                        _wishlistState.value = WishlistGetState.Error("Error: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
+//
+
 }
 
 sealed class UiState2 {
@@ -717,5 +839,25 @@ sealed class SearchState {
 }
 
 
+sealed class TopMoviestState {
+    data object Loading : TopMoviestState()
+    data object Ready : TopMoviestState()
+    data class Success(val data: topMoviesResponse) : TopMoviestState()
+    data class Error(val msg: String) : TopMoviestState()
+}
 
 
+
+sealed class WishlistPostState {
+    object Loading : WishlistPostState()
+    object Ready : WishlistPostState()
+    data class Success(val message: String) : WishlistPostState()
+    data class Error(val errorMessage: String) : WishlistPostState()
+}
+
+sealed class WishlistGetState {
+    object Loading :  WishlistGetState()
+    object Ready :  WishlistGetState()
+    data class Success(val data: wishListResponse) :  WishlistGetState()
+    data class Error(val errorMessage: String) :  WishlistGetState()
+}

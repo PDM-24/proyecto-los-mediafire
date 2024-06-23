@@ -37,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -67,6 +68,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
     val addScreenState = viewModel.uiState.collectAsState()
     val userDataState by viewModel.userDataState.collectAsState()
     var showReloadButton by remember { mutableStateOf(false) }
+    var isFocused by remember { mutableStateOf(false) }
 
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
@@ -101,7 +103,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                 {
                     IconButton(
                         onClick = {
-                            // Acción del botón de navegación
+
                         }
                     ) {
                         Icon(
@@ -163,7 +165,8 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                     Surface(
                         color = Color.White,
                         shape = RoundedCornerShape(24.dp),
-                        modifier = Modifier.padding(6.dp)
+                        modifier = Modifier.padding(6.dp),
+
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -171,8 +174,11 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                             Box(
                                 modifier = Modifier
                                     .clickable {
-                                        navController.navigate(screenRoute.Buscador.route)
-                                    },
+                                        if (!isFocused) {
+                                            navController.navigate(screenRoute.Buscador.route)
+
+                                        }
+                                               },
                                 contentAlignment = Alignment.CenterStart
                             ) {
                                 Icon(
@@ -205,6 +211,14 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                                     textStyle = TextStyle(color = black),
                                     singleLine = true,
                                     modifier = Modifier.padding(start = 20.dp)
+                                        .onFocusChanged { focusState ->
+                                            isFocused = focusState.isFocused
+                                        }
+                                        .clickable {
+                                            if (!isFocused) {
+                                                navController.navigate(screenRoute.Buscador.route)
+                                            }
+                                        }
                                 )
                             }
                         }
