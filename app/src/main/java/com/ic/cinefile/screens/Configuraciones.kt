@@ -30,12 +30,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.ic.cinefile.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Configuraciones() {
+fun Configuraciones(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -52,10 +54,12 @@ fun Configuraciones() {
                 },
                 navigationIcon = {
                     Icon(
+                        modifier = Modifier
+                            .padding(6.dp)
+                            .clickable { navController.popBackStack() },
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White,
-                        modifier = Modifier.padding(6.dp)
                     )
                 }
             )
@@ -160,5 +164,5 @@ fun Terminos() {
 @Preview
 @Composable
 fun ConfiguracionPreview() {
-    Configuraciones()
+    Configuraciones(navController = rememberNavController())
 }

@@ -191,7 +191,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            modifier = Modifier.padding(6.dp),
+                            modifier = Modifier.padding(start = 12.dp),
                             painter = painterResource(id = R.drawable.baseline_search_24),
                             contentDescription = "Lupa"
                         )
@@ -487,9 +487,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                     val movies = (searchState as SearchState.Success).data?.moviesSearch ?: emptyList()
                     LazyColumn(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                            .padding(innerPadding)
+                            .fillMaxSize()
                             .background(Color.Black),
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.CenterHorizontally

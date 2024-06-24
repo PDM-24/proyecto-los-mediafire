@@ -11,6 +11,7 @@ import com.ic.cinefile.screens.Administrador.HomeAdmin
 import com.ic.cinefile.screens.Administrador.descripcionPeliAdmin
 import com.ic.cinefile.screens.Buscador
 import com.ic.cinefile.screens.Calificadas
+import com.ic.cinefile.screens.Configuraciones
 import com.ic.cinefile.screens.CrearCuenta
 import com.ic.cinefile.screens.CrearPerfil
 import com.ic.cinefile.screens.ElegirGeneros
@@ -124,6 +125,9 @@ fun AppNavigation(
         }
         composable(route=screenRoute.Lista_deseos.route){
             Lista_deseos(viewModel,navController)
+        }
+        composable(route=screenRoute.Configuraciones.route){
+            Configuraciones(navController)
         }
 
 
