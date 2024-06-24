@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.grisComment
@@ -75,6 +76,9 @@ fun Calificadas(
     val moviesReatedState by viewModel.moviesReatedState.collectAsState()
     val addScreenState = viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val userRole = viewModel.getUserRole()
+
+
     //Listas de valores para prueba
 
 
@@ -113,7 +117,7 @@ fun Calificadas(
                 ),
                 title = {
                     Row(
-                        modifier = Modifier.padding(start = 100.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -124,14 +128,6 @@ fun Calificadas(
                         )
                         Text(text = "Calificadas")
                     }
-                },
-                navigationIcon = {
-                    Icon(
-                        modifier = Modifier.clickable { /*navController.popBackStack() para volver atrás*/ },
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "",
-                        tint = white
-                    )
                 }
             )
         },
@@ -144,19 +140,29 @@ fun Calificadas(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = "Home",
-                                tint = white
-                            )
-                        }
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = "Perfil",
-                                tint = white
-                            )
+                        if(userRole=="admin"){
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                        }else{
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                            IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = "User",
+                                    tint = white
+                                )
+                            }
                         }
                     }
                 }

@@ -88,6 +88,8 @@ fun Lista_deseos(
 
     val addScreenState = viewModel.uiState.collectAsState()
 
+    val userRole = viewModel.getUserRole()
+
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
             is UiState.Error -> {
@@ -123,26 +125,17 @@ fun Lista_deseos(
                 ),
                 title = {
                     Row(
-                        modifier = Modifier.padding(start = 70.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Icon(
-                            modifier = Modifier.padding(end = 10.dp),
                             painter = painterResource(id = R.drawable.baseline_bookmark_24),
                             contentDescription = null,
                             tint = white
                         )
                         Text(text = "Lista de deseos")
                     }
-                },
-                navigationIcon = {
-                    Icon(
-                        //modifier = Modifier.clickable { /navController.popBackStack() para volver atrás/ },
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "",
-                        tint = white
-                    )
                 }
             )
         },
@@ -155,19 +148,29 @@ fun Lista_deseos(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = "Home",
-                                tint = white
-                            )
-                        }
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = "Perfil",
-                                tint = white
-                            )
+                        if(userRole=="admin"){
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                        }else{
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                            IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = "User",
+                                    tint = white
+                                )
+                            }
                         }
                     }
                 }

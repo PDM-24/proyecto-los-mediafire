@@ -1,6 +1,7 @@
-package com.ic.cinefile.screens.Administrador
+package com.ic.cinefile.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextField
@@ -15,31 +16,47 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -61,6 +78,7 @@ import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserDataState
 import com.ic.cinefile.viewModel.userCreateViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +88,13 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     val addScreenState = viewModel.uiState.collectAsState()
     val userDataState by viewModel.userDataState.collectAsState()
     var showReloadButton by remember { mutableStateOf(false) }
+    var isFocused by remember { mutableStateOf(false) }
+    //Del menu hamburguesa
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val coroutineScope = rememberCoroutineScope()
+    val navigationController = rememberNavController()
+
+    val userRole = viewModel.getUserRole()
 
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
@@ -78,64 +103,209 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 viewModel.setStateToReady()
             }
+
             UiState.Loading -> {
                 // Puedes agregar algún indicador de carga general aquí si es necesario
             }
+
             UiState.Ready -> {}
             is UiState.Success -> {
                 val token = (addScreenState.value as UiState.Success).token
-
                 viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
                 viewModel.setStateToReady()
             }
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
+    ModalNavigationDrawer(drawerState = drawerState, gesturesEnabled = true, drawerContent = {
+        ModalDrawerSheet(
+            drawerContainerColor = black
+        ) {
+            Row(
                 modifier = Modifier
-                    .padding(0.dp)
-                    .height(50.dp),
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = black
-                ),
-                title = {},
-                navigationIcon =
-                {
-                    IconButton(
-                        onClick = {
-                            // Acción del botón de navegación
+                    .fillMaxWidth()
+                    .padding(40.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+
+
+                when (userDataState) {
+                    is UserDataState.Loading -> {
+                    }
+
+                    is UserDataState.Success -> {
+                        val user = (userDataState as UserDataState.Success).userData.user
+                        val avatarUsuario = getAvatarResourcesinanuncios(user.avatarUrl)
+                        val username = user.username
+
+                        Row(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = avatarUsuario),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(CircleShape)
+                            )
+                            Text(
+                                text = username,
+                                color = white,
+                                modifier = Modifier.padding(start = 12.dp),
+                                fontSize = 20.sp
+                            )
+
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = "",
-                            tint = white,
-                            modifier = Modifier.size(40.dp)
-                        )
+                    }
+
+                    else -> { /* Manejar otros estados si es necesario */
                     }
                 }
+                
+            }
+            Divider()
+            Spacer(modifier = Modifier.height(10.dp))
+            if(userRole=="admin"){
+                Text(text = "")
+            }else{
+                NavigationDrawerItem(label = {
+                    Text(
+                        text = "Calificadas", color = white, fontSize = 16.sp
+                    )
+                }, selected = false, icon = {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = white
+                    )
+                }, onClick = {
+                    coroutineScope.launch {
+                        drawerState.close()
+                    }
+                    navController.navigate(screenRoute.Calificadas.route) {
+                        popUpTo(0)
+                    }
+                }, colors = NavigationDrawerItemDefaults.colors(
+                    unselectedContainerColor = Color.Transparent,
+                    selectedContainerColor = Color.Transparent
+                )
+                )
+                NavigationDrawerItem(
+                    label = { Text(text = "Lista de deseos", color = white, fontSize = 16.sp) },
+                    selected = false,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = white
+                        )
+                    },
+                    onClick = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+                        navController.navigate(screenRoute.Lista_deseos.route) {
+                            popUpTo(0)
+                        }
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color.Transparent
+                    )
+                )
+
+                NavigationDrawerItem(label = {
+                    Text(
+                        text = "Políticas de privacidad", color = white, fontSize = 16.sp
+                    )
+                }, selected = false, icon = {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = null,
+                        tint = white
+                    )
+                }, onClick = {
+                    coroutineScope.launch {
+                        drawerState.close()
+                    }/*PARA IR A LAS POLITICAS DE PRIVACIDAD*/
+                }, colors = NavigationDrawerItemDefaults.colors(
+                    unselectedContainerColor = Color.Transparent,
+                    selectedContainerColor = Color.Transparent
+                )
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            NavigationDrawerItem(
+                label = { Text(text = "Cerrar sesión", color = white, fontSize = 16.sp) },
+                selected = false,
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.ExitToApp,
+                        contentDescription = null,
+                        tint = white
+                    )
+                },
+                onClick = {
+                    coroutineScope.launch {
+                        drawerState.close()
+                    }/*LOGICA PA SALIR DE LA APP*/
+                },
+                colors = NavigationDrawerItemDefaults.colors(
+                    unselectedContainerColor = Color.Transparent,
+                    selectedContainerColor = Color.Transparent
+                )
             )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = Color.Black,
-                content = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(onClick = {navController.navigate(screenRoute.Home.route)}) {
+
+        }
+    }) {
+
+        Scaffold(topBar = {
+            TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = black
+            ), title = {}, navigationIcon = {
+                IconButton(onClick = {
+                    coroutineScope.launch {
+                        drawerState.open()
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.Menu,
+                        contentDescription = "",
+                        tint = white,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+            })
+        }, bottomBar = {
+            BottomAppBar(containerColor = Color.Black, content = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if(userRole=="admin"){
+                        IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
                             Icon(
                                 imageVector = Icons.Filled.Home,
                                 contentDescription = "Home",
                                 tint = white
                             )
                         }
-                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route)
-                        }) {
+                    }else{
+                        IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                            Icon(
+                                imageVector = Icons.Filled.Home,
+                                contentDescription = "Home",
+                                tint = white
+                            )
+                        }
+                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
                             Icon(
                                 imageVector = Icons.Filled.Person,
                                 contentDescription = "User",
@@ -144,167 +314,162 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                         }
                     }
                 }
-            )
-        }
-    ) { innerPadding ->
-        if (userDataState is UserDataState.Loading) {
-            LoadingAnimation()
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .background(Color.Black)
-                    .verticalScroll(rememberScrollState())
-            ) {
-
-                Row(
+            })
+        }) { innerPadding ->
+            if (userDataState is UserDataState.Loading) {
+                LoadingAnimation()
+            } else {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .background(black)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    Surface(
-                        color = Color.White,
-                        shape = RoundedCornerShape(24.dp),
-                        modifier = Modifier.padding(6.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth(0.9f)
-                                    .clickable {
-                                        navController.navigate(screenRoute.Buscador.route)
-                                    },
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Icon(
-                                    modifier = Modifier.padding(6.dp),
-                                    painter = painterResource(id = R.drawable.baseline_search_24),
-                                    contentDescription = "Lupa"
-                                )
 
-                                TextField(
-                                    value = buscador,
-                                    onValueChange = { newBuscador -> buscador = newBuscador },
-                                    colors = TextFieldDefaults.colors(
-                                        unfocusedContainerColor = Color.Transparent,
-                                        focusedContainerColor = Color.Transparent,
-                                        unfocusedIndicatorColor = Color.Transparent,
-                                        focusedIndicatorColor = Color.Transparent,
-                                        disabledIndicatorColor = Color.Transparent
-                                    ),
-                                    placeholder = {
-                                        Text(
-                                            text = "Buscar",
-                                            style = TextStyle(
-                                                color = Color.Gray,
-                                                fontSize = 15.sp,
-                                                letterSpacing = 0.1.em,
-                                                fontWeight = FontWeight.Normal
-                                            )
-                                        )
-                                    },
-                                    textStyle = TextStyle(color = Color.Black),
-                                    singleLine = true,
-                                    modifier = Modifier.padding(start = 20.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+
+                        Box(
+                            modifier = Modifier
+                                .clickable {
+                                    if (!isFocused) {
+                                        navController.navigate(screenRoute.Buscador.route)
+                                    }
+                                }
+                                .padding(6.dp)
+                                .background(
+                                    color = white, shape = RoundedCornerShape(24.dp)
+                                )
+                                .fillMaxWidth(0.8f)
+                                .height(55.dp),
+                            contentAlignment = Alignment.CenterStart,
+
+                            ) {
+                            Icon(
+                                modifier = Modifier.padding(6.dp),
+                                painter = painterResource(id = R.drawable.baseline_search_24),
+                                contentDescription = "Lupa"
+                            )
+                            Text(
+                                text = "Buscar", style = TextStyle(
+                                    color = Color.Gray,
+                                    fontSize = 15.sp,
+                                    letterSpacing = 0.1.em,
+                                    fontWeight = FontWeight.Normal
+                                ), modifier = Modifier.padding(start = 50.dp)
+                            )
+
+                        }
+                        if(userRole!="admin"){
+                            IconButton(onClick = {
+                                navController.navigate(route = screenRoute.Notificaciones.route)
+                            }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_notifications_24),
+                                    tint = Color.White,
+                                    contentDescription = "notificaciones"
                                 )
                             }
                         }
                     }
-                }
 
-                //Para agregar una peli
-                Button(
-                    onClick = { /*NAVEGAR A AGREGARPELI*/
-                              navController.navigate(screenRoute.AgregarPeliAdmin.route)
-                              },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent
-                    )
-                ) {
-                    Row {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription =null,
-                            tint = white
-                        )
-                        Text(
-                            text = "Agregar película",
-                            style = TextStyle(
-                                color = white,
-                                fontSize = 18.sp,
-                                textAlign = TextAlign.Left,
-                                fontWeight = FontWeight.Normal
+                    if(userRole =="admin"){
+                        //Para agregar una peli
+                        Button(
+                            onClick = { /*NAVEGAR A AGREGARPELI*/
+                                navController.navigate(screenRoute.AgregarPeliAdmin.route)
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
                             )
-                        )
-                    }
-                }
-
-                when (userDataState) {
-                    is UserDataState.Success -> {
-                        val movieCategories = (userDataState as UserDataState.Success).userData.movies
-                        movieCategories.forEach { (category, movies) ->
-                            Box(modifier = Modifier.padding(8.dp)) {
+                        ) {
+                            Row {
+                                Icon(
+                                    imageVector = Icons.Filled.Add,
+                                    contentDescription =null,
+                                    tint = white
+                                )
                                 Text(
-                                    text = category,
+                                    text = "Agregar película",
                                     style = TextStyle(
-                                        color = Color.White,
-                                        textAlign = TextAlign.Start,
-                                        fontFamily = montserratFamily,
-                                        fontWeight = FontWeight.Medium,
-                                        fontSize = 20.sp
+                                        color = white,
+                                        fontSize = 18.sp,
+                                        textAlign = TextAlign.Left,
+                                        fontWeight = FontWeight.Normal
                                     )
                                 )
                             }
+                        }
+                    } else {
+                        when (userDataState) {
+                            is UserDataState.Success -> {
+                                val movieCategories =
+                                    (userDataState as UserDataState.Success).userData.movies
+                                movieCategories.forEach { (category, movies) ->
+                                    Box(modifier = Modifier.padding(8.dp)) {
+                                        Text(
+                                            text = category, style = TextStyle(
+                                                color = Color.White,
+                                                textAlign = TextAlign.Start,
+                                                fontFamily = montserratFamily,
+                                                fontWeight = FontWeight.Medium,
+                                                fontSize = 20.sp
+                                            )
+                                        )
+                                    }
 
-                            LazyRow {
-                                items(movies.size) { index ->
-                                    val movie = movies[index]
+                                    LazyRow {
+                                        items(movies.size) { index ->
+                                            val movie = movies[index]
 
-                                    Box(
-                                        modifier = Modifier
-                                            .padding(4.dp)
-                                            .clickable {
-                                                // Aquí navegas a la pantalla de descripción de la película
-                                                navController.navigate(route = screenRoute.descripcionPeliAdmin.route + "/${movie.id}")
-                                            }
-                                    ) {
-                                        val painter = rememberAsyncImagePainter(model = movie.posterUrl)
-                                        val painterState = painter.state
+                                            Box(modifier = Modifier
+                                                .padding(4.dp)
+                                                .clickable {
+                                                    // Aquí navegas a la pantalla de descripción de la película
+                                                    navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
+                                                }) {
+                                                val painter =
+                                                    rememberAsyncImagePainter(model = movie.posterUrl)
+                                                val painterState = painter.state
 
-                                        Box(
-                                            modifier = Modifier
-                                                .height(200.dp)
-                                                .width(150.dp)
-                                        ) {
-                                            if (painterState is AsyncImagePainter.State.Error) {
-                                                Text(
-                                                    text = "Error al cargar la imagen",
-                                                    color = Color.Red,
-                                                    modifier = Modifier.padding(16.dp)
-                                                )
-                                            } else {
-                                                AsyncImage(
-                                                    model = movie.posterUrl,
-                                                    contentDescription = null,
-                                                    contentScale = ContentScale.Crop,
-                                                    modifier = Modifier.fillMaxSize()
-                                                )
+                                                Box(
+                                                    modifier = Modifier
+                                                        .height(200.dp)
+                                                        .width(150.dp)
+                                                ) {
+                                                    if (painterState is AsyncImagePainter.State.Error) {
+                                                        Text(
+                                                            text = "Error al cargar la imagen",
+                                                            color = Color.Red,
+                                                            modifier = Modifier.padding(16.dp)
+                                                        )
+                                                    } else {
+                                                        AsyncImage(
+                                                            model = movie.posterUrl,
+                                                            contentDescription = null,
+                                                            contentScale = ContentScale.Crop,
+                                                            modifier = Modifier.fillMaxSize()
+                                                        )
+                                                    }
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
+
+                            is UserDataState.Loading -> {
+                                // Mostrar diálogo de carga o indicador de progreso
+                                LoadingProgressDialog()
+                            }
+
+                            else -> {}
                         }
                     }
-                    is UserDataState.Loading -> {
-                        // Mostrar diálogo de carga o indicador de progreso
-                        LoadingProgressDialog()
-                    }
-                    else -> {}
                 }
             }
         }
@@ -321,15 +486,7 @@ fun LoadingAnimation() {
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
-            color = Color.White,
-            modifier = Modifier.size(36.dp)
+            color = Color.White, modifier = Modifier.size(36.dp)
         )
     }
 }
-
-
-//@Preview
-//@Composable
-//fun HomePreview(){
-//    Home(viewModel = userCreateViewModel(), navController = rememberNavController())
-//}

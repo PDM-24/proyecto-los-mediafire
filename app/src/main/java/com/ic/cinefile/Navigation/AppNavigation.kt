@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ic.cinefile.screens.Administrador.AgregarPeliAdmin
-import com.ic.cinefile.screens.Administrador.HomeAdmin
+//import com.ic.cinefile.screens.Administrador.HomeAdmin
 import com.ic.cinefile.screens.Administrador.descripcionPeliAdmin
 import com.ic.cinefile.screens.Buscador
 import com.ic.cinefile.screens.Calificadas
@@ -15,7 +15,8 @@ import com.ic.cinefile.screens.Configuraciones
 import com.ic.cinefile.screens.CrearCuenta
 import com.ic.cinefile.screens.CrearPerfil
 import com.ic.cinefile.screens.ElegirGeneros
-import com.ic.cinefile.screens.Home
+import com.ic.cinefile.screens.HomeAdmin
+//import com.ic.cinefile.screens.Home
 import com.ic.cinefile.screens.HomeAppScreen
 import com.ic.cinefile.screens.Lista_deseos
 import com.ic.cinefile.screens.Login
@@ -61,9 +62,9 @@ fun AppNavigation(
             Login(viewModel,navController)
         }
 
-        composable(route=screenRoute.Home.route){
+        /*composable(route=screenRoute.Home.route){
             Home(viewModel,navController)
-        }
+        }*/
 
         composable(route=screenRoute.Buscador.route){
             Buscador(viewModel,navController)

@@ -88,6 +88,9 @@ fun PerfilAnuncios(
     val wishlisGetState by viewModel.wishlisGetState.collectAsState()
     val averageRating by viewModel.averageRatingState.collectAsState()
     val moviesReatedState by viewModel.moviesReatedState.collectAsState()
+
+    val userRole = viewModel.getUserRole()
+
     LaunchedEffect(Unit) {
         viewModel.getWishlist()
         viewModel.getMoviesReated()
@@ -141,21 +144,29 @@ fun PerfilAnuncios(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = "Home",
-                                tint = white
-                            )
-                        }
-                        IconButton(onClick = {
-                            navController.navigate(screenRoute.PerfilAnuncios.route)
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = "User",
-                                tint = white
-                            )
+                        if(userRole=="admin"){
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                        }else{
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                            IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = "User",
+                                    tint = white
+                                )
+                            }
                         }
                     }
                 }
