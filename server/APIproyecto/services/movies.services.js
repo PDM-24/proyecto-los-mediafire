@@ -41,6 +41,22 @@ const getMovies=async()=>{
 }
 
 
+const hideMovie = async (movieId) => {
+  try {
+    const movie = await Movie.findOne({ id: movieId });
+    if (!movie) {
+      throw new Error('Película no encontrada');
+    }
+
+    movie.isHidden = true;
+    await movie.save();
+
+    return { message: 'Película ocultada exitosamente' };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 
 
 //buscar PELICULAS
@@ -135,6 +151,10 @@ const getMoviesCategory = async (categoryName, limit = 10) => {
 
     const movies = response.data.results.slice(0, limit); // Limitar las películas al número especificado
 
+
+
+
+
     // Enrich each movie with additional details including actors
     const moviesWithDetails = await Promise.all(
       movies.map(async (movie) => {
@@ -180,6 +200,9 @@ const getMoviesCategory = async (categoryName, limit = 10) => {
     throw new Error(`No se ha podido encontrar películas en la categoría: ${categoryName}`);
   }
 };
+
+
+
 
 
 
@@ -309,29 +332,87 @@ const getMovieDetailsFromAPI = async (movieId) => {
   }
 };
 
-const getRatedMovies = async () => {
-  try {
-    const users = await User.find({ 'ratings.0': { $exists: true } });
 
-    // Crear un objeto para evitar duplicados y almacenar las películas calificadas
+
+
+
+
+
+// const getRatedMovies = async () => {
+//   try {
+//     const users = await User.find({ 'ratings.0': { $exists: true } });
+
+//     // Crear un objeto para evitar duplicados y almacenar las películas calificadas
+//     const ratedMovies = {};
+
+//     for (const user of users) {
+//       for (const rating of user.ratings) {
+//         if (!ratedMovies[rating.movieId]) {
+//           const movieDetails = await getMovieDetailsFromAPI(rating.movieId);
+//           if (movieDetails) {
+//             ratedMovies[rating.movieId] = {
+//               movieId: rating.movieId,
+//               title: movieDetails.title,
+//               poster: movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : null,
+//               ratings: [],
+//               releaseDate: movieDetails.release_date, // Agregar fecha de lanzamiento
+//               genres: movieDetails.genres.map(genre => genre.name).join(', ') // Agregar géneros como una cadena separad
+//             };
+//           }
+//         }
+//         if (ratedMovies[rating.movieId]) {
+//           ratedMovies[rating.movieId].ratings.push(rating.rating);
+//         }
+//       }
+//     }
+
+//     // Convertir el objeto a un array y calcular el promedio de calificaciones para cada película
+//     const ratedMoviesArray = Object.values(ratedMovies).map(movie => {
+//       const averageRating = movie.ratings.reduce((sum, rating) => sum + rating, 0) / movie.ratings.length;
+//       return {
+//         movieId: movie.movieId,
+//         title: movie.title,
+//         poster: movie.poster,
+//         releaseDate: movie.releaseDate, // Mantener fecha de lanzamiento
+//         genres: movie.genres,
+//         averageRating
+//       };
+//     });
+
+//     return ratedMoviesArray;
+//   } catch (error) {
+//     console.error("Error in getRatedMovies:", error);
+//     throw new Error("Error occurred while fetching rated movies. Please try again.");
+//   }
+// };
+  
+const getRatedMovies = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+
+    if (!user || !user.ratings || user.ratings.length === 0) {
+      return [];
+    }
+
+    // Crear un objeto para almacenar las películas calificadas por el usuario
     const ratedMovies = {};
 
-    for (const user of users) {
-      for (const rating of user.ratings) {
-        if (!ratedMovies[rating.movieId]) {
-          const movieDetails = await getMovieDetailsFromAPI(rating.movieId);
-          if (movieDetails) {
-            ratedMovies[rating.movieId] = {
-              movieId: rating.movieId,
-              title: movieDetails.title,
-              poster: movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : null,
-              ratings: []
-            };
-          }
+    for (const rating of user.ratings) {
+      if (!ratedMovies[rating.movieId]) {
+        const movieDetails = await getMovieDetailsFromAPI(rating.movieId);
+        if (movieDetails) {
+          ratedMovies[rating.movieId] = {
+            movieId: rating.movieId,
+            title: movieDetails.title,
+            poster: movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : null,
+            ratings: [],
+            releaseDate: movieDetails.release_date, // Agregar fecha de lanzamiento
+            genres: movieDetails.genres.map(genre => genre.name).join(', ') // Agregar géneros como una cadena separada
+          };
         }
-        if (ratedMovies[rating.movieId]) {
-          ratedMovies[rating.movieId].ratings.push(rating.rating);
-        }
+      }
+      if (ratedMovies[rating.movieId]) {
+        ratedMovies[rating.movieId].ratings.push(rating.rating);
       }
     }
 
@@ -342,6 +423,8 @@ const getRatedMovies = async () => {
         movieId: movie.movieId,
         title: movie.title,
         poster: movie.poster,
+        releaseDate: movie.releaseDate, // Mantener fecha de lanzamiento
+        genres: movie.genres,
         averageRating
       };
     });
@@ -352,7 +435,9 @@ const getRatedMovies = async () => {
     throw new Error("Error occurred while fetching rated movies. Please try again.");
   }
 };
-  
+
+
+
   //proxiomo a estrenar
   const getUpcomingMovies= async (limit = 10) => {
     try {
@@ -434,8 +519,9 @@ const getRatedMovies = async () => {
         movieId: movieDetails.id,
         title: movieDetails.title,
         poster: movieDetails.poster,
-        releaseDate: movieDetails.fecha_lanzamiento,
-        genre: movieDetails.genero,
+        releaseDate: movieDetails.fecha_lanzamiento, // Usar fecha de lanzamiento del objeto movieDetails
+        genre: movieDetails.genero //
+        
       });
   
       await user.save();
@@ -447,6 +533,8 @@ const getRatedMovies = async () => {
   };
   
 
+
+  //obtener watclist
   const getWishlist = async (userId) => {
     try {
       const user = await User.findById(userId);
@@ -462,7 +550,23 @@ const getRatedMovies = async () => {
   };
   
   
+  const searchActorsByName = async (actorName) => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL_API}search/person?api_key=${API_KEY}&language=es-MX&query=${encodeURIComponent(actorName)}`
+      );
   
+      const actors = response.data.results.map(actor => ({
+        name: actor.name,
+        profileUrl: actor.profile_path ? `https://image.tmdb.org/t/p/w500${actor.profile_path}` : null
+      }));
+  
+      return actors;
+    } catch (error) {
+      console.error("Error al buscar actores:", error.message);
+      throw new Error("Ocurrió un error al buscar actores. Por favor, inténtalo de nuevo.");
+    }
+  };
   
 
 // se exportan como se deven son variables por asi asi
@@ -477,5 +581,7 @@ module.exports={
   getUpcomingMoviesAPI:getUpcomingMovies,
   addToWishlistAPI:addToWishlist,
   getWishlistAPI:getWishlist,
-  getRatedMoviesAPI:getRatedMovies
+  getRatedMoviesAPI:getRatedMovies,
+  hideMovieAPI: hideMovie,
+  searchActorsByNameAPI:searchActorsByName
 }

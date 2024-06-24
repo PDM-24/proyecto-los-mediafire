@@ -22,7 +22,7 @@ import com.ic.cinefile.ui.theme.dark_blue
 import com.ic.cinefile.ui.theme.dark_red
 
 @Composable
-fun DeleteDialog(
+fun DeleteDialogAdmin(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogText: String

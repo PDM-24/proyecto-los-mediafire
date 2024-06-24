@@ -58,7 +58,7 @@ import com.ic.cinefile.viewModel.userCreateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun comentarios(
+fun comentariosAdmin(
     viewModel: userCreateViewModel,
     movieId: Int
 
@@ -85,6 +85,7 @@ fun comentarios(
             UiState.Loading -> {
 
             }
+
             UiState.Ready -> {}
             is UiState.Success -> {
                 val token = (addScreenState.value as UiState.Success).token
@@ -156,7 +157,7 @@ fun comentarios(
 
                             items(comments.size) { index ->
                                 val comentario = comments[index]
-                                unComentario(
+                                unComentarioAdmin(
                                     movieId = movieId,
                                     viewModel = viewModel,
                                     id = comentario.id,

@@ -18,7 +18,13 @@ data class WishlistItem(
     @SerializedName("_id")
     val id: String?,
     @SerializedName("dateAdded")
-    val dateAdded: String?
+    val dateAdded: String?,
+    @SerializedName("releasedData")
+val releaseDate: String,
+@SerializedName("genre")
+val genres: String,
+
+
 )
 
 

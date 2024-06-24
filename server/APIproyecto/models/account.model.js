@@ -59,15 +59,21 @@ const accountSchema = SchemaUsers(
       title: { type: String},
   poster: { type: String },
   releaseDate: { type: String },
-  genre: { type: String }
+  genre: { type: String },
+
     }],
+    isHidden: { type: Boolean, default: false }, // Nuevo campo para marcar si la película está oculta
+
     wishlist: [{
       movieId: { type: Number },
       title: { type: String },
       poster: { type: String },
-      dateAdded: { type: String, default: Date.now }
+      dateAdded: { type: String, default: Date.now },
+      releaseDate: { type: String },
+      genre: { type: String },
+
     }],
-   
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
     recentSearches: [{
       query: String,
       timestamp: { type: Date, default: Date.now }

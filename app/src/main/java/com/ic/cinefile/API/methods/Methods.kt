@@ -1,11 +1,16 @@
 package com.ic.cinefile.API.methods
 
+import com.ic.cinefile.API.Model.movies.ActorResponse
 import com.ic.cinefile.API.Model.movies.AverageRatingResponse
+import com.ic.cinefile.API.Model.movies.DeleteResponse
 import com.ic.cinefile.API.Model.movies.RatingResponse
 import com.ic.cinefile.API.Model.movies.ReplyComment
+import com.ic.cinefile.API.Model.movies.actorNameResponse
+import com.ic.cinefile.API.Model.movies.createMovieResponse
 import com.ic.cinefile.API.Model.movies.getCommentResponse
 import com.ic.cinefile.API.Model.movies.homeUserResponse
 import com.ic.cinefile.API.Model.movies.mostViewMoviesResponse
+import com.ic.cinefile.API.Model.movies.movieResponseAdminResponse
 import com.ic.cinefile.API.Model.movies.moviesResponse
 import com.ic.cinefile.API.Model.movies.postCommentResponse
 import com.ic.cinefile.API.Model.movies.rateMoveResponse
@@ -22,6 +27,7 @@ import com.ic.cinefile.data.RatingData
 import com.ic.cinefile.data.accountLoginData
 import com.ic.cinefile.data.accountRegisterData
 import com.ic.cinefile.data.commentData
+import com.ic.cinefile.data.createMovieData
 import com.ic.cinefile.data.searchMoviesData
 import com.ic.cinefile.data.witchListData
 
@@ -29,6 +35,7 @@ import com.ic.cinefile.data.witchListData
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.Response
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
@@ -170,6 +177,52 @@ interface Methods {
     suspend fun getRatedMovies(
         @Header("Authorization") authorization: String
     ): Response<rateMoveResponse>
+
+
+
+    // Método para eliminar un comentario principal y sus respuestas
+    @DELETE("api/movies/comments/{id}")
+    suspend fun deleteComment(
+        @Header("Authorization") authorization: String,
+        @Path("id") commentId: String
+    ): Response<DeleteResponse>
+
+    // Método para eliminar una respuesta específica
+    @DELETE("api/movies/replies/{id}")
+    suspend fun deleteReply(
+        @Header("Authorization") authorization: String,
+        @Path("id") replyId: String
+    ): Response<DeleteResponse>
+
+
+    //administrador
+    @Headers(value=["Content-Type:application/json"])
+    @POST("api/account/user/home/movies")
+    suspend fun createMovie(
+        @Header("Authorization") authorization: String,
+        @Body createMovieData: createMovieData
+    ): Response<createMovieResponse>
+
+    @Headers(value=["Content-Type:application/json"])
+    @POST("api/account/user/home/movies")
+    suspend fun getMovieCreate(
+        @Header("Authorization") authorization: String
+
+    ): Response<movieResponseAdminResponse>
+
+    @GET("api/account/user/home/movies/actors/search/{actorName}")
+    suspend fun searchActorsByName(
+        @Header("Authorization") authorization: String,
+        @Path("actorName") actorName: String
+    ): Response<actorNameResponse>  // Ajusta el tipo de datos según tu modelo Actor
+
+
+
+
+
+
+
+
 }
 
 

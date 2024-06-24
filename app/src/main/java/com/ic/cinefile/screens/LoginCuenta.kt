@@ -68,7 +68,12 @@ fun Login(viewModel: userCreateViewModel, navController: NavController) {
         UiState.Ready -> {}
         is UiState.Success -> {
             showMessage(context, "Token: ${(addScreenState.value as UiState.Success).token}")
-            navController.navigate(screenRoute.Home.route)
+            val userRole = viewModel.getUserRole() // Obtener el rol del usuario
+
+
+                //navController.navigate(screenRoute.Home.route)
+
+            navController.navigate(screenRoute.HomeAdmin.route)
             viewModel.setStateToReady()
         }
     }

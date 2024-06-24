@@ -27,7 +27,8 @@ controller.getUserData = async (req, res, next) => {
         year_nac: user.year_nac,
         genere: user.genere,
         movie_genere: user.movie_genere,
-        avatar: user.avatar
+        avatar: user.avatar,
+
       },
       movies: moviesByGenre
     });

@@ -4,6 +4,8 @@ const express = require("express");
 
 const router = express.Router(); //enrutador
 const AccountController = require("../controllers/account.controller");
+const movieController = require("../controllers/movieData.controller");
+
 const {
   createAccountValidator,
 } = require("../validators/createAccount.validator");
@@ -34,6 +36,19 @@ router.post(
 );
 router.get('/user/Home',authenticate,userLoginController.getUserData)
 
+
 router.get('/user/notifications', authenticate, notificationController.getNotifications);
 router.patch('/user/notifications/:id', authenticate, notificationController.markAsRead);
+
+//CREAR PELICULAS
+router.post('/user/home/movies', movieController.movieData);
+router.delete('/user/home/movies/:id', movieController.deleteMovie);
+router.get('/user/home/movies/:id', movieController.getMovieById);
+router.get('/user/home/movies/actors/search/:actorName', authenticate, movieController.searchActorsByName);
+
+
+router.get('/user/home/movies', movieController.getAllMovies);
+
+
+
 module.exports = router;

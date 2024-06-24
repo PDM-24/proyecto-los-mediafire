@@ -52,6 +52,7 @@ import com.ic.cinefile.data.commentData
 import com.ic.cinefile.screens.getAvatarResource
 import com.ic.cinefile.ui.theme.dark_red
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.DeleteCommentState
 import com.ic.cinefile.viewModel.RepliesToCommentState
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.userCreateViewModel
@@ -60,7 +61,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun unComentario(
+fun unComentarioAdmin(
     movieId: Int,
     id: String,
     username: String,
@@ -83,6 +84,7 @@ fun unComentario(
 
     // Formato de salida para mostrar la fecha y hora en un formato legible
     val outputFormat = SimpleDateFormat("dd 'de' MMMM 'de' yyyy hh:mm a", Locale.getDefault())
+    val deleteCommentState by viewModel.deleteCommentState.collectAsState()
 
     // Parsear la fecha y hora del comentario
     val parsedDate = inputFormat.parse(createdAt)
@@ -105,6 +107,26 @@ fun unComentario(
                 viewModel.fetchUserData(token)
                 viewModel.setStateToReady()
             }
+        }
+    }
+
+
+    LaunchedEffect(deleteCommentState) {
+        when (deleteCommentState) {
+            is DeleteCommentState.Error -> {
+                val message = (deleteCommentState as DeleteCommentState.Error).errorMessage
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.resetDeleteCommentState()
+            }
+            DeleteCommentState.Loading -> {
+                Toast.makeText(context, "Eliminando comentario...", Toast.LENGTH_SHORT).show()
+            }
+            is DeleteCommentState.Success -> {
+                val message = (deleteCommentState as DeleteCommentState.Success).message
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.resetDeleteCommentState()
+            }
+            else -> {}
         }
     }
 
@@ -161,7 +183,17 @@ fun unComentario(
 
         //Eliminar comentario
         IconButton(
-            onClick = { /*ELIMINAR LA COMENTARIO*/ },
+            onClick = {
+
+
+
+                      /*ELIMINAR LA COMENTARIO*/
+
+                viewModel.deleteComment(id)
+
+
+
+                      },
             modifier = Modifier.align(Alignment.Start)
         ) {
             Icon(
@@ -196,7 +228,7 @@ fun unComentario(
                     viewModel = viewModel
                 )
 
-                respuestas(
+                respuestasAdmin(
                     movieId = movieId,
                     id = id,
                     parentId = parentId,
@@ -226,7 +258,7 @@ fun unComentario(
                             val replies = (repliesState as RepliesToCommentState.Success).replies
                             items(replies.size) { index ->
                                 val reply = replies[index]
-                                unComentario(
+                                unComentarioAdmin(
                                     movieId = movieId,
                                     id = reply.id,
                                     parentId = reply.parentId,

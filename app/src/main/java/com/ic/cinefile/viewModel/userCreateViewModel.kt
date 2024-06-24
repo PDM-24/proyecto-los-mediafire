@@ -8,9 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.annotations.SerializedName
 import com.ic.cinefile.API.Model.movies.AverageRatingResponse
 import com.ic.cinefile.API.Model.movies.ReplyComment
+import com.ic.cinefile.API.Model.movies.actorNameResponse
 import com.ic.cinefile.API.Model.movies.getCommentResponse
 import com.ic.cinefile.API.Model.movies.homeUserResponse
 import com.ic.cinefile.API.Model.movies.mostViewMoviesResponse
+import com.ic.cinefile.API.Model.movies.movieResponseAdminResponse
 import com.ic.cinefile.API.Model.movies.moviesResponse
 import com.ic.cinefile.API.Model.movies.rateMoveResponse
 import com.ic.cinefile.API.Model.movies.recentMoviesResponse
@@ -20,11 +22,13 @@ import com.ic.cinefile.API.Model.movies.wishListResponse
 import com.ic.cinefile.API.Model.users.NotificationResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.apiServer
+import com.ic.cinefile.data.Actor
 import com.ic.cinefile.data.NotificationData
 import com.ic.cinefile.data.RatingData
 import com.ic.cinefile.data.accountLoginData
 import com.ic.cinefile.data.accountRegisterData
 import com.ic.cinefile.data.commentData
+import com.ic.cinefile.data.createMovieData
 import com.ic.cinefile.data.searchMoviesData
 import com.ic.cinefile.data.witchListData
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +50,8 @@ class userCreateViewModel: ViewModel() {
 
     private val _uiState2 = MutableStateFlow<UiState2>(UiState2.Ready)
     val uiState2 : StateFlow<UiState2> = _uiState2
+
+
 
     // Estados que gestionan la informacion de las screens
     private val _accountCreateAPI = mutableStateOf(accountRegisterData())
@@ -121,6 +127,32 @@ class userCreateViewModel: ViewModel() {
     val moviesReatedState : StateFlow<MoviesReated> = _moviesReated
 
     private var authToken: String = "" // Propiedad para almacenar el token de autenticación
+    private var userRole: String = "" // Propiedad para almacenar el rol del usuario
+
+
+
+    private val _deleteCommentState = MutableStateFlow<DeleteCommentState>(DeleteCommentState.Ready)
+    val deleteCommentState: StateFlow<DeleteCommentState> = _deleteCommentState
+
+    private val _deleteReplyState = MutableStateFlow<DeleteReplyState>(DeleteReplyState.Ready)
+    val deleteReplyState: StateFlow<DeleteReplyState> = _deleteReplyState
+
+
+
+    //ADMIN
+    private val _createMovie = mutableStateOf(createMovieData())
+    val createMovie: State<createMovieData> = _createMovie
+
+    private val _getMovieCreate = MutableStateFlow<GetMovieCreate>(GetMovieCreate.Ready)
+    val getMovieCreate: StateFlow<GetMovieCreate> = _getMovieCreate
+
+    // Estado para la búsqueda de actores por nombre
+    private val _searchActorsState = MutableStateFlow<SearchActorsState>(SearchActorsState.Ready)
+    val searchActorsState: StateFlow<SearchActorsState> = _searchActorsState
+
+
+
+
 
 
     fun updateAccountData(newData: accountRegisterData) {
@@ -136,6 +168,22 @@ class userCreateViewModel: ViewModel() {
         )
         Log.i("userCreateViewModel", "Updated data: ${_accountCreateAPI.value.movieGenereList}")
     }
+
+
+    fun updateActors(newActors: List<Actor>) {
+        _createMovie.value = _createMovie.value.copy(
+            actors = newActors.toMutableList()
+        )
+    }
+
+    fun addActor(actor: Actor) {
+        _createMovie.value = _createMovie.value.copy(
+            actors = _createMovie.value.actors.toMutableList().apply { add(actor) }
+        )
+    }
+
+    // Función para agregar un actor a la lista de actores
+
     fun createAccountUser(userregisterData: accountRegisterData){
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -164,30 +212,6 @@ class userCreateViewModel: ViewModel() {
 
 
 
-        fun markNotificationAsRead(notificationId: String) {
-            viewModelScope.launch(Dispatchers.IO) {
-                try {
-                    _markNotificationState.value = MarkNotificationState.Loading
-                    val response = apiServer.methods.markNotificationAsRead("Bearer $authToken", notificationId)
-                    if (response.isSuccessful) {
-                        _markNotificationState.value = MarkNotificationState.Success("Notification marked as read")
-                    } else {
-                        _markNotificationState.value = MarkNotificationState.Error("Error: ${response.message()}")
-                    }
-                } catch (e: Exception) {
-                    when (e) {
-                        is HttpException -> {
-                            Log.e("UserCreateViewModel", "Error HTTP: ${e.message()}")
-                            _markNotificationState.value = MarkNotificationState.Error("Error HTTP: ${e.message()}")
-                        }
-                        else -> {
-                            Log.e("UserCreateViewModel", "Error: ${e.message}")
-                            _markNotificationState.value = MarkNotificationState.Error("Error: ${e.message}")
-                        }
-                    }
-                }
-            }
-        }
 
 
     }
@@ -211,6 +235,9 @@ class userCreateViewModel: ViewModel() {
                 val response = apiServer.methods.loginAccount(userLoginData)
                 Log.i("userLoginViewModel", response.toString())
                 val token = response.token
+                val role = response.role // Asegúrate de que el rol también se devuelva en la respuesta
+                userRole = role // Guardar el rol del usuario
+
                 authToken = token
                 _uiState.value = UiState.Success(authToken)
 
@@ -229,7 +256,9 @@ class userCreateViewModel: ViewModel() {
             }
         }
     }
-
+    fun getUserRole(): String {
+        return userRole
+    }
 
     private fun setErrorMessage(message: String) {
         _errorMessage.value = message
@@ -704,7 +733,7 @@ class userCreateViewModel: ViewModel() {
     }
 
 
-
+//calificadas
     fun getMoviesReated() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -716,6 +745,7 @@ class userCreateViewModel: ViewModel() {
                         _moviesReated.value = MoviesReated.Success(it)
                     } ?: run {
                         _moviesReated.value = MoviesReated.Error("Lista de deseos vacía")
+
                     }
                 } else {
                     _moviesReated.value = MoviesReated.Error("Error: ${response.message()}")
@@ -732,8 +762,129 @@ class userCreateViewModel: ViewModel() {
             }
         }
     }
+    fun resetDeleteCommentState() {
+        _deleteCommentState.value = DeleteCommentState.Ready
+    }
 
-//
+
+    // Eliminar comentario principal
+    fun deleteComment(commentId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _deleteCommentState.value = DeleteCommentState.Loading
+                val response = apiServer.methods.deleteComment("Bearer $authToken", commentId)
+                if (response.isSuccessful) {
+                    _deleteCommentState.value = DeleteCommentState.Success("Comment deleted successfully")
+                } else {
+                    _deleteCommentState.value = DeleteCommentState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _deleteCommentState.value = DeleteCommentState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    // Eliminar respuesta específica
+    fun deleteReply(replyId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _deleteReplyState.value = DeleteReplyState.Loading
+                val response = apiServer.methods.deleteReply("Bearer $authToken", replyId)
+                if (response.isSuccessful) {
+                    _deleteReplyState.value = DeleteReplyState.Success("Reply deleted successfully")
+                } else {
+                    _deleteReplyState.value = DeleteReplyState.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _deleteReplyState.value = DeleteReplyState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun createMovie(createMovieData: createMovieData){
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = apiServer.methods.createMovie("Bearer $authToken",createMovieData)
+                Log.i("userCreateViewModel", response.toString())
+
+
+            }catch (e:Exception){
+                when (e) {
+                    is HttpException -> {
+                        Log.i("userCreateViewModel", e.message())
+                    }
+                    else -> {
+                        Log.i("userCreateViewModel", e.toString())
+
+                    }
+                }
+            }
+        }
+
+
+
+
+
+
+    }
+
+
+
+    fun getMovieCreate() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _getMovieCreate.value = GetMovieCreate.Loading
+                val response = apiServer.methods.getMovieCreate("Bearer $authToken")
+                if (response.isSuccessful) {
+                    val userData = response.body()
+                    _getMovieCreate.value = userData?.let { GetMovieCreate.Success(it) } ?: GetMovieCreate.Error("Error: Datos de la pelicula no encontrado")
+                } else {
+                    _getMovieCreate.value = GetMovieCreate.Error("Error: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        Log.i("datos:", e.message())
+                        _getMovieCreate.value = GetMovieCreate.Error(e.message())
+                    }
+
+                }
+            }
+        }
+    }
+
+
+    // Método para buscar actores por nombre
+    // Método para buscar actores por nombre
+    fun searchActorsByName(actorName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _searchActorsState.value = SearchActorsState.Loading
+
+                // Llamar al método de la API para buscar actores por nombre
+                val response = apiServer.methods.searchActorsByName("Bearer $authToken" , actorName)
+
+                if (response.isSuccessful) {
+                    val actorsResponse = response.body()
+                    actorsResponse?.let {
+                        _searchActorsState.value = SearchActorsState.Success(it)
+                    } ?: run {
+                        _searchActorsState.value = SearchActorsState.Error("Respuesta nula del servidor")
+                    }
+                } else {
+                    _searchActorsState.value = SearchActorsState.Error("Error ${response.code()}: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _searchActorsState.value = SearchActorsState.Error("Error: ${e.message}")
+            }
+        }
+    }
+
+    // Método para limpiar el estado de búsqueda de actores
+    fun clearSearchActorsState() {
+        _searchActorsState.value = SearchActorsState.Ready
+    }
 
 }
 
@@ -875,3 +1026,45 @@ sealed class MoviesReated {
     data class Success(val data: rateMoveResponse) :  MoviesReated()
     data class Error(val errorMessage: String) :  MoviesReated()
 }
+
+
+sealed class DeleteCommentState {
+    object Loading : DeleteCommentState()
+    object Ready : DeleteCommentState()
+    data class Success(val message: String) : DeleteCommentState()
+    data class Error(val errorMessage: String) : DeleteCommentState()
+}
+
+sealed class DeleteReplyState {
+    object Loading : DeleteReplyState()
+    object Ready : DeleteReplyState()
+    data class Success(val message: String) : DeleteReplyState()
+    data class Error(val errorMessage: String) : DeleteReplyState()
+}
+
+
+//admin
+sealed class CreateMovie {
+    data object Loading : CreateMovie()
+    data object Ready : CreateMovie()
+    data class Success (val data:createMovieData) : CreateMovie()
+    data class Error (val msg : String) : CreateMovie()
+}
+
+
+sealed class GetMovieCreate {
+    object Loading :  GetMovieCreate()
+    object Ready :  GetMovieCreate()
+    data class Success(val data: movieResponseAdminResponse) :  GetMovieCreate()
+    data class Error(val errorMessage: String) :  GetMovieCreate()
+}
+
+sealed class SearchActorsState {
+    object Loading : SearchActorsState()
+    object Ready : SearchActorsState()
+    data class Success(val actors: actorNameResponse) : SearchActorsState()
+    data class Error(val errorMessage: String) : SearchActorsState()
+}
+
+
+

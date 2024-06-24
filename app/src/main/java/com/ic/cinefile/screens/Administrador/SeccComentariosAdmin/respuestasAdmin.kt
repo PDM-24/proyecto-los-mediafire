@@ -29,7 +29,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun respuestas(
+fun respuestasAdmin(
     movieId: Int,
     id: String,
     parentId:String?,
@@ -97,7 +97,12 @@ fun respuestas(
 
             //Eliminar comentario
             IconButton(
-                onClick = { /*ELIMINAR LA COMENTARIO*/ },
+                onClick = { /*ELIMINAR LA COMENTARIO*/
+
+
+
+
+                          },
                 modifier = Modifier.align(Alignment.CenterVertically)
             ) {
                 Icon(
