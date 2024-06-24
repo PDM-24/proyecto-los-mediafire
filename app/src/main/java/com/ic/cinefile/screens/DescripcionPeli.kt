@@ -22,10 +22,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,6 +57,9 @@ import com.ic.cinefile.components.seccComentarios.comentarios
 import com.ic.cinefile.components.ratingStars
 import com.ic.cinefile.components.verTrailer
 import com.ic.cinefile.data.witchListData
+import com.ic.cinefile.screens.Administrador.DeleteDialogAdmin
+import com.ic.cinefile.ui.theme.black
+import com.ic.cinefile.ui.theme.dark_red
 import com.ic.cinefile.ui.theme.light_yellow
 import com.ic.cinefile.ui.theme.sky_blue
 import com.ic.cinefile.ui.theme.white
@@ -83,6 +91,7 @@ fun descripcionPeli(
     val witchListPostSate by viewModel.wishListPostState
     var idMovie by remember { mutableStateOf(witchListPostSate.movieId) }
 
+    val userRole = viewModel.getUserRole()
 
     val averageRating by viewModel.averageRatingState.collectAsState()
 
@@ -139,6 +148,19 @@ fun descripcionPeli(
             is MovieState.Success -> {
                 // Mostrar la información de la película una vez cargada
                 val movie = (movieState as MovieState.Success).data
+
+                //Modal de eliminar:
+                val openAlertDialog = remember { mutableStateOf(false) }
+                if (openAlertDialog.value) {
+                    DeleteDialogAdmin(
+                        //lo que hace si se da en "eliminar", logica de eliminar la peli
+                        onConfirmation = { openAlertDialog.value = false },
+                        //lo que hace si se le da "atrás"
+                        onDismissRequest = { openAlertDialog.value = false },
+                        dialogText = "Pelicula a eliminar: \n${movie.title}"
+                    )
+                }
+
                 //Imagen de fondo
 
                 AsyncImage(
@@ -149,6 +171,17 @@ fun descripcionPeli(
                         .fillMaxHeight(0.7f)
                         .fillMaxWidth()
                 )
+                //Back
+                IconButton(
+                    onClick = {navController.popBackStack() },
+                    colors = IconButtonDefaults.iconButtonColors(black)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "",
+                        tint = white
+                    )
+                }
 
                 //Card de información de la peli
                 Card(
@@ -177,16 +210,29 @@ fun descripcionPeli(
                                     modifier = Modifier.fillMaxWidth(0.85f)
                                 )
                                 //guardado o no
-                                botonGuardar(
-                                    onClick = {
-                                        isBookmarked = !isBookmarked
-                                        val data= witchListData(movieId =movie.id)
+                                if(userRole == "admin"){
+                                    IconButton(
+                                        onClick = { openAlertDialog.value = true },
+                                        modifier = Modifier.align(Alignment.Top)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = null,
+                                            tint = dark_red
+                                        )
+                                    }
+                                }else {
+                                    botonGuardar(
+                                        onClick = {
+                                            isBookmarked = !isBookmarked
+                                            val data = witchListData(movieId = movie.id)
 
-                                        viewModel.addToWishlist(data)
-                                    },
-                                    isBookmarked = isBookmarked,
-                                    modifier = Modifier.align(Alignment.Top)
-                                )
+                                            viewModel.addToWishlist(data)
+                                        },
+                                        isBookmarked = isBookmarked,
+                                        modifier = Modifier.align(Alignment.Top)
+                                    )
+                                }
                             }
                         }
 

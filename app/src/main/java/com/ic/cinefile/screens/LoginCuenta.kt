@@ -246,35 +246,6 @@ fun Login(viewModel: userCreateViewModel, navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(
-            onClick = {
-                // Acción para iniciar sesión con Google
-            },
-            modifier = Modifier.width(300.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
-            ),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(id = R.drawable.googlee),
-                    contentDescription = null,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-                Text(
-                    text = "Iniciar sesión con Google",
-                    style = TextStyle(
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center,
-                    )
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
         Text(
             text = "¿No tienes cuenta? Crea una acá",
             style = TextStyle(

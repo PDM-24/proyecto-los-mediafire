@@ -34,6 +34,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
@@ -82,6 +83,7 @@ import com.ic.cinefile.R
 import com.ic.cinefile.components.seccComentarios.unComentario
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.dark_blue
+import com.ic.cinefile.ui.theme.dark_red
 import com.ic.cinefile.ui.theme.grisComment
 import com.ic.cinefile.ui.theme.light_yellow
 import com.ic.cinefile.ui.theme.montserratFamily
@@ -94,6 +96,7 @@ import com.ic.cinefile.viewModel.RepliesToCommentState
 import com.ic.cinefile.viewModel.SearchState
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.userCreateViewModel
+
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavController, title: String) {
@@ -113,6 +116,8 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
     val context = LocalContext.current
 
     val addScreenState = viewModel.uiState.collectAsState()
+
+    val userRole = viewModel.getUserRole()
 
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
@@ -150,20 +155,33 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = "Home",
-                                tint = white
-                            )
-                        }
-                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
-                            Icon(
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = "User",
-                                tint = white
-                            )
-                        }
+
+                    }
+
+                        if(userRole=="admin"){
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                        }else{
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                            IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = "User",
+                                    tint = white
+                                )
+                            }
+
                     }
                 }
             )
@@ -261,7 +279,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                                 selectedOption = "Recientes"
                                 isMenuExpanded = false
                                 // Llamar función de búsqueda con filtro de recientes
-                                viewModel.searchMoviesByTitle(title,sortBy="release_date.desc")
+                                viewModel.searchMoviesByTitle(title, sortBy = "release_date.desc")
                             }
                         )
                         DropdownMenuItem(
@@ -270,7 +288,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                                 selectedOption = "Más viejas"
                                 isMenuExpanded = false
                                 // Llamar función de búsqueda con filtro de más viejas
-                                viewModel.searchMoviesByTitle(title,sortBy="release_date.asc")
+                                viewModel.searchMoviesByTitle(title, sortBy = "release_date.asc")
                             }
                         )
                         DropdownMenuItem(
@@ -463,8 +481,6 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                     }
 
 
-
-
                 }
             }
 
@@ -483,8 +499,10 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                         )
                     }
                 }
+
                 is SearchState.Success -> {
-                    val movies = (searchState as SearchState.Success).data?.moviesSearch ?: emptyList()
+                    val movies =
+                        (searchState as SearchState.Success).data?.moviesSearch ?: emptyList()
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
@@ -493,7 +511,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         items(movies.size) { index ->
-                            val movie =movies[index]
+                            val movie = movies[index]
 
 
                             Box(
@@ -509,15 +527,18 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                                     titulo = movie.title,
                                     fechaLanzamiento = movie.releaseDate ?: "sin fecha",
                                     categoria = movie.genres,
+                                    userRole = userRole,
                                     isBookmarked = bookmarkedStates.getOrNull(movies.indexOf(movie)) ?: false,
                                     averageRating= movie.averageRating// Pasar el estado completo aquí
 
                                     )
+
                                 Spacer(modifier = Modifier.height(18.dp))
                             }
                         }
                     }
                 }
+
                 is SearchState.Error -> {
                     val message = (searchState as SearchState.Error).message
                     Box(
@@ -536,6 +557,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                         )
                     }
                 }
+
                 else -> {
                     // Mostrar un mensaje o indicador por defecto cuando no hay datos aún
                     Box(
@@ -558,6 +580,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
         }
     }
 }
+
 @Composable
 fun Peli(
     poster: String?,
@@ -565,6 +588,7 @@ fun Peli(
     fechaLanzamiento: String?,
     categoria: String,
     isBookmarked: Boolean,
+    userRole: String,
     averageRating: Double,
 ) {
     val displayedFechaLanzamiento = fechaLanzamiento ?: "sin fecha"
@@ -646,7 +670,7 @@ fun Peli(
                 categoria.split(",").forEach { cat ->
                     Card(
                         modifier = Modifier.wrapContentSize(),
-                        colors = CardDefaults.cardColors(containerColor = sky_blue                        )
+                        colors = CardDefaults.cardColors(containerColor = sky_blue)
                     ) {
                         Text(
                             text = cat,
@@ -673,13 +697,27 @@ fun Peli(
                     fontSize = 14.sp
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_bookmark_24),
-                    contentDescription = null,
-                    tint = if (isBookmarked) Color.Yellow else Color.White,
-                    modifier = Modifier.size(16.dp)
-                )
+                if (userRole == "admin") {
+                    IconButton(
+                        onClick = { /*ELIMINAR PELI*/ },
+                        modifier = Modifier.align(Alignment.Top)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = null,
+                            tint = dark_red
+                        )
+                    }
+                } else {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_bookmark_24),
+                        contentDescription = null,
+                        tint = if (isBookmarked) Color.Yellow else Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
     }
 }
+

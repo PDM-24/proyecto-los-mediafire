@@ -76,6 +76,9 @@ fun Calificadas(
     val moviesReatedState by viewModel.moviesReatedState.collectAsState()
     val addScreenState = viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val userRole = viewModel.getUserRole()
+
+
     //Listas de valores para prueba
 
 
@@ -114,7 +117,7 @@ fun Calificadas(
                 ),
                 title = {
                     Row(
-                        modifier = Modifier.padding(start = 100.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -125,14 +128,6 @@ fun Calificadas(
                         )
                         Text(text = "Calificadas")
                     }
-                },
-                navigationIcon = {
-                    Icon(
-                        modifier = Modifier.clickable { navController.popBackStack()  },
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "",
-                        tint = white
-                    )
                 }
             )
         },
@@ -145,19 +140,30 @@ fun Calificadas(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = "Home",
-                                tint = white
-                            )
-                        }
-                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
-                            Icon(
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = "User",
-                                tint = white
-                            )
+
+                        if (userRole == "admin") {
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                        } else {
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                            IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = "User",
+                                    tint = white
+                                )
+                            }
                         }
                     }
                 }
@@ -200,11 +206,10 @@ fun Calificadas(
                                         titulo = movie.title ?: "sin categoria",
                                         fechaLanzamiento = movie.releaseDate ?: "sin fecha",
                                         categoria = movie.genres,
-                                        averageRating= movie.averageRating,// Pasar el estado completo aquívi
+                                        averageRating = movie.averageRating,// Pasar el estado completo aquívi
                                         viewModel = viewModel
                                     )
                                     Spacer(modifier = Modifier.height(18.dp))
-
 
 
                                 }
@@ -237,13 +242,12 @@ fun Calificadas(
                         modifier = Modifier.padding(8.dp)
                     )
                 }
-                is MoviesReated.Ready->{
+
+                is MoviesReated.Ready -> {
 
                 }
 
             }
-
-
 
 
         }
@@ -271,7 +275,7 @@ fun BloquePeliD(
             .background(black),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
-    ){
+    ) {
         //Poster de la peli
         Box(
             modifier = Modifier
@@ -284,7 +288,7 @@ fun BloquePeliD(
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-            }else {
+            } else {
                 // Placeholder para imagen nula
                 Box(
                     modifier = Modifier
