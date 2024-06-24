@@ -386,13 +386,7 @@ fun descripcionPeliAdmin(
         }
     }
 }
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun descripcionPeliPreview() {
-//    var isBookmarked by remember { mutableStateOf(false) }
-//    descripcionPeli(onClick = { isBookmarked = !isBookmarked })
-//}
+
 
 
 @Composable

@@ -135,7 +135,13 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         is UserDataState.Success -> {
                             val user = (userDataState as UserDataState.Success).userData.user
                             val avatarUsuario = getAvatarResourcesinanuncios(user.avatarUrl)
+<<<<<<< HEAD
+                            val username= user.username
+
+
+=======
                             val username = user.username
+>>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e
 
                             Row(
                                 modifier = Modifier
@@ -295,7 +301,11 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
 
             }
         }
+<<<<<<< HEAD
+    ){
+=======
     ) {
+>>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e
 
         Scaffold(
             topBar = {
@@ -488,20 +498,26 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
             }
         }
     }
-}
-
-@Composable
-fun LoadingAnimation() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            color = Color.White,
-            modifier = Modifier.size(36.dp)
-        )
     }
+<<<<<<< HEAD
+
+    @Composable
+    fun LoadingAnimation() {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = Color.White,
+                modifier = Modifier.size(36.dp)
+            )
+        }
+    }
+
+
+=======
 }
+>>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e

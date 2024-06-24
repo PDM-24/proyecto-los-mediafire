@@ -150,18 +150,18 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
                             Icon(
                                 imageVector = Icons.Filled.Home,
                                 contentDescription = "Home",
-                                tint = Color.White
+                                tint = white
                             )
                         }
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
                             Icon(
                                 imageVector = Icons.Filled.Person,
-                                contentDescription = "Perfil",
-                                tint = Color.White
+                                contentDescription = "User",
+                                tint = white
                             )
                         }
                     }
@@ -495,9 +495,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                         items(movies.size) { index ->
                             val movie =movies[index]
 
-                            LaunchedEffect(key1 = movie.id) {
-                                viewModel.getAverageRating(movie.id)
-                            }
+
                             Box(
                                 modifier = Modifier
                                     .padding(4.dp)
@@ -512,7 +510,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                                     fechaLanzamiento = movie.releaseDate ?: "sin fecha",
                                     categoria = movie.genres,
                                     isBookmarked = bookmarkedStates.getOrNull(movies.indexOf(movie)) ?: false,
-                                    averageRating= averageRatingState // Pasar el estado completo aquí
+                                    averageRating= movie.averageRating// Pasar el estado completo aquí
 
                                     )
                                 Spacer(modifier = Modifier.height(18.dp))
@@ -567,7 +565,7 @@ fun Peli(
     fechaLanzamiento: String?,
     categoria: String,
     isBookmarked: Boolean,
-    averageRating: AverageRatingState,
+    averageRating: Double,
 ) {
     val displayedFechaLanzamiento = fechaLanzamiento ?: "sin fecha"
 
@@ -622,18 +620,7 @@ fun Peli(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = when (averageRating) {
-                            is AverageRatingState.Success -> {
-                                String.format("%.2f", (averageRating as AverageRatingState.Success).averageRating)
-                            }
-                            is AverageRatingState.Loading -> {
-                                "..."
-                            }
-                            is AverageRatingState.Error -> {
-                                "Error"
-                            }
-                            else -> "0.0"
-                        },
+                        text = String.format("%.2f", averageRating),
                         color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold

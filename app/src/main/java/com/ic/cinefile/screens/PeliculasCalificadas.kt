@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.grisComment
@@ -127,7 +128,7 @@ fun Calificadas(
                 },
                 navigationIcon = {
                     Icon(
-                        modifier = Modifier.clickable { /*navController.popBackStack() para volver atrás*/ },
+                        modifier = Modifier.clickable { navController.popBackStack()  },
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = "",
                         tint = white
@@ -144,17 +145,17 @@ fun Calificadas(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
                             Icon(
                                 imageVector = Icons.Filled.Home,
                                 contentDescription = "Home",
                                 tint = white
                             )
                         }
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
                             Icon(
                                 imageVector = Icons.Filled.Person,
-                                contentDescription = "Perfil",
+                                contentDescription = "User",
                                 tint = white
                             )
                         }
@@ -189,7 +190,7 @@ fun Calificadas(
                                         .padding(4.dp)
                                         .clickable {
                                             // Aquí navegas a la pantalla de descripción de la película
-                                            //navController.navigate("${screenRoute.descripcionPeli.route}/${movie.movieId}")
+                                            navController.navigate("${screenRoute.descripcionPeli.route}/${movie.movieId}")
                                         }
                                 )
                                 {
@@ -200,8 +201,8 @@ fun Calificadas(
                                         fechaLanzamiento = movie.releaseDate ?: "sin fecha",
                                         categoria = movie.genres,
                                         averageRating= movie.averageRating,// Pasar el estado completo aquívi
-                                    viewModel = viewModel
-                                        )
+                                        viewModel = viewModel
+                                    )
                                     Spacer(modifier = Modifier.height(18.dp))
 
 
@@ -264,7 +265,6 @@ fun BloquePeliD(
     viewModel: userCreateViewModel
 ) {
     val displayedFechaLanzamiento = fechaLanzamiento ?: "sin fecha"
-    val averageRating by viewModel.averageRatingState.collectAsState()
 
     Row(
         modifier = Modifier
@@ -316,13 +316,7 @@ fun BloquePeliD(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = when(val state = averageRating) {
-                            is AverageRatingState.Success -> {
-                                state.averageRating?.takeIf { it != 0.0 }?.let { String.format("%.2f", it) } ?: "0.0"
-
-                            }
-                            else -> "0.0"
-                        },
+                        text = String.format("%.2f", averageRating),
                         color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -379,4 +373,3 @@ fun BloquePeliD(
         }
     }
 }
-

@@ -38,12 +38,12 @@ fun respuestas(
 ) {
     //val comment = "Comentario $idComentario"
     // Formato de entrada para parsear la fecha y hora
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
-    // Formato de salida para mostrar la fecha y hora en un formato legible
+// Formato de salida para mostrar la fecha y hora en un formato legible
     val outputFormat = SimpleDateFormat("dd 'de' MMMM 'de' yyyy hh:mm a", Locale.getDefault())
 
-    // Parsear la fecha y hora del comentario
+// Parsear la fecha y hora del comentario
     val parsedDate = inputFormat.parse(createdAt)
     val formattedDateTime = outputFormat.format(parsedDate)
 
