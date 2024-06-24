@@ -177,32 +177,6 @@ fun CrearCuenta(viewModel: userCreateViewModel, navController: NavController) {
             )
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Button(
-            onClick = { /*TODO*/ },
-            modifier = Modifier.width(300.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
-            ),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(id = R.drawable.googlee),
-                    contentDescription = null,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-                Text(
-                    text = "Iniciar sesión con Google",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center,
-                    )
-                )
-            }
-        }
 
         Spacer(modifier = Modifier.height(100.dp))
 

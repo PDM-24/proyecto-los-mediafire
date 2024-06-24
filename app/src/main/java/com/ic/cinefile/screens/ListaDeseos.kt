@@ -75,8 +75,7 @@ import com.ic.cinefile.viewModel.userCreateViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Lista_deseos(
-    viewModel: userCreateViewModel,
-    navController: NavController
+    viewModel: userCreateViewModel, navController: NavController
 
 ) {
     //Listas de valores para prueba
@@ -87,6 +86,8 @@ fun Lista_deseos(
     val context = LocalContext.current
 
     val addScreenState = viewModel.uiState.collectAsState()
+
+    val userRole = viewModel.getUserRole()
 
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
@@ -114,48 +115,42 @@ fun Lista_deseos(
         viewModel.getWishlist()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = black,
-                    titleContentColor = white
-                ),
-                title = {
-                    Row(
-                        modifier = Modifier.padding(start = 70.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            modifier = Modifier.padding(end = 10.dp),
-                            painter = painterResource(id = R.drawable.baseline_bookmark_24),
-                            contentDescription = null,
-                            tint = white
-                        )
-                        Text(text = "Lista de deseos")
-                    }
-                },
-                navigationIcon = {
-                    Icon(
-                        //modifier = Modifier.clickable { /navController.popBackStack() para volver atrás/ },
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "",
-                        tint = white
-                    )
-                }
-            )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = Color.Black,
-                content = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
+    Scaffold(topBar = {
+        TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = black, titleContentColor = white
+        ), title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_bookmark_24),
+                    contentDescription = null,
+                    tint = white
+                )
+                Text(text = "Lista de deseos")
+            }
+        })
+    }, bottomBar = {
+        BottomAppBar(
+            containerColor = Color.Black, content = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    if (userRole == "admin") {
+                        IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                            Icon(
+                                imageVector = Icons.Filled.Home,
+                                contentDescription = "Home",
+                                tint = white
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
                             Icon(
                                 imageVector = Icons.Filled.Home,
                                 contentDescription = "Home",
@@ -169,10 +164,12 @@ fun Lista_deseos(
                                 tint = white
                             )
                         }
+
                     }
                 }
-            )
-        }
+            }
+        )
+    }
 
     ) { innerPadding ->
         Column(
@@ -185,8 +182,7 @@ fun Lista_deseos(
 
             when (wishlisGetState) {
                 is WishlistGetState.Success -> {
-                    val movies =
-                        (wishlisGetState as WishlistGetState.Success).data.wishlist
+                    val movies = (wishlisGetState as WishlistGetState.Success).data.wishlist
                     Column {
 
 
@@ -194,26 +190,22 @@ fun Lista_deseos(
                             items(movies.size) { index ->
                                 val movie = movies[index]
 
-                                Box(
-                                    modifier = Modifier
-                                        .padding(4.dp)
-                                        .clickable {
-                                            // Aquí navegas a la pantalla de descripción de la película
-                                            navController.navigate("${screenRoute.descripcionPeli.route}/${movie.movieId}")
-                                        }
-                                )
-                                {
+                                Box(modifier = Modifier
+                                    .padding(4.dp)
+                                    .clickable {
+                                        // Aquí navegas a la pantalla de descripción de la película
+                                        navController.navigate("${screenRoute.descripcionPeli.route}/${movie.movieId}")
+                                    }) {
 
                                     BloquePeliDL(
                                         poster = movie.poster,
                                         titulo = movie.title ?: "sin categoria",
                                         fechaLanzamiento = movie.releaseDate ?: "sin fecha",
                                         categoria = movie.genres,
-                                       averageRating= averageRatingState // Pasar el estado completo aquí
+                                        averageRating = averageRatingState // Pasar el estado completo aquí
 
                                     )
                                     Spacer(modifier = Modifier.height(18.dp))
-
 
 
                                 }
@@ -232,8 +224,7 @@ fun Lista_deseos(
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
-                            color = Color.White,
-                            modifier = Modifier.size(50.dp)
+                            color = Color.White, modifier = Modifier.size(50.dp)
                         )
                     }
                 }
@@ -246,17 +237,12 @@ fun Lista_deseos(
                         modifier = Modifier.padding(8.dp)
                     )
                 }
-                is WishlistGetState.Ready->{
+
+                is WishlistGetState.Ready -> {
 
                 }
 
             }
-
-
-
-
-
-
 
 
         }
@@ -265,29 +251,25 @@ fun Lista_deseos(
 }
 
 
-
-
 //Contenedor de la peli y su info básica
 @Composable
 fun BloquePeliDL(
     poster: String?,
-                titulo: String,
-                fechaLanzamiento: String?,
+    titulo: String,
+    fechaLanzamiento: String?,
     categoria: String?,
     averageRating: AverageRatingState
 ) {
     val displayedFechaLanzamiento = fechaLanzamiento ?: "sin fecha"
 
     Row(
-        modifier = Modifier
-            .background(black),
+        modifier = Modifier.background(black),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
-    ){
+    ) {
         //Poster de la peli
         Box(
-            modifier = Modifier
-                .size(100.dp, 150.dp)
+            modifier = Modifier.size(100.dp, 150.dp)
         ) {
             if (poster != null) {
                 AsyncImage(
@@ -296,7 +278,7 @@ fun BloquePeliDL(
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-            }else {
+            } else {
                 // Placeholder para imagen nula
                 Box(
                     modifier = Modifier
@@ -305,18 +287,16 @@ fun BloquePeliDL(
                 )
             }
 
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .background(
-                        grisComment,
-                        shape = RoundedCornerShape(bottomStart = 8.dp, topStart = 8.dp)
-                    )
-                    .clickable {
-                        //navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
-                    }
-                    .padding(4.dp)
-            ) {
+            Box(modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .background(
+                    grisComment,
+                    shape = RoundedCornerShape(bottomStart = 8.dp, topStart = 8.dp)
+                )
+                .clickable {
+                    //navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
+                }
+                .padding(4.dp)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -330,14 +310,20 @@ fun BloquePeliDL(
                     Text(
                         text = when (averageRating) {
                             is AverageRatingState.Success -> {
-                                String.format("%.2f", (averageRating as AverageRatingState.Success).averageRating)
+                                String.format(
+                                    "%.2f",
+                                    (averageRating as AverageRatingState.Success).averageRating
+                                )
                             }
+
                             is AverageRatingState.Loading -> {
                                 "..."
                             }
+
                             is AverageRatingState.Error -> {
                                 "Error"
                             }
+
                             else -> "0.0"
                         },
                         color = Color.White,
@@ -359,8 +345,7 @@ fun BloquePeliDL(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 categoria?.split(",")?.forEach { cat ->
@@ -388,12 +373,11 @@ fun BloquePeliDL(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = displayedFechaLanzamiento,
-                    color = Color.White,
-                    fontSize = 14.sp
+                    text = displayedFechaLanzamiento, color = Color.White, fontSize = 14.sp
                 )
             }
+
+
         }
     }
 }
-
