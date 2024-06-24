@@ -155,17 +155,17 @@ fun Lista_deseos(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
                             Icon(
                                 imageVector = Icons.Filled.Home,
                                 contentDescription = "Home",
                                 tint = white
                             )
                         }
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
                             Icon(
                                 imageVector = Icons.Filled.Person,
-                                contentDescription = "Perfil",
+                                contentDescription = "User",
                                 tint = white
                             )
                         }

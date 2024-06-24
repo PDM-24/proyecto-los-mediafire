@@ -80,15 +80,18 @@ fun unComentarioAdmin(
     val commentState by viewModel.commentsState.collectAsState()
 
     // Formato de entrada para parsear la fecha y hora
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
-    // Formato de salida para mostrar la fecha y hora en un formato legible
+// Formato de salida para mostrar la fecha y hora en un formato legible
     val outputFormat = SimpleDateFormat("dd 'de' MMMM 'de' yyyy hh:mm a", Locale.getDefault())
-    val deleteCommentState by viewModel.deleteCommentState.collectAsState()
 
-    // Parsear la fecha y hora del comentario
+// Parsear la fecha y hora del comentario
     val parsedDate = inputFormat.parse(createdAt)
     val formattedDateTime = outputFormat.format(parsedDate)
+
+    val deleteCommentState by viewModel.deleteCommentState.collectAsState()
+
+
 
     val addScreenState = viewModel.uiState.collectAsState()
 
@@ -187,13 +190,13 @@ fun unComentarioAdmin(
 
 
 
-                      /*ELIMINAR LA COMENTARIO*/
+                /*ELIMINAR LA COMENTARIO*/
 
                 viewModel.deleteComment(id)
 
 
 
-                      },
+            },
             modifier = Modifier.align(Alignment.Start)
         ) {
             Icon(
@@ -339,4 +342,3 @@ fun getRepliesToComment(
         viewModel.getRepliesToComment(movieId, parentId)
     }
 }
-

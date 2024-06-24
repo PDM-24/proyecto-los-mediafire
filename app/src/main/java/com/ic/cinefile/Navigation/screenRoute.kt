@@ -23,7 +23,6 @@ sealed class screenRoute(var route: String) {
 
     object ResultadoBuscador:screenRoute("ResultadoBuscador")
     object Calificadas:screenRoute("Calificadas")
-<<<<<<< HEAD
     object Lista_deseos:screenRoute("Lista_deseos")
 
 
@@ -33,9 +32,10 @@ sealed class screenRoute(var route: String) {
     object descripcionPeliAdmin:screenRoute("descripcionPeliAdmin")
 
     object AgregarPeliAdmin:screenRoute("AgregarPeliAdmin")
-=======
     object ListaDeseos:screenRoute("ListaDeseos")
     object Configuraciones:screenRoute("Configuraciones")
->>>>>>> 05660a4a2c49a792e3fc43333bede78250a4a628
+
+
+
 
 }

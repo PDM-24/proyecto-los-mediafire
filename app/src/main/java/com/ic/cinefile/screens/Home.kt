@@ -137,7 +137,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         is UserDataState.Success -> {
                             val user = (userDataState as UserDataState.Success).userData.user
                             val avatarUsuario = getAvatarResourcesinanuncios(user.avatarUrl)
-                                    val username= user.username
+                            val username= user.username
 
 
 
@@ -246,9 +246,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         selectedContainerColor = Color.Transparent
                     )
                 )
-<<<<<<< HEAD
 
-=======
                 NavigationDrawerItem(
                     label = {
                         Text(
@@ -276,7 +274,6 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         selectedContainerColor = Color.Transparent
                     )
                 )
->>>>>>> 05660a4a2c49a792e3fc43333bede78250a4a628
                 Spacer(modifier = Modifier.weight(1f))
                 NavigationDrawerItem(
                     label = { Text(text = "Cerrar sesión", color = white, fontSize = 16.sp) },
@@ -302,14 +299,8 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
 
             }
         }
-<<<<<<< HEAD
-    )
+    ){
 
-
-    {
-=======
-    ) {
->>>>>>> 05660a4a2c49a792e3fc43333bede78250a4a628
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -501,27 +492,22 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
             }
         }
     }
-}
-
-@Composable
-fun LoadingAnimation() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            color = Color.White,
-            modifier = Modifier.size(36.dp)
-        )
     }
-}
+
+    @Composable
+    fun LoadingAnimation() {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = Color.White,
+                modifier = Modifier.size(36.dp)
+            )
+        }
+    }
 
 
-/*@Preview
-@Composable
-fun HomePreview() {
-    Home(viewModel = userCreateViewModel(), navController = rememberNavController())
-}*/
