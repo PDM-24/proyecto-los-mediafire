@@ -20,12 +20,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -56,6 +60,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -162,6 +167,7 @@ fun AgregarPeliAdmin(
         val generosSeleccionados = remember { mutableStateListOf<String>() }
         var uri by remember { mutableStateOf<Uri?>(null) }
 
+
         val foto = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickVisualMedia(),
             onResult = { resultUri: Uri? ->
@@ -173,7 +179,8 @@ fun AgregarPeliAdmin(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(black),
+                .background(black)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -235,7 +242,8 @@ fun AgregarPeliAdmin(
                         focusedLabelColor = white,
                         focusedIndicatorColor = white,
                         cursorColor = white,
-                        focusedTextColor = white
+                        focusedTextColor = white,
+                        unfocusedTextColor = white
                     ),
                     placeholder = {
                         Text(
@@ -276,7 +284,8 @@ fun AgregarPeliAdmin(
                         focusedLabelColor = white,
                         focusedIndicatorColor = white,
                         cursorColor = white,
-                        focusedTextColor = white
+                        focusedTextColor = white,
+                        unfocusedTextColor = white
                     ),
                     placeholder = {
                         Text(
@@ -316,7 +325,8 @@ fun AgregarPeliAdmin(
                         focusedLabelColor = white,
                         focusedIndicatorColor = white,
                         cursorColor = white,
-                        focusedTextColor = white
+                        focusedTextColor = white,
+                        unfocusedTextColor = white
                     ),
                     placeholder = {
                         Text(
@@ -356,13 +366,14 @@ fun AgregarPeliAdmin(
                         }
                     },
                     colors = TextFieldDefaults.colors(
-                        unfocusedLabelColor = Color.White,
-                        focusedLabelColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedIndicatorColor = Color.White,
-                        unfocusedIndicatorColor = Color.White
+                        unfocusedContainerColor = black,
+                        focusedContainerColor = black,
+                        unfocusedLabelColor = white,
+                        focusedLabelColor = white,
+                        focusedIndicatorColor = white,
+                        cursorColor = white,
+                        focusedTextColor = white,
+                        unfocusedTextColor = white
                     ),
                     placeholder = {
                         Text(
@@ -403,23 +414,30 @@ fun AgregarPeliAdmin(
                     }
                     is SearchActorsState.Success -> {
                         val actors = (searchActorsState as SearchActorsState.Success).actors.actors
-                        LazyColumn(
+                        LazyRow(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(innerPadding)
-                                .background(Color.Black),
-                            verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             items(actors.size) { index ->
                                 val actor = actors[index]
-                                ActorItem(name = actor.name, avatar = actor.profileUrl ?: "s/n")
+                                ActorItem(
+                                    name = actor.name,
+                                    avatar = actor.profileUrl ?: "s/n"
+                                )
                             }
                         }
+                    }
+                    is SearchActorsState.Ready -> {
+                        Text(
+                            text = "",
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
                     }
                     else -> {}
                 }
 
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Sección para seleccionar categorías de la película
                 Text(
@@ -494,14 +512,10 @@ fun AgregarPeliAdmin(
 
 @Composable
 fun ActorItem(name: String, avatar: String?) {
-    Row(
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .background(Color.Gray, RoundedCornerShape(8.dp))
-            .clickable { /* Handle actor selection here */ }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .wrapContentSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (avatar == null) {
             Box(
@@ -521,15 +535,18 @@ fun ActorItem(name: String, avatar: String?) {
             AsyncImage(
                 model = avatar,
                 contentDescription = "Actor Profile Picture",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(64.dp)
+                    .size(60.dp)
                     .clip(CircleShape)
             )
         }
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = name,
-            style = TextStyle(color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 6.dp)
         )
     }
 }

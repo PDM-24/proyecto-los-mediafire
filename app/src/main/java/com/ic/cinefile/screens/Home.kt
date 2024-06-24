@@ -128,18 +128,14 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                 ) {
 
 
-
                     when (userDataState) {
                         is UserDataState.Loading -> {
-
                         }
 
                         is UserDataState.Success -> {
                             val user = (userDataState as UserDataState.Success).userData.user
                             val avatarUsuario = getAvatarResourcesinanuncios(user.avatarUrl)
-                                    val username= user.username
-
-
+                            val username = user.username
 
                             Row(
                                 modifier = Modifier
@@ -214,7 +210,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         coroutineScope.launch {
                             drawerState.close()
                         }
-                        navController.navigate(screenRoute.Calificadas.route)  {
+                        navController.navigate(screenRoute.Calificadas.route) {
                             popUpTo(0)
                         }
                     },
@@ -237,7 +233,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         coroutineScope.launch {
                             drawerState.close()
                         }
-                        navController.navigate(screenRoute.Lista_deseos.route)  {
+                        navController.navigate(screenRoute.Lista_deseos.route) {
                             popUpTo(0)
                         }
                     },
@@ -246,9 +242,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         selectedContainerColor = Color.Transparent
                     )
                 )
-<<<<<<< HEAD
 
-=======
                 NavigationDrawerItem(
                     label = {
                         Text(
@@ -276,7 +270,6 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         selectedContainerColor = Color.Transparent
                     )
                 )
->>>>>>> 05660a4a2c49a792e3fc43333bede78250a4a628
                 Spacer(modifier = Modifier.weight(1f))
                 NavigationDrawerItem(
                     label = { Text(text = "Cerrar sesión", color = white, fontSize = 16.sp) },
@@ -302,14 +295,8 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
 
             }
         }
-<<<<<<< HEAD
-    )
-
-
-    {
-=======
     ) {
->>>>>>> 05660a4a2c49a792e3fc43333bede78250a4a628
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -518,10 +505,3 @@ fun LoadingAnimation() {
         )
     }
 }
-
-
-/*@Preview
-@Composable
-fun HomePreview() {
-    Home(viewModel = userCreateViewModel(), navController = rememberNavController())
-}*/
