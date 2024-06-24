@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.compose.rememberImagePainter
 import com.ic.cinefile.components.seccComentarios.unComentario
+import com.ic.cinefile.screens.Administrador.AgregarPeliAdmin
 //import com.ic.cinefile.screens.Administrador.AgregarPeliAdmin
 import com.ic.cinefile.screens.Administrador.HomeAdmin
 import com.ic.cinefile.screens.Administrador.descripcionPeliAdmin
@@ -184,9 +185,9 @@ fun AppNavigation(
 
 
 
-//        composable(route=screenRoute.AgregarPeliAdmin.route){
-//            AgregarPeliAdmin(viewModel,navController)
-//        }
+        composable(route=screenRoute.AgregarPeliAdmin.route){
+            AgregarPeliAdmin(viewModel,navController)
+        }
 
 
 

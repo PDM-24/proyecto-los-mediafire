@@ -2,6 +2,7 @@ package com.ic.cinefile.viewModel
 
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -152,9 +153,11 @@ class userCreateViewModel: ViewModel() {
 
     // Estado para la búsqueda de actores por nombre
     private val _searchActorsState = MutableStateFlow<SearchActorsState>(SearchActorsState.Ready)
-    val searchActorsState: StateFlow<SearchActorsState> = _searchActorsState
+    val searchActorsState: StateFlow<SearchActorsState> get() = _searchActorsState
 
 
+    private val _selectedActors = mutableStateListOf<Actor>()
+    val selectedActors: List<Actor> get() = _selectedActors
 
 
 
@@ -174,17 +177,7 @@ class userCreateViewModel: ViewModel() {
     }
 
 
-    fun updateActors(newActors: List<Actor>) {
-        _createMovie.value = _createMovie.value.copy(
-            actors = newActors.toMutableList()
-        )
-    }
 
-    fun addActor(actor: Actor) {
-        _createMovie.value = _createMovie.value.copy(
-            actors = _createMovie.value.actors.toMutableList().apply { add(actor) }
-        )
-    }
 
     // Función para agregar un actor a la lista de actores
 
@@ -879,6 +872,13 @@ class userCreateViewModel: ViewModel() {
         }
     }
 
+    fun addActor(actor: Actor) {
+        _selectedActors.add(actor)
+    }
+
+    fun clearSelectedActors() {
+        _selectedActors.clear()
+    }
     // Método para limpiar el estado de búsqueda de actores
     fun clearSearchActorsState() {
         _searchActorsState.value = SearchActorsState.Ready
