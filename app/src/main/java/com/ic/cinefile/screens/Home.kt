@@ -128,18 +128,20 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                 ) {
 
 
-
                     when (userDataState) {
                         is UserDataState.Loading -> {
-
                         }
 
                         is UserDataState.Success -> {
                             val user = (userDataState as UserDataState.Success).userData.user
                             val avatarUsuario = getAvatarResourcesinanuncios(user.avatarUrl)
+<<<<<<< HEAD
                             val username= user.username
 
 
+=======
+                            val username = user.username
+>>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e
 
                             Row(
                                 modifier = Modifier
@@ -214,7 +216,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         coroutineScope.launch {
                             drawerState.close()
                         }
-                        navController.navigate(screenRoute.Calificadas.route)  {
+                        navController.navigate(screenRoute.Calificadas.route) {
                             popUpTo(0)
                         }
                     },
@@ -237,7 +239,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         coroutineScope.launch {
                             drawerState.close()
                         }
-                        navController.navigate(screenRoute.Lista_deseos.route)  {
+                        navController.navigate(screenRoute.Lista_deseos.route) {
                             popUpTo(0)
                         }
                     },
@@ -299,7 +301,11 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
 
             }
         }
+<<<<<<< HEAD
     ){
+=======
+    ) {
+>>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e
 
         Scaffold(
             topBar = {
@@ -493,6 +499,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
         }
     }
     }
+<<<<<<< HEAD
 
     @Composable
     fun LoadingAnimation() {
@@ -511,3 +518,6 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
     }
 
 
+=======
+}
+>>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e

@@ -827,14 +827,7 @@ class userCreateViewModel: ViewModel() {
                 }
             }
         }
-
-
-
-
-
-
     }
-
 
 
     fun getMovieCreate() {
@@ -861,7 +854,6 @@ class userCreateViewModel: ViewModel() {
     }
 
 
-    // Método para buscar actores por nombre
     // Método para buscar actores por nombre
     fun searchActorsByName(actorName: String) {
         viewModelScope.launch(Dispatchers.IO) {

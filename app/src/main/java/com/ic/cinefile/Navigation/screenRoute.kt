@@ -35,7 +35,10 @@ sealed class screenRoute(var route: String) {
     object ListaDeseos:screenRoute("ListaDeseos")
     object Configuraciones:screenRoute("Configuraciones")
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e
 
 }
