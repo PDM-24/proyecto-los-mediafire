@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -125,6 +126,52 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
+
+
+
+                    when (userDataState) {
+                        is UserDataState.Loading -> {
+
+                        }
+
+                        is UserDataState.Success -> {
+                            val user = (userDataState as UserDataState.Success).userData.user
+                            val avatarUsuario = getAvatarResourcesinanuncios(user.avatarUrl)
+                                    val username= user.username
+
+
+
+                            Row(
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = avatarUsuario),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(80.dp)
+                                        .clip(CircleShape)
+                                )
+                                Text(
+                                    text = username,
+                                    color = white,
+                                    modifier = Modifier
+                                        .padding(start = 12.dp),
+                                    fontSize = 20.sp
+                                )
+
+                            }
+                        }
+
+                        else -> { /* Manejar otros estados si es necesario */
+                        }
+                    }
+
+
                     //Avatar del usuario
                     Image(
                         painter = painterResource(id = R.drawable.reynolds),
@@ -134,6 +181,8 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                             .size(80.dp)
                             .clip(CircleShape)
                     )
+
+
                     //Nombre del usuario
                     Text(
                         text = "usuario",
@@ -165,7 +214,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         coroutineScope.launch {
                             drawerState.close()
                         }
-                        navigationController.navigate(screenRoute.Calificadas.route) {
+                        navController.navigate(screenRoute.Calificadas.route)  {
                             popUpTo(0)
                         }
                     },
@@ -188,7 +237,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         coroutineScope.launch {
                             drawerState.close()
                         }
-                        navigationController.navigate(screenRoute.ListaDeseos.route) {
+                        navController.navigate(screenRoute.Lista_deseos.route)  {
                             popUpTo(0)
                         }
                     },
@@ -197,6 +246,9 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         selectedContainerColor = Color.Transparent
                     )
                 )
+<<<<<<< HEAD
+
+=======
                 NavigationDrawerItem(
                     label = {
                         Text(
@@ -224,6 +276,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         selectedContainerColor = Color.Transparent
                     )
                 )
+>>>>>>> 05660a4a2c49a792e3fc43333bede78250a4a628
                 Spacer(modifier = Modifier.weight(1f))
                 NavigationDrawerItem(
                     label = { Text(text = "Cerrar sesión", color = white, fontSize = 16.sp) },
@@ -249,7 +302,14 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
 
             }
         }
+<<<<<<< HEAD
+    )
+
+
+    {
+=======
     ) {
+>>>>>>> 05660a4a2c49a792e3fc43333bede78250a4a628
         Scaffold(
             topBar = {
                 TopAppBar(

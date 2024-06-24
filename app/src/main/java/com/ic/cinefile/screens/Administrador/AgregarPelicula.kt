@@ -10,7 +10,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -28,6 +32,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,7 +44,9 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -61,19 +68,65 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.ic.cinefile.API.Model.movies.ActorName
+import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
 import com.ic.cinefile.components.botonGeneros
 import com.ic.cinefile.components.gridGeneros
 import com.ic.cinefile.components.valoresGeneros.generos
+import com.ic.cinefile.data.Actor
+import com.ic.cinefile.screens.showMessage
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.dark_red
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.SearchActorsState
+import com.ic.cinefile.viewModel.UiState
+import com.ic.cinefile.viewModel.userCreateViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AgregarPeli(
+fun AgregarPeliAdmin(
+    viewModel: userCreateViewModel,
     navController: NavController
 ) {
+    val createMovie by viewModel.createMovie
+    var title by remember { mutableStateOf(createMovie.title) }
+    var sypnosis by remember { mutableStateOf(createMovie.synopsis) }
+    var duration by remember { mutableStateOf(createMovie.duration) }
+    val categories = remember { mutableStateListOf<String>().apply { addAll(createMovie.categories) } }
+    var coverPhoto by remember { mutableStateOf(createMovie.coverPhoto) }
+    var actorName by remember { mutableStateOf("") }
+    var actorProfileUrl by remember { mutableStateOf("") }
+    val searchActorsState by viewModel.searchActorsState.collectAsState()
+    val context = LocalContext.current
+
+    val showErrorToast by viewModel.showErrorToast.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    if (showErrorToast) {
+        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+        viewModel.hideErrorToast()
+    }
+
+    val addScreenState = viewModel.uiState.collectAsState()
+    when (addScreenState.value) {
+        is UiState.Error -> {
+            val message = (addScreenState.value as UiState.Error).msg
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            viewModel.setStateToReady()
+        }
+        UiState.Loading -> {
+            com.ic.cinefile.ui.theme.LoadingAnimation()
+        }
+        UiState.Ready -> {}
+        is UiState.Success -> {
+            showMessage(context, "Token: ${(addScreenState.value as UiState.Success).token}")
+            val userRole = viewModel.getUserRole()
+            navController.navigate(screenRoute.HomeAdmin.route)
+            viewModel.setStateToReady()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -88,30 +141,27 @@ fun AgregarPeli(
                     )
                 },
                 navigationIcon = {
-                    Icon(
-                        modifier = Modifier
-                            .clickable { navController.popBackStack() }
-                            .padding(start = 10.dp),
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "",
-                        tint = white
-                    )
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier.padding(start = 10.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "",
+                            tint = white
+                        )
+                    }
                 }
             )
         }
     ) { innerPadding ->
-
         val titulo: MutableState<String> = remember { mutableStateOf("") }
         val sinopsis: MutableState<String> = remember { mutableStateOf("") }
         val duracion: MutableState<String> = remember { mutableStateOf("") }
-        val buscador by remember { mutableStateOf("") }
-        val generosSeleccionados = remember { mutableStateListOf<String>()}
-        val context = LocalContext.current
+        var buscador by remember { mutableStateOf("") }
+        val generosSeleccionados = remember { mutableStateListOf<String>() }
+        var uri by remember { mutableStateOf<Uri?>(null) }
 
-        //PARA LA IMAGEN DEL POSTER
-        var uri by remember {
-            mutableStateOf<Uri?>(null)
-        }
         val foto = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickVisualMedia(),
             onResult = { resultUri: Uri? ->
@@ -119,48 +169,37 @@ fun AgregarPeli(
             }
         )
 
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
                 .background(black),
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            //PARA SUBIR EL POSTER DE LA PELICULA A AGREGAR
-            item {
+            // Sección para subir el poster de la película
                 Box(
-                    modifier = Modifier
-                        .padding(innerPadding),
+                    modifier = Modifier.padding(innerPadding),
                     contentAlignment = Alignment.Center
                 ) {
                     if (uri == null) {
-                        //IMAGEN POR DEFECTO SI NO HAY NADA SUBIDO
                         Image(
                             painter = painterResource(id = R.drawable.no_picture),
                             contentDescription = null,
                             modifier = Modifier.size(150.dp, 200.dp)
                         )
                     } else {
-                        //IMAGEN SUBIDA
                         AsyncImage(
                             model = uri,
                             contentDescription = null,
                             modifier = Modifier.size(150.dp, 200.dp)
-
                         )
                     }
                     IconButton(
                         onClick = {
-                            foto.launch(
-                                PickVisualMediaRequest(
-                                    ActivityResultContracts.PickVisualMedia.ImageOnly
-                                )
-                            )
+                            foto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                         },
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .clip(shape = RoundedCornerShape(2.dp)),
+                        modifier = Modifier.align(Alignment.BottomEnd),
                         colors = IconButtonDefaults.iconButtonColors(dark_red)
                     ) {
                         Icon(
@@ -171,13 +210,12 @@ fun AgregarPeli(
                     }
                 }
                 Spacer(modifier = Modifier.height(20.dp))
-            }
-            item{
+
+
+            // Sección para ingresar el título de la película
                 Text(
                     text = "Título",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 64.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp),
                     style = TextStyle(
                         color = white,
                         fontSize = 18.sp,
@@ -189,9 +227,7 @@ fun AgregarPeli(
                 TextField(
                     modifier = Modifier.width(300.dp),
                     value = titulo.value,
-                    onValueChange = {
-                        titulo.value = it
-                    },
+                    onValueChange = { titulo.value = it },
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = black,
                         focusedContainerColor = black,
@@ -203,40 +239,36 @@ fun AgregarPeli(
                     ),
                     placeholder = {
                         Text(
-                            text = "Agregar titulo...",
+                            text = "Agregar título...",
                             style = TextStyle(
                                 color = white,
                                 fontSize = 15.sp,
                                 letterSpacing = 0.1.em,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.Normal
                             )
                         )
                     },
                     maxLines = 1
                 )
-
                 Spacer(modifier = Modifier.height(20.dp))
-            }
-            item{
+
+
+            // Sección para ingresar la sinopsis de la película
                 Text(
                     text = "Sinopsis",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 64.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp),
                     style = TextStyle(
                         color = white,
                         fontSize = 18.sp,
                         textAlign = TextAlign.Left,
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.Normal
                     )
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 TextField(
                     modifier = Modifier.width(300.dp),
                     value = sinopsis.value,
-                    onValueChange = {
-                        sinopsis.value = it
-                    },
+                    onValueChange = { sinopsis.value = it },
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = black,
                         focusedContainerColor = black,
@@ -253,35 +285,30 @@ fun AgregarPeli(
                                 color = white,
                                 fontSize = 15.sp,
                                 letterSpacing = 0.1.em,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.Normal
                             )
                         )
-                    },
+                    }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-            }
 
-            //AGREGAR LA DURACIÓN DE LA PELICULA
-            item{
+
+            // Sección para ingresar la duración de la película
                 Text(
                     text = "Duración",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 64.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp),
                     style = TextStyle(
                         color = white,
                         fontSize = 18.sp,
                         textAlign = TextAlign.Left,
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.Normal
                     )
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 TextField(
                     modifier = Modifier.width(300.dp),
                     value = duracion.value,
-                    onValueChange = {
-                        duracion.value = it
-                    },
+                    onValueChange = { duracion.value = it },
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = black,
                         focusedContainerColor = black,
@@ -298,54 +325,53 @@ fun AgregarPeli(
                                 color = white,
                                 fontSize = 15.sp,
                                 letterSpacing = 0.1.em,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.Normal
                             )
                         )
-                    },
-                    //SI QUEREMOS QUE SOLO SE INGRESEN NUMEROS DESCOMENTAR LA LINEA DE ABAJO:
-                    //keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-            }
 
-            //BUSQUEDA DE LOS ACTORES DISPONIBLES
-            item {
+
+            // Sección para buscar actores
                 Text(
                     text = "Actores",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 64.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp),
                     style = TextStyle(
                         color = white,
                         fontSize = 18.sp,
                         textAlign = TextAlign.Left,
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.Normal
                     )
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 TextField(
-                    modifier = Modifier.width(300.dp),
                     value = buscador,
-                    onValueChange = {},
+                    onValueChange = { newBuscador ->
+                        buscador = newBuscador
+                        if (newBuscador.isNotEmpty()) {
+                            viewModel.searchActorsByName(newBuscador)
+                        } else {
+                            viewModel.clearSearchActorsState()
+                        }
+                    },
                     colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.LightGray,
-                        focusedContainerColor = Color.LightGray,
-                        unfocusedLabelColor = black,
-                        focusedLabelColor = black,
-                        cursorColor = black,
-                        focusedTextColor = black,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
+                        unfocusedLabelColor = Color.White,
+                        focusedLabelColor = Color.White,
+                        cursorColor = Color.White,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedIndicatorColor = Color.White,
+                        unfocusedIndicatorColor = Color.White
                     ),
                     placeholder = {
                         Text(
-                            text = "Buscar",
+                            text = "Buscar actor por nombre...",
                             style = TextStyle(
-                                color = black,
+                                color = Color.White,
                                 fontSize = 15.sp,
                                 letterSpacing = 0.1.em,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.Normal
                             )
                         )
                     },
@@ -353,34 +379,62 @@ fun AgregarPeli(
                         IconButton(onClick = { }) {
                             Icon(
                                 imageVector = Icons.Filled.Search,
-                                contentDescription = null
+                                contentDescription = "Search Icon",
+                                tint = Color.White
                             )
                         }
                     },
                     shape = RoundedCornerShape(15.dp)
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-            }
 
-            //BOTONES PARA ELEGIR LAS CATEGORIAS A LA QUE PERTENECE LA PELICULA
-            item {
+
+            // Sección para mostrar los resultados de búsqueda de actores
+                when (searchActorsState) {
+                    is SearchActorsState.Loading -> {
+                        CircularProgressIndicator()
+                    }
+                    is SearchActorsState.Error -> {
+                        val message = (searchActorsState as SearchActorsState.Error).errorMessage
+                        Text(
+                            text = message,
+                            color = Color.Red
+                        )
+                    }
+                    is SearchActorsState.Success -> {
+                        val actors = (searchActorsState as SearchActorsState.Success).actors.actors
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(innerPadding)
+                                .background(Color.Black),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            items(actors.size) { index ->
+                                val actor = actors[index]
+                                ActorItem(name = actor.name, avatar = actor.profileUrl ?: "s/n")
+                            }
+                        }
+                    }
+                    else -> {}
+                }
+
+
+            // Sección para seleccionar categorías de la película
                 Text(
-                    text = "Categorias",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 64.dp),
+                    text = "Categorías",
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp),
                     style = TextStyle(
                         color = white,
                         fontSize = 18.sp,
                         textAlign = TextAlign.Left,
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.Normal
                     )
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 LazyVerticalGrid(
-                    modifier = Modifier
-                        .width(300.dp)
-                        .height(480.dp),
+                    modifier = Modifier.width(300.dp).height(480.dp),
                     columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -390,14 +444,13 @@ fun AgregarPeli(
                         val isGenreSelected = generosSeleccionados.contains(genero.name)
                         val isMaxReached = generosSeleccionados.size >= 6
 
-                        // Deshabilitar el botón si se ha alcanzado el límite de géneros
                         val isEnabled = !isMaxReached || isGenreSelected
 
                         botonGeneros(
                             generos = genero,
                             selectedColor = if (isGenreSelected) selectedColor else defaultColor,
                             defaultColor = defaultColor,
-                            onClick =  {
+                            onClick = {
                                 if (isGenreSelected) {
                                     generosSeleccionados.remove(genero.name)
                                 } else {
@@ -406,24 +459,20 @@ fun AgregarPeli(
                                             generosSeleccionados.add(genero.name)
                                         }
                                     } else {
-                                        // Mostrar mensaje de error al usuario (Toast)
                                         Toast.makeText(context, "¡Máximo 6 géneros!", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             },
-
-                            isEnabled = isEnabled// Pasar el estado de habilitación al botón
+                            isEnabled = isEnabled
                         )
                     }
                 }
-            }
 
-            //BOTON PARA GUARDAR LA PELICULA AGREGADA
-            item {
+
+            // Botón para guardar la película
                 Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier
-                        .width(300.dp),
+                    onClick = { /* TODO */ },
+                    modifier = Modifier.width(300.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = white,
                         contentColor = black
@@ -440,13 +489,47 @@ fun AgregarPeli(
                 }
                 Spacer(modifier = Modifier.height(20.dp))
             }
-
         }
     }
-}
 
-@Preview
 @Composable
-fun AgregarPeliPreview() {
-    AgregarPeli(navController = rememberNavController())
+fun ActorItem(name: String, avatar: String?) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .background(Color.Gray, RoundedCornerShape(8.dp))
+            .clickable { /* Handle actor selection here */ }
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (avatar == null) {
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+                    .background(Color.DarkGray),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "s/a",
+                    style = TextStyle(color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            AsyncImage(
+                model = avatar,
+                contentDescription = "Actor Profile Picture",
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+            )
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = name,
+            style = TextStyle(color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        )
+    }
 }

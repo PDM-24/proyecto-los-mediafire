@@ -7,5 +7,8 @@ data class UserLoginResponse(
     val message: String = "",
 
     @SerializedName(value = "token")
-    val token: String = ""
+    val token: String = "",
+
+    @SerializedName(value="role")
+    val role : String=""
 )

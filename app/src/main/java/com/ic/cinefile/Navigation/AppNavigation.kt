@@ -6,6 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ic.cinefile.screens.Administrador.AgregarPeliAdmin
+import com.ic.cinefile.screens.Administrador.HomeAdmin
+import com.ic.cinefile.screens.Administrador.descripcionPeliAdmin
 import com.ic.cinefile.screens.Buscador
 import com.ic.cinefile.screens.Calificadas
 import com.ic.cinefile.screens.Configuraciones
@@ -32,8 +35,9 @@ fun AppNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = screenRoute.Login.route
-    ){
+        startDestination = screenRoute.HomeAppScreen.route
+    )
+    {
         composable(route = screenRoute.CrearCuenta.route){
             CrearCuenta(viewModel, navController)
         }
@@ -56,9 +60,11 @@ fun AppNavigation(
         composable(route=screenRoute.Login.route){
             Login(viewModel,navController)
         }
+
         composable(route=screenRoute.Home.route){
             Home(viewModel,navController)
         }
+
         composable(route=screenRoute.Buscador.route){
             Buscador(viewModel,navController)
         }
@@ -115,14 +121,47 @@ fun AppNavigation(
 //        }
 
         composable(route=screenRoute.Calificadas.route){
-            Calificadas()
+            Calificadas(viewModel,navController)
         }
-        composable(route=screenRoute.ListaDeseos.route){
-            Lista_deseos()
+        composable(route=screenRoute.Lista_deseos.route){
+            Lista_deseos(viewModel,navController)
         }
         composable(route=screenRoute.Configuraciones.route){
             Configuraciones(navController)
         }
+
+
+
+
+
+
+
+
+        //admin
+        composable(route=screenRoute.HomeAdmin.route){
+            HomeAdmin(viewModel,navController)
+        }
+
+        composable(
+            route = "${screenRoute.descripcionPeliAdmin.route}/{movieId}",
+            arguments = listOf(navArgument("movieId"){
+                type= NavType.IntType
+            })
+
+        ) { backStackEntry ->
+            val movieId = backStackEntry.arguments?.getInt("movieId") ?: throw IllegalArgumentException("Movie ID missing")
+
+            descripcionPeliAdmin(
+                onClick = {}, viewModel,navController, movieId)
+        }
+
+
+
+        composable(route=screenRoute.AgregarPeliAdmin.route){
+            AgregarPeliAdmin(viewModel,navController)
+        }
+
+
 
     }
 

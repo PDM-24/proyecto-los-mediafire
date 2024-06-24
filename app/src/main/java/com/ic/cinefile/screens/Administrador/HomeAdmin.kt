@@ -64,7 +64,7 @@ import com.ic.cinefile.viewModel.userCreateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(viewModel: userCreateViewModel, navController: NavController) {
+fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     var buscador by remember { mutableStateOf("") }
     val context = LocalContext.current
     val addScreenState = viewModel.uiState.collectAsState()
@@ -84,6 +84,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
             UiState.Ready -> {}
             is UiState.Success -> {
                 val token = (addScreenState.value as UiState.Success).token
+
                 viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
                 viewModel.setStateToReady()
             }
@@ -217,7 +218,9 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
 
                 //Para agregar una peli
                 Button(
-                    onClick = { /*NAVEGAR A AGREGARPELI*/ },
+                    onClick = { /*NAVEGAR A AGREGARPELI*/
+                              navController.navigate(screenRoute.AgregarPeliAdmin.route)
+                              },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent
                     )
@@ -266,7 +269,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                                             .padding(4.dp)
                                             .clickable {
                                                 // Aquí navegas a la pantalla de descripción de la película
-                                                navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
+                                                navController.navigate(route = screenRoute.descripcionPeliAdmin.route + "/${movie.id}")
                                             }
                                     ) {
                                         val painter = rememberAsyncImagePainter(model = movie.posterUrl)
@@ -325,8 +328,8 @@ fun LoadingAnimation() {
 }
 
 
-@Preview
-@Composable
-fun HomePreview(){
-    Home(viewModel = userCreateViewModel(), navController = rememberNavController())
-}
+//@Preview
+//@Composable
+//fun HomePreview(){
+//    Home(viewModel = userCreateViewModel(), navController = rememberNavController())
+//}

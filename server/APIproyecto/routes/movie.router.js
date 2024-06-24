@@ -34,8 +34,17 @@ router.get("/topRatedMovies", authenticate, movieController.getTopRatedMoviesOve
  
 router.post('/moviesId/:id/wishlist/add', authenticate,movieController.addToWishlist);
 router.get('/wishlist/',authenticate, movieController.getWishlist);
-
 //peliculas ya claificadas
 router.get("/ratedMovies", authenticate, movieController.getRatedMovies);
+
+
+
+//ADMIN
+// Ruta para eliminar un comentario principal y sus respuestas
+router.delete("/comments/:id", authenticate, commentController.deleteComment);
+
+// Ruta para eliminar una respuesta específica
+router.delete("/replies/:id", authenticate, commentController.deleteReply);
+
 
 module.exports = router;

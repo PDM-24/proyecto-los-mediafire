@@ -13,7 +13,8 @@ controller.register=async(req,res,next)=>{
           year_nac,
           genere,
          movie_genere,
-         avatar
+         avatar,
+         role
         } = req.body;
   
         const user = await User.findOne({ $or: [{ email: email }] });
@@ -31,6 +32,7 @@ controller.register=async(req,res,next)=>{
             genere:genere,
            movie_genere:movie_genere,
            avatar:avatar,
+           role: role// Aquí se asegura de establecer el rol proporcionado
 
         });
   
@@ -93,7 +95,9 @@ controller.register=async(req,res,next)=>{
 
         return res.status(200).json({
           message: 'Se ha iniciado sesión correctamente',
-          token
+          token,
+          role: user.role
+
       });
       } catch (error) {
         next(error);

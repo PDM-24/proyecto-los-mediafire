@@ -115,5 +115,49 @@ controller.getRepliesToComment = async (req, res, next) => {
     }
   };
   
+
+  //borrar comentario padre
+  // Función para eliminar un comentario y sus respuestas
+controller.deleteComment = async (req, res, next) => {
+  try {
+      const { id: commentId } = req.params;
+
+      const comment = await commentUser.findById(commentId);
+      if (!comment) {
+          throw httpError(404, 'Comentario no encontrado');
+      }
+
+      // Eliminar todas las respuestas del comentario
+      await commentUser.deleteMany({ parentId: commentId });
+
+      // Eliminar el comentario
+      await commentUser.findByIdAndDelete(commentId);
+
+      res.status(200).json({ message: 'Comentario y sus respuestas eliminados exitosamente' });
+  } catch (error) {
+      next(error);
+  }
+};
+
+
+//eliminar comentarios hijos
+// Función para eliminar una respuesta específica
+controller.deleteReply = async (req, res, next) => {
+  try {
+      const { id: replyId } = req.params;
+
+      const reply = await commentUser.findById(replyId);
+      if (!reply) {
+          throw httpError(404, 'Respuesta no encontrada');
+      }
+
+      // Eliminar la respuesta
+      await commentUser.findByIdAndDelete(replyId);
+
+      res.status(200).json({ message: 'Respuesta eliminada exitosamente' });
+  } catch (error) {
+      next(error);
+  }
+};
   
 module.exports = controller;
