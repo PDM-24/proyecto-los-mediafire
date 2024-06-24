@@ -143,14 +143,16 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         is UserDataState.Success -> {
                             val user = (userDataState as UserDataState.Success).userData.user
                             val avatarUsuario = getAvatarResourcesinanuncios(user.avatarUrl)
-<<<<<<< HEAD
                             val username= user.username
 
 
+<<<<<<< HEAD
+=======
 =======
                             val username = user.username
 >>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e
 >>>>>>> develop
+>>>>>>> 70c5c72818d790f8575369b752ea61c0ef3a50cc
 
                         Row(
                             modifier = Modifier
@@ -415,11 +417,8 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
 
             }
         }
-<<<<<<< HEAD
     ){
-=======
-    ) {
->>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e
+
 
         Scaffold(
             topBar = {
@@ -631,7 +630,6 @@ fun LoadingAnimation() {
 }*/
 =======
     }
-<<<<<<< HEAD
 
     @Composable
     fun LoadingAnimation() {
@@ -650,7 +648,11 @@ fun LoadingAnimation() {
     }
 
 
+<<<<<<< HEAD
+
+=======
 =======
 }
 >>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e
 >>>>>>> develop
+>>>>>>> 70c5c72818d790f8575369b752ea61c0ef3a50cc

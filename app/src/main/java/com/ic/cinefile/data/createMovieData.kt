@@ -1,6 +1,7 @@
 package com.ic.cinefile.data
 
 import com.google.gson.annotations.SerializedName
+import com.ic.cinefile.API.Model.movies.ActorName
 
 data class createMovieData(
 
@@ -14,7 +15,7 @@ data class createMovieData(
     val duration: String="",
 
     @SerializedName(value="actors")
-    val actors: List<Actor> = listOf(),
+    val actors: List<ActorName> = listOf(),
 
     @SerializedName(value="coverPhoto")
     val coverPhoto: String="",

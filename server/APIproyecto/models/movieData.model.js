@@ -21,7 +21,6 @@ actors: [{
 }],
 coverPhoto: {
     type: String,
-    required: true
 },
 categories: [{
     type: String,
