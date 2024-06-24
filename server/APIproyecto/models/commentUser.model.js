@@ -6,6 +6,7 @@ const commentSchema = new Schema({
         type: Number,
         required: true
     },
+    
     userId: {
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -18,7 +19,9 @@ const commentSchema = new Schema({
     parentId: {
         type: Schema.Types.ObjectId,
         ref: 'CommentUser' // Referencia a otro comentario en el mismo esquema
-    }
+    },
+  
+
 }, { timestamps: true });
 
 

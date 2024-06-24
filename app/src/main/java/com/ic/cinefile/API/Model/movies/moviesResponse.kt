@@ -21,8 +21,10 @@ data class moviesResponse(
     @SerializedName("trailer")
     val trailerUrl: String,
     @SerializedName("actors")
-val actors: List<ActorResponse>
+val actors: List<ActorResponse>,
 
+    @SerializedName("averageRating")
+    val averageRating: Double
 )
 
 

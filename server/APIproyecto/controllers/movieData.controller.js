@@ -196,6 +196,9 @@ controller.searchMovieByTitle = async (req, res, next) => {
 
 
 
+
+
+
 // Obtener las películas más vistas
 controller.getMostViewedMovies = async (req, res, next) => {
   try {
@@ -275,6 +278,9 @@ controller.getMovieAverageRating = async (req, res, next) => {
     }
     const { movieId } = req.params;
     console.log(`Buscando calificaciones para la película con ID: ${movieId}`);
+
+    const numericMovieId = Number(movieId);
+
     
     // Buscar todos los usuarios que han calificado esta película
     const users = await User.find({ 'ratings.movieId': movieId });
@@ -313,7 +319,25 @@ controller.getMovieAverageRating = async (req, res, next) => {
   }
 };
 
-// Obtener películas calificadas
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Obtener películas calificadas POR USUARIO
 controller.getRatedMovies = async (req, res, next) => {
   try {
     const userId = req.user._id; // Asumiendo que el ID del usuario está disponible en req.user

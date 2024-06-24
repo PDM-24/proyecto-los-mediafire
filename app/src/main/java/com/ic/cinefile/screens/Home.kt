@@ -134,10 +134,23 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                     is UserDataState.Loading -> {
                     }
 
+<<<<<<< HEAD
                     is UserDataState.Success -> {
                         val user = (userDataState as UserDataState.Success).userData.user
                         val avatarUsuario = getAvatarResourcesinanuncios(user.avatarUrl)
                         val username = user.username
+=======
+                        is UserDataState.Success -> {
+                            val user = (userDataState as UserDataState.Success).userData.user
+                            val avatarUsuario = getAvatarResourcesinanuncios(user.avatarUrl)
+<<<<<<< HEAD
+                            val username= user.username
+
+
+=======
+                            val username = user.username
+>>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e
+>>>>>>> develop
 
                         Row(
                             modifier = Modifier
@@ -310,6 +323,128 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                             contentDescription = "Home",
                             tint = white
                         )
+<<<<<<< HEAD
+=======
+                    },
+                    onClick = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+                        navController.navigate(screenRoute.Calificadas.route) {
+                            popUpTo(0)
+                        }
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color.Transparent
+                    )
+                )
+                NavigationDrawerItem(
+                    label = { Text(text = "Lista de deseos", color = white, fontSize = 16.sp) },
+                    selected = false,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = white
+                        )
+                    },
+                    onClick = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+                        navController.navigate(screenRoute.Lista_deseos.route) {
+                            popUpTo(0)
+                        }
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color.Transparent
+                    )
+                )
+
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            text = "Políticas de privacidad",
+                            color = white,
+                            fontSize = 16.sp
+                        )
+                    },
+                    selected = false,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = null,
+                            tint = white
+                        )
+                    },
+                    onClick = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+                        /*PARA IR A LAS POLITICAS DE PRIVACIDAD*/
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color.Transparent
+                    )
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                NavigationDrawerItem(
+                    label = { Text(text = "Cerrar sesión", color = white, fontSize = 16.sp) },
+                    selected = false,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.ExitToApp,
+                            contentDescription = null,
+                            tint = white
+                        )
+                    },
+                    onClick = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+                        /*LOGICA PA SALIR DE LA APP*/
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color.Transparent
+                    )
+                )
+
+            }
+        }
+<<<<<<< HEAD
+    ){
+=======
+    ) {
+>>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = black
+                    ),
+                    title = {},
+                    navigationIcon =
+                    {
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    drawerState.open()
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Menu,
+                                contentDescription = "",
+                                tint = white,
+                                modifier = Modifier.size(40.dp)
+                            )
+                        }
+>>>>>>> develop
                     }
                     IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
                         Icon(
@@ -477,6 +612,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
             }
         }
     }
+<<<<<<< HEAD
 }
 
 @Composable
@@ -493,3 +629,28 @@ fun LoadingAnimation() {
         )
     }
 }*/
+=======
+    }
+<<<<<<< HEAD
+
+    @Composable
+    fun LoadingAnimation() {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = Color.White,
+                modifier = Modifier.size(36.dp)
+            )
+        }
+    }
+
+
+=======
+}
+>>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e
+>>>>>>> develop

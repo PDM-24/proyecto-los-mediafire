@@ -140,7 +140,8 @@ fun Calificadas(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if(userRole=="admin"){
+
+                        if (userRole == "admin") {
                             IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
                                 Icon(
                                     imageVector = Icons.Filled.Home,
@@ -148,7 +149,7 @@ fun Calificadas(
                                     tint = white
                                 )
                             }
-                        }else{
+                        } else {
                             IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
                                 Icon(
                                     imageVector = Icons.Filled.Home,
@@ -195,7 +196,7 @@ fun Calificadas(
                                         .padding(4.dp)
                                         .clickable {
                                             // Aquí navegas a la pantalla de descripción de la película
-                                            //navController.navigate("${screenRoute.descripcionPeli.route}/${movie.movieId}")
+                                            navController.navigate("${screenRoute.descripcionPeli.route}/${movie.movieId}")
                                         }
                                 )
                                 {
@@ -205,11 +206,10 @@ fun Calificadas(
                                         titulo = movie.title ?: "sin categoria",
                                         fechaLanzamiento = movie.releaseDate ?: "sin fecha",
                                         categoria = movie.genres,
-                                        averageRating= movie.averageRating,// Pasar el estado completo aquívi
-                                    viewModel = viewModel
-                                        )
+                                        averageRating = movie.averageRating,// Pasar el estado completo aquívi
+                                        viewModel = viewModel
+                                    )
                                     Spacer(modifier = Modifier.height(18.dp))
-
 
 
                                 }
@@ -242,13 +242,12 @@ fun Calificadas(
                         modifier = Modifier.padding(8.dp)
                     )
                 }
-                is MoviesReated.Ready->{
+
+                is MoviesReated.Ready -> {
 
                 }
 
             }
-
-
 
 
         }
@@ -270,14 +269,13 @@ fun BloquePeliD(
     viewModel: userCreateViewModel
 ) {
     val displayedFechaLanzamiento = fechaLanzamiento ?: "sin fecha"
-    val averageRating by viewModel.averageRatingState.collectAsState()
 
     Row(
         modifier = Modifier
             .background(black),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
-    ){
+    ) {
         //Poster de la peli
         Box(
             modifier = Modifier
@@ -290,7 +288,7 @@ fun BloquePeliD(
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-            }else {
+            } else {
                 // Placeholder para imagen nula
                 Box(
                     modifier = Modifier
@@ -322,13 +320,7 @@ fun BloquePeliD(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = when(val state = averageRating) {
-                            is AverageRatingState.Success -> {
-                                state.averageRating?.takeIf { it != 0.0 }?.let { String.format("%.2f", it) } ?: "0.0"
-
-                            }
-                            else -> "0.0"
-                        },
+                        text = String.format("%.2f", averageRating),
                         color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -385,4 +377,3 @@ fun BloquePeliD(
         }
     }
 }
-

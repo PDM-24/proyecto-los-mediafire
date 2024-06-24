@@ -32,3 +32,10 @@ categories: [{
 
 const Movie = Mongoose.model('Movie', movieSchema);
 module.exports = Movie;
+
+
+
+
+
+
+

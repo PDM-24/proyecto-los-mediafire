@@ -155,6 +155,9 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
+                    }
+
                         if(userRole=="admin"){
                             IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
                                 Icon(
@@ -178,7 +181,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                                     tint = white
                                 )
                             }
-                        }
+
                     }
                 }
             )
@@ -510,9 +513,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                         items(movies.size) { index ->
                             val movie = movies[index]
 
-                            LaunchedEffect(key1 = movie.id) {
-                                viewModel.getAverageRating(movie.id)
-                            }
+
                             Box(
                                 modifier = Modifier
                                     .padding(4.dp)
@@ -526,11 +527,12 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                                     titulo = movie.title,
                                     fechaLanzamiento = movie.releaseDate ?: "sin fecha",
                                     categoria = movie.genres,
-                                    isBookmarked = bookmarkedStates.getOrNull(movies.indexOf(movie))
-                                        ?: false,
-                                    averageRating = averageRatingState, // Pasar el estado completo aquí
-                                    userRole = userRole
-                                )
+                                    userRole = userRole,
+                                    isBookmarked = bookmarkedStates.getOrNull(movies.indexOf(movie)) ?: false,
+                                    averageRating= movie.averageRating// Pasar el estado completo aquí
+
+                                    )
+
                                 Spacer(modifier = Modifier.height(18.dp))
                             }
                         }
@@ -586,8 +588,8 @@ fun Peli(
     fechaLanzamiento: String?,
     categoria: String,
     isBookmarked: Boolean,
-    averageRating: AverageRatingState,
-    userRole: String
+    userRole: String,
+    averageRating: Double,
 ) {
     val displayedFechaLanzamiento = fechaLanzamiento ?: "sin fecha"
 
@@ -642,24 +644,7 @@ fun Peli(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = when (averageRating) {
-                            is AverageRatingState.Success -> {
-                                String.format(
-                                    "%.2f",
-                                    (averageRating as AverageRatingState.Success).averageRating
-                                )
-                            }
-
-                            is AverageRatingState.Loading -> {
-                                "..."
-                            }
-
-                            is AverageRatingState.Error -> {
-                                "Error"
-                            }
-
-                            else -> "0.0"
-                        },
+                        text = String.format("%.2f", averageRating),
                         color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -714,7 +699,7 @@ fun Peli(
                 Spacer(modifier = Modifier.width(8.dp))
                 if (userRole == "admin") {
                     IconButton(
-                        onClick = { /*ELIMINAR LA COMENTARIO*/ },
+                        onClick = { /*ELIMINAR PELI*/ },
                         modifier = Modifier.align(Alignment.Top)
                     ) {
                         Icon(

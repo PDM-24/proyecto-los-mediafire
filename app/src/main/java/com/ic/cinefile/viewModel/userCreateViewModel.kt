@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import java.text.Normalizer
 import java.time.LocalDateTime
 import java.util.Locale.Category
 
@@ -107,6 +108,8 @@ class userCreateViewModel: ViewModel() {
     val rateMovieState: StateFlow<RateMovieState> = _rateMovieState
 
     private val _averageRatingState = MutableStateFlow<AverageRatingState>(AverageRatingState.Ready)
+
+    //peliculas en general
     val averageRatingState: StateFlow<AverageRatingState> get() = _averageRatingState
 
     //top peliculas
@@ -123,6 +126,7 @@ class userCreateViewModel: ViewModel() {
     val wishListPostState: State<witchListData> = _wishListPostState
 
 
+    //obtener peliculas individual
     private val _moviesReated = MutableStateFlow<MoviesReated>(MoviesReated.Ready)
     val moviesReatedState : StateFlow<MoviesReated> = _moviesReated
 
@@ -208,11 +212,6 @@ class userCreateViewModel: ViewModel() {
                 }
             }
         }
-
-
-
-
-
 
     }
 
@@ -380,10 +379,12 @@ class userCreateViewModel: ViewModel() {
     }
 
     fun searchMoviesByTitle(title: String, sortBy: String? = null, genre: String? = null) {
+        val normalizedTitle = normalizeString(title)
+
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _searchState.value = SearchState.Loading
-                val response = apiServer.methods.searchMovies("Bearer $authToken", title, sortBy, genre)
+                val response = apiServer.methods.searchMovies("Bearer $authToken",normalizedTitle, sortBy, genre)
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody != null) {
@@ -436,7 +437,11 @@ class userCreateViewModel: ViewModel() {
         }
     }
 
-
+    fun normalizeString(str: String): String {
+        return Normalizer.normalize(str, Normalizer.Form.NFD)
+            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+            .toLowerCase()
+    }
 
 
 
@@ -617,7 +622,7 @@ class userCreateViewModel: ViewModel() {
         }
     }
 
-    // Método para obtener la calificación promedio de una película
+    // Método para obtener la calificación promedio de una película(general)
     fun getAverageRating(movieId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -733,7 +738,7 @@ class userCreateViewModel: ViewModel() {
     }
 
 
-//calificadas
+//calificadas por usuario individual
     fun getMoviesReated() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -744,7 +749,7 @@ class userCreateViewModel: ViewModel() {
                     moviesReatedItems?.let {
                         _moviesReated.value = MoviesReated.Success(it)
                     } ?: run {
-                        _moviesReated.value = MoviesReated.Error("Lista de deseos vacía")
+                        _moviesReated.value = MoviesReated.Error("Lista de Calificados vacía")
 
                     }
                 } else {
@@ -762,6 +767,7 @@ class userCreateViewModel: ViewModel() {
             }
         }
     }
+
     fun resetDeleteCommentState() {
         _deleteCommentState.value = DeleteCommentState.Ready
     }

@@ -73,7 +73,7 @@ fun Login(viewModel: userCreateViewModel, navController: NavController) {
 
                 //navController.navigate(screenRoute.Home.route)
 
-            navController.navigate(screenRoute.HomeAdmin.route)
+            navController.navigate(screenRoute.Home.route)
             viewModel.setStateToReady()
         }
     }

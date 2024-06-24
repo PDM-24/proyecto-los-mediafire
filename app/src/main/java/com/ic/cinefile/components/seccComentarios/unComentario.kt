@@ -62,6 +62,7 @@ import com.ic.cinefile.viewModel.UserDataState
 import com.ic.cinefile.viewModel.userCreateViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,15 +85,18 @@ fun unComentario(
     val commentState by viewModel.commentsState.collectAsState()
 
     // Formato de entrada para parsear la fecha y hora
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+// Formato de entrada para parsear la fecha y hora
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
-    // Formato de salida para mostrar la fecha y hora en un formato legible
+// Formato de salida para mostrar la fecha y hora en un formato legible
     val outputFormat = SimpleDateFormat("dd 'de' MMMM 'de' yyyy hh:mm a", Locale.getDefault())
     val deleteCommentState by viewModel.deleteCommentState.collectAsState()
 
-    // Parsear la fecha y hora del comentario
+// Parsear la fecha y hora del comentario
     val parsedDate = inputFormat.parse(createdAt)
     val formattedDateTime = outputFormat.format(parsedDate)
+
+
 
     val addScreenState = viewModel.uiState.collectAsState()
 
