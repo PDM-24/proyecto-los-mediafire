@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
@@ -73,7 +74,9 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.components.LoadingProgressDialog
+import com.ic.cinefile.screens.Administrador.DeleteDialogAdmin
 import com.ic.cinefile.ui.theme.black
+import com.ic.cinefile.ui.theme.dark_red
 import com.ic.cinefile.ui.theme.montserratFamily
 import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.GetMovieCreate
@@ -98,6 +101,18 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     val navigationController = rememberNavController()
 
     val userRole = viewModel.getUserRole()
+
+    //Modal de eliminar:
+    val openAlertDialog = remember { mutableStateOf(false) }
+    if (openAlertDialog.value) {
+        DeleteDialogAdmin(
+            //lo que hace si se da en "eliminar", logica de eliminar la peli
+            onConfirmation = { openAlertDialog.value = false },
+            //lo que hace si se le da "atrás"
+            onDismissRequest = { openAlertDialog.value = false },
+            dialogText = ""
+        )
+    }
 
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
@@ -419,7 +434,7 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                             }
                         }
 
-                        //PELICULAS CREADAS POR USUARIO
+                        //PELICULAS CREADAS POR ADMINISTRADOR
                         when (getMovieCreateState) {
                             is GetMovieCreate.Success -> {
                                 val movies =
@@ -454,7 +469,19 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                                                     modifier = Modifier
                                                         .padding(4.dp)
                                                         .height(200.dp)
+                                                        .width(150.dp)
                                                 )
+                                                IconButton(
+                                                    onClick = { openAlertDialog.value = true },
+                                                    modifier = Modifier
+                                                        .align(Alignment.TopEnd)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Delete,
+                                                        contentDescription = null,
+                                                        tint = dark_red
+                                                    )
+                                                }
                                             }
                                         }
                                     }
@@ -591,6 +618,7 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                                                     modifier = Modifier
                                                         .padding(4.dp)
                                                         .height(200.dp)
+                                                        .width(150.dp)
                                                 )
                                             }
                                         }
