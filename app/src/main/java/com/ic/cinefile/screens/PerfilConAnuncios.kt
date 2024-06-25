@@ -1,3 +1,4 @@
+
 package com.ic.cinefile.screens
 
 import android.widget.Toast
@@ -43,10 +44,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-<<<<<<< HEAD
-=======
 import androidx.compose.runtime.setValue
->>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -81,8 +79,6 @@ import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserDataState
 import com.ic.cinefile.viewModel.WishlistGetState
 import com.ic.cinefile.viewModel.userCreateViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,18 +101,6 @@ fun PerfilAnuncios(
         viewModel.getMoviesReated()
     }
 
-    val showReloadButton = remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        launch {
-            delay(7000) // Esperar 7 segundos
-            if (userDataState is UserDataState.Loading || wishlisGetState is WishlistGetState.Loading || moviesReatedState is MoviesReated.Loading) {
-                showReloadButton.value = true
-            }
-        }
-    }
-
-
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
             is UiState.Error -> {
@@ -126,11 +110,7 @@ fun PerfilAnuncios(
             }
 
             UiState.Loading -> {
-<<<<<<< HEAD
-                viewModel.startLoadingTimer()
-=======
                 // Mostrar un diálogo de carga o indicador de progreso si es necesario
->>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
             }
 
             UiState.Ready -> {}
@@ -141,7 +121,6 @@ fun PerfilAnuncios(
             }
         }
     }
-
 
     Scaffold(
         topBar = {
@@ -221,18 +200,6 @@ fun PerfilAnuncios(
                             color = Color.White,
                             modifier = Modifier.size(36.dp)
                         )
-                        if (showReloadButton.value) {
-                            Button(
-                                onClick = { viewModel.getWishlist(); viewModel.getMoviesReated() },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                                modifier = Modifier.padding(top = 16.dp)
-                            ) {
-                                Text(
-                                    text = "Recargar",
-                                    color = Color.Black
-                                )
-                            }
-                        }
                     }
                 }
 
@@ -298,19 +265,7 @@ fun PerfilAnuncios(
                     }
                 }
 
-                else -> {
-                    if (showReloadButton.value) {
-                        Button(
-                            onClick = { viewModel.getWishlist(); viewModel.getMoviesReated() },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Text(
-                                text = "Recargar",
-                                color = Color.Black
-                            )
-                        }
-                    }
+                else -> { /* Manejar otros estados si es necesario */
                 }
             }
 
@@ -397,40 +352,12 @@ fun PerfilAnuncios(
 
                         is WishlistGetState.Error -> {
                             // Aquí puedes manejar el estado de error
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.Black),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.error404), // Asegúrate de que el recurso de imagen exista
-                                        contentDescription = "Error 404",
-                                        modifier = Modifier
-                                            .size(200.dp)
-                                            .padding(8.dp)
-                                    )
-                                    Text(
-                                        text = "Error: ${(wishlisGetState as WishlistGetState.Error).errorMessage}",
-                                        color = Color.Red,
-                                        fontSize = 18.sp
-                                    )
-                                }
-                            }
+                            Text(
+                                text = "Error: ${(wishlisGetState as WishlistGetState.Error).errorMessage}",
+                                color = Color.Red,
+                                modifier = Modifier.padding(8.dp)
+                            )
                         }
-                        is WishlistGetState.Ready -> {
-                            // Manejo del estado Ready si es necesario
-                        }
-<<<<<<< HEAD
-                    }
-
-
-
-                    //LISTA DE CALIFICADAS
-=======
 
                         is WishlistGetState.Ready -> {
 
@@ -438,7 +365,6 @@ fun PerfilAnuncios(
                     }
 
                     // LISTA DE CALIFICADAS
->>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
                     Spacer(modifier = Modifier.height(40.dp))
 
                     when (moviesReatedState) {
@@ -488,38 +414,15 @@ fun PerfilAnuncios(
 
                         is MoviesReated.Error -> {
                             // Aquí puedes manejar el estado de error
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.Black),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.error404), // Asegúrate de que el recurso de imagen exista
-                                        contentDescription = "Error 404",
-                                        modifier = Modifier
-                                            .size(200.dp)
-                                            .padding(8.dp)
-                                    )
-                                    Text(
-                                        text = "Error: ${(moviesReatedState as MoviesReated.Error).errorMessage}",
-                                        color = Color.Red,
-                                        fontSize = 18.sp
-                                    )
-                                }
-                            }
+                            Text(
+                                text = "Error: ${(moviesReatedState as MoviesReated.Error).errorMessage}",
+                                color = Color.Red,
+                                modifier = Modifier.padding(8.dp)
+                            )
                         }
-<<<<<<< HEAD
-                        is MoviesReated.Ready -> {
-                            // Manejo del estado Ready si es necesario
-=======
 
                         is MoviesReated.Ready -> {
 
->>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
                         }
                     }
                     Spacer(modifier = Modifier.height(10.dp))

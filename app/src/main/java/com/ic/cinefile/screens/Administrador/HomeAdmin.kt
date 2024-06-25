@@ -99,21 +99,15 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
     val navigationController = rememberNavController()
-    var movieIdToDelete by remember { mutableStateOf<String?>(null) }
 
     val userRole = viewModel.getUserRole()
-    val deleteMovieState by viewModel.deleteMovieState.collectAsState()
 
     //Modal de eliminar:
     val openAlertDialog = remember { mutableStateOf(false) }
     if (openAlertDialog.value) {
         DeleteDialogAdmin(
             //lo que hace si se da en "eliminar", logica de eliminar la peli
-            onConfirmation = {
-                movieIdToDelete?.let { id ->
-                    viewModel.deleteMovieById(id)
-                }
-            },
+            onConfirmation = { openAlertDialog.value = false },
             //lo que hace si se le da "atrás"
             onDismissRequest = { openAlertDialog.value = false },
             dialogText = ""
@@ -143,15 +137,6 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     }
 
     LaunchedEffect(Unit) {
-<<<<<<< HEAD
-        kotlinx.coroutines.delay(7000)
-        showReloadButton = true
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-=======
         viewModel.getMovieCreate()
 
     }
@@ -163,7 +148,6 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
             drawerContainerColor = black
         ) {
             Row(
->>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(40.dp),
@@ -209,7 +193,7 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                     else -> { /* Manejar otros estados si es necesario */
                     }
                 }
-                
+
             }
             Divider()
             Spacer(modifier = Modifier.height(10.dp))
@@ -356,54 +340,12 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                         }
                     }
                 }
-<<<<<<< HEAD
-            )
-        }
-    ) { innerPadding ->
-        if (userDataState is UserDataState.Loading) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .background(black),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                com.ic.cinefile.screens.LoadingAnimation()
-
-                if (showReloadButton) {
-                    Text(
-                        text = "¿Está tardando mucho?",
-                        color = Color.White,
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
-                    Button(
-                        onClick = { viewModel.reload() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-                        modifier = Modifier.padding(top = 16.dp)
-                    ) {
-                        Text(text = "Recargar", color = Color.White)
-                    }
-                }
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .background(Color.Black)
-                    .verticalScroll(rememberScrollState())
-            ) {
-
-                Row(
-=======
             })
         }) { innerPadding ->
             if (userDataState is UserDataState.Loading) {
                 LoadingAnimation()
             } else {
                 Column(
->>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
@@ -790,11 +732,11 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
 
 
 
-                    }
                 }
             }
         }
     }
+}
 
 
 @Composable

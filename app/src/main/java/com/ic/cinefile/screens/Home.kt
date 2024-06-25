@@ -693,12 +693,9 @@ fun LoadingAnimation() {
     }*/
 
 
-<<<<<<< HEAD
 
 /*@Preview
 @Composable
 fun HomePreview() {
     Home(viewModel = userCreateViewModel(), navController = rememberNavController())
 }*/
-=======
->>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3

@@ -2,16 +2,13 @@ package com.ic.cinefile.viewModel
 
 import android.util.Log
 import androidx.compose.runtime.State
-<<<<<<< HEAD
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-=======
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
->>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.annotations.SerializedName
@@ -31,11 +28,8 @@ import com.ic.cinefile.API.Model.movies.wishListResponse
 import com.ic.cinefile.API.Model.users.NotificationResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.apiServer
-<<<<<<< HEAD
 import com.ic.cinefile.R
-=======
 import com.ic.cinefile.data.Actor
->>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
 import com.ic.cinefile.data.NotificationData
 import com.ic.cinefile.data.RatingData
 import com.ic.cinefile.data.accountLoginData

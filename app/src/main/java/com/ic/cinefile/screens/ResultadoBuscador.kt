@@ -158,29 +158,29 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
 
                     }
 
-                        if(userRole=="admin"){
-                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Home,
-                                    contentDescription = "Home",
-                                    tint = white
-                                )
-                            }
-                        }else{
-                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Home,
-                                    contentDescription = "Home",
-                                    tint = white
-                                )
-                            }
-                            IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Person,
-                                    contentDescription = "User",
-                                    tint = white
-                                )
-                            }
+                    if(userRole=="admin"){
+                        IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                            Icon(
+                                imageVector = Icons.Filled.Home,
+                                contentDescription = "Home",
+                                tint = white
+                            )
+                        }
+                    }else{
+                        IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                            Icon(
+                                imageVector = Icons.Filled.Home,
+                                contentDescription = "Home",
+                                tint = white
+                            )
+                        }
+                        IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
+                            Icon(
+                                imageVector = Icons.Filled.Person,
+                                contentDescription = "User",
+                                tint = white
+                            )
+                        }
 
                     }
                 }
@@ -512,10 +512,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                     ) {
                         items(movies.size) { index ->
                             val movie = movies[index]
-<<<<<<< HEAD
-=======
 
->>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
 
                             Box(
                                 modifier = Modifier
@@ -532,15 +529,10 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                                     categoria = movie.genres,
                                     userRole = userRole,
                                     isBookmarked = bookmarkedStates.getOrNull(movies.indexOf(movie)) ?: false,
-<<<<<<< HEAD
-                                    averageRating = averageRatingState // Pasar el estado completo aquí
-                                )
-=======
                                     averageRating= movie.averageRating// Pasar el estado completo aquí
 
-                                    )
+                                )
 
->>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
                                 Spacer(modifier = Modifier.height(18.dp))
                             }
                         }
@@ -555,25 +547,14 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                             .fillMaxHeight(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.error404), // Asegúrate de que el recurso de imagen exista
-                                contentDescription = "Error 404",
-                                modifier = Modifier
-                                    .size(200.dp)
-                                    .padding(8.dp)
-                            )
-                            Text(
-                                text = "Error: $message",
-                                color = Color.Red,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(16.dp)
-                            )
-                        }
+                        Text(
+                            text = "Error: $message",
+                            color = Color.Red,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(16.dp)
+                        )
                     }
                 }
 
@@ -739,4 +720,3 @@ fun Peli(
         }
     }
 }
-
