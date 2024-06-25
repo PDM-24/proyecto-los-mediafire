@@ -56,6 +56,9 @@ interface Methods {
         @Body userLoginData: accountLoginData
     ):UserLoginResponse
 
+    @Headers("Content-Type: application/json")
+    @POST("api/account/logout")
+    suspend fun logoutAccount(): Response<Unit>
 
     @Headers("Content-Type: application/json")
     @GET("api/account/user/home")
@@ -197,20 +200,19 @@ interface Methods {
 
     //administrador
     @Headers(value=["Content-Type:application/json"])
-    @POST("api/account/user/home/movies")
+    @POST("api/account/user/admin/home/movies")
     suspend fun createMovie(
         @Header("Authorization") authorization: String,
         @Body createMovieData: createMovieData
     ): Response<createMovieResponse>
 
     @Headers(value=["Content-Type:application/json"])
-    @POST("api/account/user/home/movies")
+    @GET("api/account/user/admin/home")
     suspend fun getMovieCreate(
-        @Header("Authorization") authorization: String
 
     ): Response<movieResponseAdminResponse>
 
-    @GET("api/account/user/home/movies/actors/search/{actorName}")
+    @GET("api/account/user/admin/home/movies/actors/search/{actorName}")
     suspend fun searchActorsByName(
         @Header("Authorization") authorization: String,
         @Path("actorName") actorName: String

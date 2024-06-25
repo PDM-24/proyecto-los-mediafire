@@ -106,6 +106,32 @@ controller.register=async(req,res,next)=>{
 
 
 
+    // LOGOUT
+controller.logout = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const { userId } = await verifyToken(token);
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw httpError(404, "Usuario no encontrado");
+    }
+
+    // Eliminar el token de la lista de tokens del usuario
+    user.tokens = user.tokens.filter(t => t !== token);
+
+    await user.save();
+
+    return res.status(200).json({
+      message: 'Se ha cerrado sesión correctamente'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 
    
 

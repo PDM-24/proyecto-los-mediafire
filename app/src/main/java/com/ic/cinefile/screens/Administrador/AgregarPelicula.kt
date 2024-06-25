@@ -108,7 +108,7 @@ fun AgregarPeliAdmin(
     var actorProfileUrl by remember { mutableStateOf("") }
     val searchActorsState by viewModel.searchActorsState.collectAsState()
     val context = LocalContext.current
-    var selectedActors by remember { mutableStateOf<List<ActorName>>(emptyList()) }
+    var selectedActors by remember { mutableStateOf(listOf<ActorName>()) }
 
     val showErrorToast by viewModel.showErrorToast.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
@@ -117,16 +117,18 @@ fun AgregarPeliAdmin(
         viewModel.hideErrorToast()
     }
     // Manejar la selección de un actor
+    // Manejar la selección de un actor
     val onActorSelected: (ActorName) -> Unit = { actorName ->
         val actor = Actor(actorName.name, actorName.profileUrl)
         viewModel.addActor(actor)
+        selectedActors = selectedActors + actorName
         // Limpiar el campo de búsqueda o restablecer el estado de búsqueda
         viewModel.clearSearchActorsState()
     }
-
     // Función para manejar la eliminación de un actor seleccionado
-
-
+    val onActorRemoved: (ActorName) -> Unit = { actorName ->
+        selectedActors = selectedActors - actorName
+    }
     val addScreenState = viewModel.uiState.collectAsState()
     when (addScreenState.value) {
         is UiState.Error -> {
@@ -176,13 +178,12 @@ fun AgregarPeliAdmin(
     ) { innerPadding ->
 
         var buscador by remember { mutableStateOf("") }
-        var uri by remember { mutableStateOf<Uri?>(null) }
 
 
         val foto = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickVisualMedia(),
             onResult = { resultUri: Uri? ->
-                uri = resultUri
+                coverPhoto = resultUri?.toString() ?: ""
             }
         )
 
@@ -200,19 +201,20 @@ fun AgregarPeliAdmin(
                     modifier = Modifier.padding(innerPadding),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (uri == null) {
-                        Image(
-                            painter = painterResource(id = R.drawable.no_picture),
-                            contentDescription = null,
-                            modifier = Modifier.size(150.dp, 200.dp)
-                        )
-                    } else {
+                    val coverPhotoToShow = if (coverPhoto.isNullOrEmpty()) {
+                        "https://ih1.redbubble.net/image.1893341687.8294/fposter,small,wall_texture,product,750x1000.jpg"
+                    }else {
                         AsyncImage(
-                            model = uri,
+                            model = coverPhoto,
                             contentDescription = null,
                             modifier = Modifier.size(150.dp, 200.dp)
                         )
                     }
+                    AsyncImage(
+                        model = coverPhotoToShow,
+                        contentDescription = null,
+                        modifier = Modifier.size(150.dp, 200.dp)
+                    )
                     IconButton(
                         onClick = {
                             foto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -452,6 +454,33 @@ fun AgregarPeliAdmin(
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            // Sección para mostrar los actores seleccionados
+            if (selectedActors.isNotEmpty()) {
+                Text(
+                    text = "Actores seleccionados:",
+                    style = TextStyle(
+                        color = white,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    items(selectedActors.size) { index ->
+                        val actorName = selectedActors[index]
+                        ActorItem(
+                            actorName = actorName,
+                            onClick = {
+                                onActorRemoved(actorName)
+                            }
+                        )
+                    }
+                }
+            }
             // Sección para seleccionar categorías de la película
                 Text(
                     text = "Categorías",
@@ -509,7 +538,7 @@ fun AgregarPeliAdmin(
                             synopsis = sypnosis,
                             duration = duration,
                             actors = selectedActors,
-                            coverPhoto = coverPhoto,
+                            coverPhoto = coverPhoto ?: "https://ih1.redbubble.net/image.1893341687.8294/fposter,small,wall_texture,product,750x1000.jpg",
                             categories = generosSeleccionados
                         )
                         // Llamar al método en tu ViewModel para guardar la película

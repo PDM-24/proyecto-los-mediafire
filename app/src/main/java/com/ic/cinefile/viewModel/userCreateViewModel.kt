@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.annotations.SerializedName
@@ -159,13 +161,43 @@ class userCreateViewModel: ViewModel() {
     private val _selectedActors = mutableStateListOf<Actor>()
     val selectedActors: List<Actor> get() = _selectedActors
 
-
+    private val _logoutResult = MutableLiveData<LogoutResult>()
+    val logoutResult: LiveData<LogoutResult>
+        get() = _logoutResult
 
 
     fun updateAccountData(newData: accountRegisterData) {
         _accountCreateAPI.value = newData
         Log.i("userCreateViewModel", "Updated data: $newData")
 
+    }
+    fun logout() {
+        viewModelScope.launch(Dispatchers.IO) {
+            // Cambiar el estado a Loading mientras se realiza la operación
+            _logoutResult.postValue(LogoutResult.Loading)
+
+            try {
+                // Realizar la llamada a la función de logout
+                val response = apiServer.methods.logoutAccount()
+
+                // Verificar si la respuesta fue exitosa
+                if (response.isSuccessful) {
+                    // Actualizar el estado a Success si el logout fue exitoso
+                    _logoutResult.postValue(LogoutResult.Success)
+                } else {
+                    // Manejar errores de respuesta no exitosa
+                    val errorBody = response.errorBody()?.string()
+                    val errorMsg = errorBody ?: "Unknown error"
+                    _logoutResult.postValue(LogoutResult.Error(errorMsg))
+                }
+            } catch (e: HttpException) {
+                // Manejar errores de red (por ejemplo, error 404, 500, etc.)
+                _logoutResult.postValue(LogoutResult.Error("Network Error: ${e.message()}"))
+            } catch (e: Exception) {
+                // Manejar otros errores inesperados
+                _logoutResult.postValue(LogoutResult.Error("Unexpected Error: ${e.message}"))
+            }
+        }
     }
 
 
@@ -827,7 +859,7 @@ class userCreateViewModel: ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _getMovieCreate.value = GetMovieCreate.Loading
-                val response = apiServer.methods.getMovieCreate("Bearer $authToken")
+                val response = apiServer.methods.getMovieCreate()
                 if (response.isSuccessful) {
                     val userData = response.body()
                     _getMovieCreate.value = userData?.let { GetMovieCreate.Success(it) } ?: GetMovieCreate.Error("Error: Datos de la pelicula no encontrado")
@@ -1066,3 +1098,9 @@ sealed class SearchActorsState {
 
 
 
+
+sealed class LogoutResult {
+    object Loading : LogoutResult()
+    object Success : LogoutResult()
+    data class Error(val message: String) : LogoutResult()
+}

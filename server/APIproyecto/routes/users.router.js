@@ -34,6 +34,8 @@ router.post(
   AccountController.login,
   authorization
 );
+router.post('/logout', authenticate, AccountController.logout);
+
 router.get('/user/Home',authenticate,userLoginController.getUserData)
 
 
@@ -41,13 +43,17 @@ router.get('/user/notifications', authenticate, notificationController.getNotifi
 router.patch('/user/notifications/:id', authenticate, notificationController.markAsRead);
 
 //CREAR PELICULAS
-router.post('/user/home/movies', movieController.movieData);
-router.delete('/user/home/movies/:id', movieController.deleteMovie);
+
+//crear pelicula
+router.post('/user/admin/home/movies', movieController.movieData);
+
+router.delete('/user/admin/home/movies/:id', movieController.deleteMovie);  
 router.get('/user/home/movies/:id', movieController.getMovieById);
-router.get('/user/home/movies/actors/search/:actorName', authenticate, movieController.searchActorsByName);
+router.get('/user/admin/home/movies/actors/search/:actorName', authenticate, movieController.searchActorsByName);
 
 
-router.get('/user/home/movies', movieController.getAllMovies);
+//traer peliculas creadas
+router.get('/user/admin/home', movieController.getAllMovies);
 
 
 

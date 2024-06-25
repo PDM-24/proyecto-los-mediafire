@@ -18,11 +18,16 @@ data class createMovieData(
     val actors: List<ActorName> = listOf(),
 
     @SerializedName(value="coverPhoto")
-    val coverPhoto: String="",
+    val coverPhoto: String?="",
 
     @SerializedName(value="categories")
     val categories: List<String> = listOf(),
 )
+    {
+        val coverPhotoOrDefault: String
+        get() = coverPhoto ?: "https://ih1.redbubble.net/image.1893341687.8294/fposter,small,wall_texture,product,750x1000.jpg"
+    }
+
 
 
 data class Actor(
