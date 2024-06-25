@@ -78,9 +78,11 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 viewModel.setStateToReady()
             }
+
             UiState.Loading -> {
                 // Puedes agregar algún indicador de carga general aquí si es necesario
             }
+
             UiState.Ready -> {}
             is UiState.Success -> {
                 val token = (addScreenState.value as UiState.Success).token
@@ -88,6 +90,11 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                 viewModel.setStateToReady()
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(7000)
+        showReloadButton = true
     }
 
     Scaffold(
@@ -147,7 +154,31 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
         }
     ) { innerPadding ->
         if (userDataState is UserDataState.Loading) {
-            LoadingAnimation()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(black),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                com.ic.cinefile.screens.LoadingAnimation()
+
+                if (showReloadButton) {
+                    Text(
+                        text = "¿Está tardando mucho?",
+                        color = Color.White,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+                    Button(
+                        onClick = { viewModel.reload() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
+                        Text(text = "Recargar", color = Color.White)
+                    }
+                }
+            }
         } else {
             Column(
                 modifier = Modifier

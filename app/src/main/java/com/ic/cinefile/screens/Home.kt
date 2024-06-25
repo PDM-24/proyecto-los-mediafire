@@ -330,10 +330,10 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         )
                         Button(
                             onClick = { viewModel.reload() },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                             modifier = Modifier.padding(top = 16.dp)
                         ) {
-                            Text(text = "Recargar", color = Color.Black)
+                            Text(text = "Recargar", color = Color.White)
                         }
                     }
                 }
