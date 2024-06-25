@@ -260,7 +260,7 @@ fun PerfilSinAnuncios(
                             .clickable { /*que abra la lista de todas las pelis en lista de deseos*/ }
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    Section(movies = listOf(R.drawable.deadpoll))
+                    SectionSinanuncios(movies = listOf(R.drawable.deadpoll))
 
                     //LISTA DE CALIFICADAS
                     Spacer(modifier = Modifier.height(40.dp))
