@@ -1,6 +1,7 @@
 package com.ic.cinefile
 
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,6 +21,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
            AppNavigation(viewModel)
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
         }
     }
