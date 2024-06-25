@@ -218,6 +218,12 @@ interface Methods {
         @Path("actorName") actorName: String
     ): Response<actorNameResponse>  // Ajusta el tipo de datos según tu modelo Actor
 
+    @Headers(value = ["Content-Type:application/json"])
+    @DELETE("api/account/user/admin/home/movies/{id}")
+    suspend fun deleteMovie(
+        @Path("id") movieId: String
+    ): Response<Unit>
+
 
 
 

@@ -6,6 +6,10 @@
       <entry key="app">
         <State />
 =======
+<<<<<<< HEAD
+      <entry key="app">
+        <State />
+=======
       <entry key="App">
         <State>
           <targetSelectedWithDropDown>
@@ -22,6 +26,7 @@
           <timeTargetWasSelectedWithDropDown value="2024-06-25T08:39:11.321723600Z" />
         </State>
 >>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
+>>>>>>> a453923cfe60d1bcd3abf6c5ce9197a3fc673a8d
       </entry>
     </value>
   </component>
