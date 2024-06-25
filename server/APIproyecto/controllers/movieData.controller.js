@@ -7,37 +7,36 @@ const httpError = require("http-errors");
 
 controller.movieData=async(req,res,next)=>{
 
-    try{
-        const{
-        //campos de datos
-        title, synopsis, duration, actors, coverPhoto, categories 
-    }=req.body;
+  try{
+      const{
+      //campos de datos
+      title, synopsis, duration, actors, coverPhoto, categories 
+  }=req.body;
 
-    // se le asignan los campos respectivos creando asi un nuevo objeto 
-    const newMovie=new Movie({
-        //campos de datos
-        title:title,
-            synopsis:synopsis,
-            duration:duration,
-            actors:actors,
-            coverPhoto:coverPhoto,
-            categories:categories
+  // se le asignan los campos respectivos creando asi un nuevo objeto 
+  const newMovie=new Movie({
+      //campos de datos
+      title:title,
+          synopsis:synopsis,
+          duration:duration,
+          actors:actors,
+          coverPhoto:coverPhoto,
+          categories:categories
 
 });   
 
 const movieSave = await newMovie.save();
 
 if (!movieSave) {
-    throw httpError(500, "No se ha podido guardar las peliculas");
+  throw httpError(500, "No se ha podido guardar las peliculas");
+}
+res.status(200).json({ message:"Se ha creado la pelicula" });
+
+  }catch(error){
+      next(error);
+
   }
-  res.status(200).json({ message:"Se ha creado la pelicula" });
-
-    }catch(error){
-        next(error);
-
-    }
-};
-
+}
 
 //traer las peliculas
 controller.findAll = async (req, res, next) => {

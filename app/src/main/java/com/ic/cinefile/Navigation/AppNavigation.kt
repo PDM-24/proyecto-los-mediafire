@@ -130,7 +130,7 @@ fun AppNavigation(
             Lista_deseos(viewModel,navController)
         }
         composable(route=screenRoute.Configuraciones.route){
-            Configuraciones(navController)
+            Configuraciones(viewModel,navController)
         }
 
 
