@@ -99,15 +99,21 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
     val navigationController = rememberNavController()
+    var movieIdToDelete by remember { mutableStateOf<String?>(null) }
 
     val userRole = viewModel.getUserRole()
+    val deleteMovieState by viewModel.deleteMovieState.collectAsState()
 
     //Modal de eliminar:
     val openAlertDialog = remember { mutableStateOf(false) }
     if (openAlertDialog.value) {
         DeleteDialogAdmin(
             //lo que hace si se da en "eliminar", logica de eliminar la peli
-            onConfirmation = { openAlertDialog.value = false },
+            onConfirmation = {
+                movieIdToDelete?.let { id ->
+                    viewModel.deleteMovieById(id)
+                }
+            },
             //lo que hace si se le da "atrás"
             onDismissRequest = { openAlertDialog.value = false },
             dialogText = ""

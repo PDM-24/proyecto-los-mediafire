@@ -916,6 +916,32 @@ class userCreateViewModel: ViewModel() {
         _searchActorsState.value = SearchActorsState.Ready
     }
 
+
+
+
+
+
+
+
+    private val _deleteMovieState = MutableStateFlow<DeleteMovieState>(DeleteMovieState.Ready)
+    val deleteMovieState: StateFlow<DeleteMovieState> = _deleteMovieState
+
+    fun deleteMovieById(movieId: String) {
+        viewModelScope.launch {
+            _deleteMovieState.value = DeleteMovieState.Loading
+            try {
+                val response = apiServer.methods.deleteMovie(movieId)
+                if (response.isSuccessful) {
+                    _deleteMovieState.value = DeleteMovieState.Success
+                } else {
+                    _deleteMovieState.value = DeleteMovieState.Error("Failed to delete movie: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                _deleteMovieState.value = DeleteMovieState.Error("Error occurred: ${e.message}")
+            }
+        }
+    }
+
 }
 
 sealed class UiState2 {
@@ -1103,4 +1129,12 @@ sealed class LogoutResult {
     object Loading : LogoutResult()
     object Success : LogoutResult()
     data class Error(val message: String) : LogoutResult()
+}
+
+
+sealed class DeleteMovieState {
+    object Loading : DeleteMovieState()
+    object Ready : DeleteMovieState()
+    object Success : DeleteMovieState()
+    data class Error(val errorMessage: String) : DeleteMovieState()
 }
