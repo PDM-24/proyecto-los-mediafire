@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -76,7 +78,7 @@ fun PerfilSinAnuncios(
             }
 
             UiState.Loading -> {
-
+                viewModel.startLoadingTimer()
             }
 
             UiState.Ready -> {}
@@ -87,6 +89,9 @@ fun PerfilSinAnuncios(
             }
         }
     }
+
+
+
 
     Scaffold(
         topBar = {
@@ -161,8 +166,21 @@ fun PerfilSinAnuncios(
                             color = Color.White,
                             modifier = Modifier.size(36.dp)
                         )
+                        if (viewModel.showReloadButton) {
+                            Button(
+                                onClick = { viewModel.reload() },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                                modifier = Modifier.padding(top = 16.dp)
+                            ) {
+                                Text(
+                                    text = "Recargar",
+                                    color = Color.Black
+                                )
+                            }
+                        }
                     }
                 }
+
 
                 is UserDataState.Success -> {
                     val user = (userDataState as UserDataState.Success).userData.user
@@ -226,8 +244,21 @@ fun PerfilSinAnuncios(
                     }
                 }
 
-                else -> { /* Manejar otros estados si es necesario */
+                else -> {
+                    if (viewModel.showReloadButton) {
+                        Button(
+                            onClick = { viewModel.reload() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Recargar",
+                                color = Color.Black
+                            )
+                        }
+                    }
                 }
+
             }
 
             Spacer(modifier = Modifier.height(15.dp))

@@ -28,6 +28,8 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
@@ -109,6 +111,11 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                 viewModel.setStateToReady()
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(7000)
+        showReloadButton = true
     }
 
     ModalNavigationDrawer(
@@ -303,9 +310,33 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                     }
                 )
             }
-        ) { innerPadding ->
+            ){ innerPadding ->
             if (userDataState is UserDataState.Loading) {
-                LoadingAnimation()
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .background(black),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    LoadingAnimation()
+
+                    if (showReloadButton) {
+                        Text(
+                            text = "¿Está tardando mucho?",
+                            color = Color.White,
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
+                        Button(
+                            onClick = { viewModel.reload() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                            modifier = Modifier.padding(top = 16.dp)
+                        ) {
+                            Text(text = "Recargar", color = Color.Black)
+                        }
+                    }
+                }
             } else {
                 Column(
                     modifier = Modifier
@@ -314,20 +345,17 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         .background(black)
                         .verticalScroll(rememberScrollState())
                 ) {
-
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-
                         Box(
                             modifier = Modifier
                                 .clickable {
                                     if (!isFocused) {
                                         navController.navigate(screenRoute.Buscador.route)
-
                                     }
                                 }
                                 .padding(6.dp)
@@ -338,13 +366,13 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                                 .fillMaxWidth(0.8f)
                                 .height(55.dp),
                             contentAlignment = Alignment.CenterStart,
-
-                            ) {
+                        ) {
                             Icon(
                                 modifier = Modifier.padding(6.dp),
                                 painter = painterResource(id = R.drawable.baseline_search_24),
                                 contentDescription = "Lupa"
                             )
+
                             Text(
                                 text = "Buscar",
                                 style = TextStyle(
@@ -355,7 +383,6 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                                 ),
                                 modifier = Modifier.padding(start = 50.dp)
                             )
-
                         }
                         IconButton(
                             onClick = {
@@ -441,6 +468,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
             }
         }
     }
+
 }
 
 @Composable
@@ -458,6 +486,7 @@ fun LoadingAnimation() {
         )
     }
 }
+
 
 
 /*@Preview

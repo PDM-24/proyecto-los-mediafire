@@ -139,6 +139,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -192,7 +193,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Notificaciones(
-    viewModel:userCreateViewModel,
+    viewModel: userCreateViewModel,
     navController: NavController,
     onNotificationClick: (NotificationResponse) -> Unit
 ) {
@@ -207,9 +208,11 @@ fun Notificaciones(
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 viewModel.setStateToReady()
             }
+
             UiState.Loading -> {
 
             }
+
             UiState.Ready -> {}
             is UiState.Success -> {
                 val token = (addScreenState.value as UiState.Success).token
@@ -219,32 +222,24 @@ fun Notificaciones(
         }
     }
     LaunchedEffect(Unit) {
-viewModel.getNotifications()
+        viewModel.getNotifications()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = topAppBarColors(
-                    containerColor = black,
-                    titleContentColor = white
-                ),
-                title = {
-                    Text("Notificaciones", modifier = Modifier.padding(start = 100.dp))
-                },
-                navigationIcon = {
-                    Icon(
-                        modifier = Modifier.clickable { navController.popBackStack()  },
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "",
-                        tint = white
-                    )
-                }
+    Scaffold(topBar = {
+        TopAppBar(colors = topAppBarColors(
+            containerColor = black, titleContentColor = white
+        ), title = {
+            Text("Notificaciones", modifier = Modifier.padding(start = 100.dp))
+        }, navigationIcon = {
+            Icon(
+                modifier = Modifier.clickable { navController.popBackStack() },
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "",
+                tint = white
             )
-        }
-    ) { innerPadding ->
+        })
+    }) { innerPadding ->
         when (notificationState) {
-
             is NotificationState.Loading -> {
                 Box(
                     modifier = Modifier
@@ -255,9 +250,11 @@ viewModel.getNotifications()
                     CircularProgressIndicator(color = white)
                 }
             }
-            is NotificationState.Ready->{
 
+            is NotificationState.Ready -> {
+                // Manejo del estado Ready si es necesario
             }
+
             is NotificationState.Success -> {
                 val notifications = (notificationState as NotificationState.Success).notifications
 
@@ -269,8 +266,7 @@ viewModel.getNotifications()
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Sin notificaciones",
-                            color = white
+                            text = "Sin notificaciones", color = white
                         )
                     }
                 } else {
@@ -284,13 +280,13 @@ viewModel.getNotifications()
                     ) {
                         items(notifications) { notification ->
                             NotificationItem(
-                                notification = notification,
-                                onClick = onNotificationClick
+                                notification = notification, onClick = onNotificationClick
                             )
                         }
                     }
                 }
             }
+
             is NotificationState.Error -> {
                 Box(
                     modifier = Modifier
@@ -298,11 +294,22 @@ viewModel.getNotifications()
                         .background(black),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = (notificationState as NotificationState.Error).message,
-                        color = Color.Red,
-                        fontSize = 18.sp
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.error404), // Asegúrate de que el recurso de imagen exista
+                            contentDescription = "Error 404",
+                            modifier = Modifier
+                                .size(200.dp)
+                                .padding(8.dp)
+                        )
+                        Text(
+                            text = (notificationState as NotificationState.Error).message,
+                            color = Color.Red,
+                            fontSize = 18.sp
+                        )
+                    }
                 }
             }
         }
@@ -311,8 +318,7 @@ viewModel.getNotifications()
 
 @Composable
 fun NotificationItem(
-    notification: NotificationResponse,
-    onClick: (NotificationResponse) -> Unit
+    notification: NotificationResponse, onClick: (NotificationResponse) -> Unit
 ) {
     val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
 
@@ -352,9 +358,7 @@ fun NotificationItem(
                 modifier = Modifier.padding(start = 12.dp)
             )
             Text(
-                text = formattedDateTime ,
-                color = white,
-                modifier = Modifier.padding(start = 12.dp)
+                text = formattedDateTime, color = white, modifier = Modifier.padding(start = 12.dp)
             )
         }
     }
@@ -374,10 +378,10 @@ fun getAvatarResourceNotification(avatarName: String): Int {
     return when (avatarName) {
         "avatar1" -> R.drawable.avatar1
         "avatar2" -> R.drawable.avatar2
-        "avatar3"->R.drawable.avatar3
-        "avatar4"->R.drawable.avatar4
-        "avatar5"->R.drawable.avatar5
-        "avatar6"->R.drawable.avatar6
+        "avatar3" -> R.drawable.avatar3
+        "avatar4" -> R.drawable.avatar4
+        "avatar5" -> R.drawable.avatar5
+        "avatar6" -> R.drawable.avatar6
         else -> R.drawable.avatar4 // O un recurso por defecto si no se encuentra
     }
 }

@@ -493,7 +493,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         items(movies.size) { index ->
-                            val movie =movies[index]
+                            val movie = movies[index]
 
                             LaunchedEffect(key1 = movie.id) {
                                 viewModel.getAverageRating(movie.id)
@@ -512,9 +512,8 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                                     fechaLanzamiento = movie.releaseDate ?: "sin fecha",
                                     categoria = movie.genres,
                                     isBookmarked = bookmarkedStates.getOrNull(movies.indexOf(movie)) ?: false,
-                                    averageRating= averageRatingState // Pasar el estado completo aquí
-
-                                    )
+                                    averageRating = averageRatingState // Pasar el estado completo aquí
+                                )
                                 Spacer(modifier = Modifier.height(18.dp))
                             }
                         }
@@ -528,14 +527,25 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                             .fillMaxHeight(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "Error: $message",
-                            color = Color.Red,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(16.dp)
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.error404), // Asegúrate de que el recurso de imagen exista
+                                contentDescription = "Error 404",
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .padding(8.dp)
+                            )
+                            Text(
+                                text = "Error: $message",
+                                color = Color.Red,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
                     }
                 }
                 else -> {

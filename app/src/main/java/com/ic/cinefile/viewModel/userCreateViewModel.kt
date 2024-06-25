@@ -2,7 +2,9 @@ package com.ic.cinefile.viewModel
 
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.annotations.SerializedName
@@ -20,6 +22,7 @@ import com.ic.cinefile.API.Model.movies.wishListResponse
 import com.ic.cinefile.API.Model.users.NotificationResponse
 import com.ic.cinefile.API.Model.users.UserLoginResponse
 import com.ic.cinefile.API.apiServer
+import com.ic.cinefile.R
 import com.ic.cinefile.data.NotificationData
 import com.ic.cinefile.data.RatingData
 import com.ic.cinefile.data.accountLoginData
@@ -28,6 +31,7 @@ import com.ic.cinefile.data.commentData
 import com.ic.cinefile.data.searchMoviesData
 import com.ic.cinefile.data.witchListData
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,6 +43,8 @@ import java.time.LocalDateTime
 import java.util.Locale.Category
 
 class userCreateViewModel: ViewModel() {
+
+
 
     // Estados que gestionan el estado de la interfaz para login
     private val _uiState = MutableStateFlow<UiState>(UiState.Ready)
@@ -258,11 +264,39 @@ class userCreateViewModel: ViewModel() {
                         Log.i("userCreateViewModel", e.message())
                         _userDataState.value = UserDataState.Error(e.message())
                     }
-
+                    else -> {
+                        Log.i("userCreateViewModel", e.message.toString())
+                        _userDataState.value = UserDataState.Error(e.message ?: "Error desconocido")
+                    }
                 }
             }
         }
     }
+
+
+
+    var showReloadButton by mutableStateOf(false)
+        private set
+
+    // Función para mostrar el botón de recarga después de 7 segundos
+    fun startLoadingTimer() {
+        viewModelScope.launch {
+            delay(7000)
+            if (userDataState.value is UserDataState.Loading ||
+                wishlisGetState.value is WishlistGetState.Loading ||
+                moviesReatedState.value is MoviesReated.Loading) {
+                showReloadButton = true
+            }
+        }
+    }
+
+    // Función para recargar datos y ocultar el botón de recarga
+    fun reload() {
+        showReloadButton = false
+        _uiState.value = UiState.Loading
+        fetchUserData("Your_Token")  // Llama a fetchUserData con el token adecuado
+    }
+
 
 
     //obtener peliculas recientes
@@ -310,7 +344,7 @@ class userCreateViewModel: ViewModel() {
             } catch (e: Exception) {
                 when (e) {
                     is HttpException -> {
-                        Log.i("userCreateViewModel", e.message())
+                        Log.i("u    serCreateViewModel", e.message())
                         _mostViewsMoviesState.value = MostViewsMoviestState.Error(e.message())
                     }
 
@@ -380,32 +414,34 @@ class userCreateViewModel: ViewModel() {
                             _searchState.value = SearchState.Success(searchMoviesResponse(movies))
                             updateRecentSearches(title) // Actualizar búsquedas recientes
                         } else {
-                            _searchState.value = SearchState.Error("Error: Expected a movie object but received something else.")
+                            _searchState.value = SearchState.Error("Error: Expected a movie object but received something else.", R.drawable.error500)
                         }
                     } else {
-                        _searchState.value = SearchState.Error("Error: Empty response body.")
+                        _searchState.value = SearchState.Error("Error: Empty response body.", R.drawable.error500)
                     }
                 } else {
-                    _searchState.value = SearchState.Error("Error: ${response.message()}")
+                    _searchState.value = SearchState.Error("Error: ${response.message()}", R.drawable.error500)
                 }
             } catch (e: Exception) {
-                when (e) {
+                val errorImage = when (e) {
                     is IOException -> {
                         Log.e("UserCreateViewModel", "Error de red: ${e.message}")
-                        _searchState.value = SearchState.Error("Error de red: ${e.message}")
+                        R.drawable.error404
                     }
                     is HttpException -> {
                         Log.e("UserCreateViewModel", "Error HTTP: ${e.message}")
-                        _searchState.value = SearchState.Error("Error HTTP: ${e.message}")
+                        R.drawable.error500
                     }
                     else -> {
                         Log.e("UserCreateViewModel", "Error desconocido: ${e.message}")
-                        _searchState.value = SearchState.Error("Error desconocido: ${e.message}")
+                        R.drawable.error500
                     }
                 }
+                _searchState.value = SearchState.Error("Error: ${e.message}", errorImage)
             }
         }
     }
+
 
 
 
@@ -841,8 +877,8 @@ sealed class AverageRatingState {
 sealed class SearchState {
     object Loading : SearchState()
     object Ready : SearchState()
-    data class Success(val data: searchMoviesResponse) : SearchState()
-    data class Error(val message: String) : SearchState()
+    data class Success(val data: searchMoviesResponse?) : SearchState()
+    data class Error(val message: String, val imageRes: Int) : SearchState()
 }
 
 
