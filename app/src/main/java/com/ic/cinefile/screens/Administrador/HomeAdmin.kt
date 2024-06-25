@@ -137,6 +137,15 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     }
 
     LaunchedEffect(Unit) {
+<<<<<<< HEAD
+        kotlinx.coroutines.delay(7000)
+        showReloadButton = true
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+=======
         viewModel.getMovieCreate()
 
     }
@@ -148,6 +157,7 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
             drawerContainerColor = black
         ) {
             Row(
+>>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(40.dp),
@@ -340,12 +350,54 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                         }
                     }
                 }
+<<<<<<< HEAD
+            )
+        }
+    ) { innerPadding ->
+        if (userDataState is UserDataState.Loading) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(black),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                com.ic.cinefile.screens.LoadingAnimation()
+
+                if (showReloadButton) {
+                    Text(
+                        text = "¿Está tardando mucho?",
+                        color = Color.White,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+                    Button(
+                        onClick = { viewModel.reload() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
+                        Text(text = "Recargar", color = Color.White)
+                    }
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(Color.Black)
+                    .verticalScroll(rememberScrollState())
+            ) {
+
+                Row(
+=======
             })
         }) { innerPadding ->
             if (userDataState is UserDataState.Loading) {
                 LoadingAnimation()
             } else {
                 Column(
+>>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)

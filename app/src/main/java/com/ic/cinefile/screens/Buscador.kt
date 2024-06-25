@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -244,88 +245,101 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
         }
     ) { innerPadding ->
         // Contenido del Scaffold
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .background(Color.Black)
-        ) {
-            if (isSearching) {
-                // Mostrar la pantalla de historial de búsqueda dentro de la columna del Scaffold
-                SearchHistoryScreen(
-                    onBackClick = { isSearching = false },
-                    recentSearches = viewModel.recentSearches.collectAsState().value,
-                    navController = navController
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(Color.Black)
+            ) {
+                if (isSearching) {
+                    // Mostrar la pantalla de historial de búsqueda dentro de la columna del Scaffold
+                    SearchHistoryScreen(
+                        onBackClick = { isSearching = false },
+                        recentSearches = viewModel.recentSearches.collectAsState().value,
+                        navController = navController
 
-                )
-            } else {
-                // Contenido principal
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    //peliculas recientes
-                    when (recentMoviesState) {
-                        is RecentMoviestState.Success -> {
-                            val movies =
-                                (recentMoviesState as RecentMoviestState.Success).data.moviesRecent
-                            Column {
-                                Text(
-                                    text = "Películas Mas recientes",
-                                    style = TextStyle(
-                                        color = Color.White,
-                                        textAlign = TextAlign.Start,
-                                        fontFamily = montserratFamily,
-                                        fontWeight = FontWeight.Medium,
-                                        fontSize = 20.sp
-                                    ),
-                                    modifier = Modifier.padding(8.dp)
-                                )
+                    )
+                } else {
+                    // Contenido principal
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        //peliculas recientes
+                        when (recentMoviesState) {
+                            is RecentMoviestState.Success -> {
+                                val movies = (recentMoviesState as RecentMoviestState.Success).data.moviesRecent
+                                Column {
+                                    Text(
+                                        text = "Películas Más recientes",
+                                        style = TextStyle(
+                                            color = Color.White,
+                                            textAlign = TextAlign.Start,
+                                            fontFamily = montserratFamily,
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 20.sp
+                                        ),
+                                        modifier = Modifier.padding(8.dp)
+                                    )
 
-                                LazyRow {
-                                    items(movies.size) { index ->
-                                        val movie = movies[index]
-                                        Box(
-                                            modifier = Modifier
-                                                .padding(4.dp)
-                                                .clickable {
-                                                    // Aquí navegas a la pantalla de descripción de la película
-                                                    navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
-                                                }
-                                        )
-                                        {
-                                            AsyncImage(
-                                                model = movie.posterUrl,
-                                                contentDescription = null,
+                                    LazyRow {
+                                        items(movies.size) { index ->
+                                            val movie = movies[index]
+                                            Box(
                                                 modifier = Modifier
                                                     .padding(4.dp)
-                                                    .height(200.dp)
-                                            )
+                                                    .clickable {
+                                                        // Aquí navegas a la pantalla de descripción de la película
+                                                        navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie.id}")
+                                                    }
+                                            ) {
+                                                AsyncImage(
+                                                    model = movie.posterUrl,
+                                                    contentDescription = null,
+                                                    modifier = Modifier
+                                                        .padding(4.dp)
+                                                        .height(200.dp)
+                                                )
+                                            }
                                         }
                                     }
                                 }
                             }
+
+                            is RecentMoviestState.Loading -> {
+                                // Aquí puedes mostrar un diálogo de carga o un indicador de progreso
+                                LoadingProgressDialog()
+                            }
+
+                            is RecentMoviestState.Error -> {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.error404), // Asegúrate de que el recurso de imagen exista
+                                        contentDescription = "Error 404",
+                                        modifier = Modifier
+                                            .size(200.dp)
+                                            .padding(8.dp)
+                                    )
+                                    Text(
+                                        text = "Error: ${(recentMoviesState as RecentMoviestState.Error).msg}",
+                                        color = Color.Red,
+                                        modifier = Modifier.padding(8.dp)
+                                    )
+                                }
+                            }
+
+                            is RecentMoviestState.Ready -> {
+                                // Aquí puedes manejar el estado de preparación inicial si es necesario
+                            }
                         }
 
-                        is RecentMoviestState.Loading -> {
-                            // Aquí puedes mostrar un diálogo de carga o un indicador de progreso
-                            LoadingProgressDialog()
-                        }
-
-                        is RecentMoviestState.Error -> {
-                            // Aquí puedes manejar el estado de error
-                            Text(
-                                text = "Error: ${(recentMoviesState as RecentMoviestState.Error).msg}",
-                                color = Color.Red,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
-
-                        is RecentMoviestState.Ready -> {
-                            // Aquí puedes manejar el estado de preparación inicial si es necesario
-                        }
-                    }
 //mas visto
                     when (mostViewsMoviesState) {
                         is MostViewsMoviestState.Success -> {
@@ -374,12 +388,26 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
                         }
 
                         is MostViewsMoviestState.Error -> {
-                            // Aquí puedes manejar el estado de error
-                            Text(
-                                text = "Error: ${(mostViewsMoviesState as MostViewsMoviestState.Error).msg}",
-                                color = Color.Red,
-                                modifier = Modifier.padding(8.dp)
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.error404), // Asegúrate de que el recurso de imagen exista
+                                    contentDescription = "Error 404",
+                                    modifier = Modifier
+                                        .size(200.dp)
+                                        .padding(8.dp)
+                                )
+                                Text(
+                                    text = "Error: ${(mostViewsMoviesState as MostViewsMoviestState.Error).msg}",
+                                    color = Color.Red,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
                         }
 
                         is MostViewsMoviestState.Ready -> {
@@ -436,13 +464,28 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
 
 
                         is TopMoviestState.Error -> {
-                            // Aquí puedes manejar el estado de error
-                            Text(
-                                text = "Error: ${(topMoviesState as TopMoviestState.Error).msg}",
-                                color = Color.Red,
-                                modifier = Modifier.padding(8.dp)
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.error404), // Asegúrate de que el recurso de imagen exista
+                                    contentDescription = "Error 404",
+                                    modifier = Modifier
+                                        .size(200.dp)
+                                        .padding(8.dp)
+                                )
+                                Text(
+                                    text = "Error: ${(topMoviesState as TopMoviestState.Error).msg}",
+                                    color = Color.Red,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
                         }
+
 
                         is TopMoviestState.Ready -> {
                             // Aquí puedes manejar el estado de preparación inicial si es necesario
