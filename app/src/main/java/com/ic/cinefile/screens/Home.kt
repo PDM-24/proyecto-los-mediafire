@@ -627,8 +627,8 @@ fun LoadingAnimation() {
             color = Color.White, modifier = Modifier.size(36.dp)
         )
     }
-}*/
-=======
+}
+
     }
 
     @Composable
@@ -645,14 +645,6 @@ fun LoadingAnimation() {
                 modifier = Modifier.size(36.dp)
             )
         }
-    }
+    }*/
 
 
-<<<<<<< HEAD
-
-=======
-=======
-}
->>>>>>> b64c13cc1aba4f8c7a75564fdd6e87277b41122e
->>>>>>> develop
->>>>>>> 70c5c72818d790f8575369b752ea61c0ef3a50cc

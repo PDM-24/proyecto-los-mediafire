@@ -10,7 +10,7 @@ import retrofit2.create
 
 
 object apiServer {
-    val BASE_URL= "http://192.168.56.1:3000/"
+    val BASE_URL= "http://192.168.0.7:3500/"
 
     val methods:Methods by lazy {
 
