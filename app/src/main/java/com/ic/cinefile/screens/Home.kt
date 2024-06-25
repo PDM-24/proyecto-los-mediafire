@@ -117,6 +117,19 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
         }
     }
 
+<<<<<<< HEAD
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(7000)
+        showReloadButton = true
+    }
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = true,
+        drawerContent = {
+            ModalDrawerSheet(
+                drawerContainerColor = black
+=======
     ModalNavigationDrawer(drawerState = drawerState, gesturesEnabled = true, drawerContent = {
         ModalDrawerSheet(
             drawerContainerColor = black
@@ -127,6 +140,7 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                     .padding(40.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
+>>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
             ) {
 
 
@@ -452,11 +466,41 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                             tint = white
                         )
                     }
+<<<<<<< HEAD
+                )
+            }
+            ){ innerPadding ->
+=======
                 }
             })
         }) { innerPadding ->
+>>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
             if (userDataState is UserDataState.Loading) {
-                LoadingAnimation()
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .background(black),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    LoadingAnimation()
+
+                    if (showReloadButton) {
+                        Text(
+                            text = "¿Está tardando mucho?",
+                            color = Color.White,
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
+                        Button(
+                            onClick = { viewModel.reload() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                            modifier = Modifier.padding(top = 16.dp)
+                        ) {
+                            Text(text = "Recargar", color = Color.White)
+                        }
+                    }
+                }
             } else {
                 Column(
                     modifier = Modifier
@@ -465,13 +509,11 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                         .background(black)
                         .verticalScroll(rememberScrollState())
                 ) {
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-
                         Box(
                             modifier = Modifier
                                 .clickable {
@@ -486,13 +528,13 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                                 .fillMaxWidth(0.8f)
                                 .height(55.dp),
                             contentAlignment = Alignment.CenterStart,
-
-                            ) {
+                        ) {
                             Icon(
                                 modifier = Modifier.padding(6.dp),
                                 painter = painterResource(id = R.drawable.baseline_search_24),
                                 contentDescription = "Lupa"
                             )
+
                             Text(
                                 text = "Buscar", style = TextStyle(
                                     color = Color.Gray,
@@ -501,7 +543,6 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
                                     fontWeight = FontWeight.Normal
                                 ), modifier = Modifier.padding(start = 50.dp)
                             )
-
                         }
                         IconButton(onClick = {
                             navController.navigate(route = screenRoute.Notificaciones.route)
@@ -612,6 +653,10 @@ fun Home(viewModel: userCreateViewModel, navController: NavController) {
         }
     }
 <<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+>>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
 }
 
 @Composable
@@ -648,3 +693,12 @@ fun LoadingAnimation() {
     }*/
 
 
+<<<<<<< HEAD
+
+/*@Preview
+@Composable
+fun HomePreview() {
+    Home(viewModel = userCreateViewModel(), navController = rememberNavController())
+}*/
+=======
+>>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3

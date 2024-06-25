@@ -288,6 +288,7 @@ fun descripcionPeli(
                             }
                         }
 
+
                         //Categorias
                         item {
                             Spacer(modifier = Modifier.height(15.dp))
