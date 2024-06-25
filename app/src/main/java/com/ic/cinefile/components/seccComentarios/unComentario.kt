@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -49,15 +51,18 @@ import com.ic.cinefile.R
 import com.ic.cinefile.data.commentData
 import com.ic.cinefile.screens.getAvatarResource
 import com.ic.cinefile.ui.theme.black
+import com.ic.cinefile.ui.theme.dark_red
 import com.ic.cinefile.ui.theme.grisComment
 import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.CommentListState
+import com.ic.cinefile.viewModel.DeleteCommentState
 import com.ic.cinefile.viewModel.RepliesToCommentState
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserDataState
 import com.ic.cinefile.viewModel.userCreateViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,16 +85,22 @@ fun unComentario(
     val commentState by viewModel.commentsState.collectAsState()
 
     // Formato de entrada para parsear la fecha y hora
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+// Formato de entrada para parsear la fecha y hora
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
-    // Formato de salida para mostrar la fecha y hora en un formato legible
+// Formato de salida para mostrar la fecha y hora en un formato legible
     val outputFormat = SimpleDateFormat("dd 'de' MMMM 'de' yyyy hh:mm a", Locale.getDefault())
+    val deleteCommentState by viewModel.deleteCommentState.collectAsState()
 
-    // Parsear la fecha y hora del comentario
+// Parsear la fecha y hora del comentario
     val parsedDate = inputFormat.parse(createdAt)
     val formattedDateTime = outputFormat.format(parsedDate)
 
+
+
     val addScreenState = viewModel.uiState.collectAsState()
+
+    val userRole = viewModel.getUserRole()
 
     val context = LocalContext.current
     LaunchedEffect(addScreenState.value) {
@@ -107,6 +118,27 @@ fun unComentario(
                 viewModel.fetchUserData(token)
                 viewModel.setStateToReady()
             }
+        }
+    }
+    LaunchedEffect(deleteCommentState) {
+        when (deleteCommentState) {
+            is DeleteCommentState.Error -> {
+                val message = (deleteCommentState as DeleteCommentState.Error).errorMessage
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.resetDeleteCommentState()
+            }
+
+            DeleteCommentState.Loading -> {
+                Toast.makeText(context, "Eliminando comentario...", Toast.LENGTH_SHORT).show()
+            }
+
+            is DeleteCommentState.Success -> {
+                val message = (deleteCommentState as DeleteCommentState.Success).message
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.resetDeleteCommentState()
+            }
+
+            else -> {}
         }
     }
 
@@ -149,16 +181,40 @@ fun unComentario(
             }
         }
 
-        IconButton(
-            onClick = { showResponses = !showResponses },
-            modifier = Modifier.padding(start = 35.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_comment_24),
-                contentDescription = "",
-                tint = white,
-                modifier = Modifier.size(18.dp)
-            )
+        Row {
+            IconButton(
+                onClick = { showResponses = !showResponses },
+                modifier = Modifier.padding(start = 35.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_comment_24),
+                    contentDescription = "",
+                    tint = white,
+                    modifier = Modifier
+                        .size(18.dp)
+                )
+            }
+
+            if (userRole == "admin") {
+                //Eliminar comentario
+                IconButton(
+                    onClick = {
+
+
+                        /*ELIMINAR LA COMENTARIO*/
+
+                        viewModel.deleteComment(id)
+
+
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = dark_red
+                    )
+                }
+            }
         }
 
         if (showResponses) {
@@ -193,7 +249,8 @@ fun unComentario(
                     username = username,
                     imagePainter = imagePainter,
                     description = description,
-                    createdAt = createdAt
+                    createdAt = createdAt,
+                    userRole = userRole
                 )
                 LazyColumn(
                     modifier = Modifier.padding(16.dp)
@@ -287,7 +344,8 @@ fun unComentario(
                                         focusedLabelColor = white,
                                         focusedIndicatorColor = white,
                                         cursorColor = white,
-                                        focusedTextColor = white
+                                        focusedTextColor = white,
+                                        unfocusedTextColor = white
                                     ),
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))

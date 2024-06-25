@@ -7,44 +7,36 @@ const httpError = require("http-errors");
 
 controller.movieData=async(req,res,next)=>{
 
-    try{
-        const{
-        //campos de datos
-        posterMovie,
-        titleMovie,
-        durationMovie,
-        yearMovie,
-        genereMovie,
-        descriptionMovie,
-        trailerMovie
-    }=req.body;
+  try{
+      const{
+      //campos de datos
+      title, synopsis, duration, actors, coverPhoto, categories 
+  }=req.body;
 
-    // se le asignan los campos respectivos creando asi un nuevo objeto 
-    const newMovie=new Movie({
-        //campos de datos
-        posterMovie:posterMovie,
-        titleMovie:titleMovie,
-        durationMovie:durationMovie,
-        yearMovie:yearMovie,
-        genereMovie:genereMovie,
-        descriptionMovie:descriptionMovie,
-        trailerMovie:trailerMovie
+  // se le asignan los campos respectivos creando asi un nuevo objeto 
+  const newMovie=new Movie({
+      //campos de datos
+      title:title,
+          synopsis:synopsis,
+          duration:duration,
+          actors:actors,
+          coverPhoto:coverPhoto,
+          categories:categories
 
 });   
 
 const movieSave = await newMovie.save();
 
 if (!movieSave) {
-    throw httpError(500, "No se ha podido guardar las peliculas");
+  throw httpError(500, "No se ha podido guardar las peliculas");
+}
+res.status(200).json({ message:"Se ha creado la pelicula" });
+
+  }catch(error){
+      next(error);
+
   }
-  res.status(200).json({ data: movieSave });
-
-    }catch(error){
-        next(error);
-
-    }
-};
-
+}
 
 //traer las peliculas
 controller.findAll = async (req, res, next) => {
@@ -64,8 +56,61 @@ controller.findAll = async (req, res, next) => {
   };
 
 
+  controller.deleteMovie = async (req, res, next) => {
+    try {
+        const { id } = req.params; // Obtener el ID de la película a eliminar
+
+        // Verificar si la película existe
+        const movie = await Movie.findById(id);
+        if (!movie) {
+            throw httpError(404, 'Película no encontrada');
+        }
+
+        // Eliminar la película
+        await Movie.findByIdAndDelete(id);
+
+        // Respuesta exitosa
+        res.status(200).json({ message: 'Película eliminada exitosamente' });
+    } catch (error) {
+        // Manejar errores y pasar al siguiente middleware de error
+        next(error);
+    }
+};
+
+controller.getMovieById = async (req, res, next) => {
+  try {
+      const { id } = req.params; // Obtener el ID de la película a obtener
+
+      // Buscar la película por su ID
+      const movie = await Movie.findById(id);
+
+      // Verificar si la película existe
+      if (!movie) {
+          throw httpError(404, 'Película no encontrada');
+      }
+
+      // Respuesta exitosa con los datos de la película
+      res.status(200).json({ data: movie });
+  } catch (error) {
+      // Manejar errores y pasar al siguiente middleware de error
+      next(error);
+  }
+};
 
 
+
+controller.getAllMovies = async (req, res, next) => {
+    try {
+        // Obtener todas las películas
+        const movies = await Movie.find();
+
+        // Respuesta exitosa con las películas encontradas
+        res.status(200).json({ data: movies });
+    } catch (error) {
+        // Manejar errores y pasar al siguiente middleware de error
+        next(error);
+    }
+};
 
 controller.getMostViewedMovies = async (req, res, next) => {
   try {
@@ -139,6 +184,9 @@ controller.searchMovieByTitle = async (req, res, next) => {
     next(error);
   }
 };
+
+
+
 
 
 
@@ -229,6 +277,9 @@ controller.getMovieAverageRating = async (req, res, next) => {
     }
     const { movieId } = req.params;
     console.log(`Buscando calificaciones para la película con ID: ${movieId}`);
+
+    const numericMovieId = Number(movieId);
+
     
     // Buscar todos los usuarios que han calificado esta película
     const users = await User.find({ 'ratings.movieId': movieId });
@@ -267,16 +318,36 @@ controller.getMovieAverageRating = async (req, res, next) => {
   }
 };
 
-// Obtener películas calificadas
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Obtener películas calificadas POR USUARIO
 controller.getRatedMovies = async (req, res, next) => {
   try {
-    const ratedMovies = await MoviesService.getRatedMoviesAPI();
-    res.status(200).json({ratedMovies:ratedMovies});
+    const userId = req.user._id; // Asumiendo que el ID del usuario está disponible en req.user
+    const ratedMovies = await MoviesService.getRatedMoviesAPI(userId);
+    res.status(200).json({ ratedMovies });
   } catch (error) {
     console.error("Error in controller.getRatedMovies:", error.message, error.stack);
     next(new Error("Error occurred while fetching rated movies. Please try again."));
   }
 };
+
 
 
 
@@ -391,19 +462,11 @@ controller.getRatedMovies = async (req, res, next) => {
     }
   };
   
-  // controller.getWishlist = async (req, res) => {
-  //   const userId = req.user.id;  // Obtener el userId del token de autenticación
-  
-  //   try {
-  //     const wishlist = await wishlistService.getWishlist(userId);
-  //     res.status(200).json({wishlist:wishlist});
-  //   } catch (error) {
-  //     res.status(500).json({ message: error.message });
-  //   }
-  // };
-  
+ 
 
 
+
+  //obtener Wathclist
 
   controller.getWishlist = async (req, res) => {
     const userId = req.user.id;  // Obtener el userId del token de autenticación
@@ -416,4 +479,27 @@ controller.getRatedMovies = async (req, res, next) => {
     }
   };
 
+
+  controller.searchActorsByName = async (req, res, next) => {
+    try {
+      const { actorName } = req.params;
+  
+      // Llama a la función para buscar actores por nombre desde el servicio de películas
+      const actors = await MoviesService.searchActorsByNameAPI(actorName);
+  
+      if (!actors || actors.length === 0) {
+        throw httpError(404, "No se encontraron actores con el nombre especificado.");
+      }
+  
+      res.status(200).json({ actors: actors });
+  
+    } catch (error) {
+      next(error);
+    }
+  };
+
+
+
 module.exports = controller;
+
+

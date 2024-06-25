@@ -1,5 +1,6 @@
 package com.ic.cinefile.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +28,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,35 +37,76 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.ic.cinefile.Navigation.screenRoute
 import com.ic.cinefile.R
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.grisComment
 import com.ic.cinefile.ui.theme.light_yellow
 import com.ic.cinefile.ui.theme.sky_blue
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.AverageRatingState
+import com.ic.cinefile.viewModel.MoviesReated
+import com.ic.cinefile.viewModel.UiState
+import com.ic.cinefile.viewModel.WishlistGetState
+import com.ic.cinefile.viewModel.userCreateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Calificadas(
-    //navController: NavController
-) {
-    //Listas de valores para prueba
-    val peliculas: MutableList<Int> = remember { mutableListOf(R.drawable.deadpoll, R.drawable.deadpoll) }
-    val calificacion: MutableList<Int> = remember { mutableListOf(5,4) }
-    val titulo: MutableList<String> = remember { mutableListOf("Deadpool", "Deadpool") }
-    val categoria: MutableList<String> = remember { mutableListOf("Accion", "Comedia") }
-    val fechaLanzamiento: MutableList<String> = remember { mutableListOf("23/10/2012", "26/10/2012") }
+    viewModel: userCreateViewModel,
+    navController: NavController
 
+) {
+    val moviesReatedState by viewModel.moviesReatedState.collectAsState()
+    val addScreenState = viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val userRole = viewModel.getUserRole()
+
+
+    //Listas de valores para prueba
+
+
+    LaunchedEffect(Unit) {
+        viewModel.getWishlist()
+        viewModel.getMoviesReated()
+    }
+
+    LaunchedEffect(addScreenState.value) {
+        when (addScreenState.value) {
+            is UiState.Error -> {
+                val message = (addScreenState.value as UiState.Error).msg
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.setStateToReady()
+            }
+
+            UiState.Loading -> {
+
+            }
+
+            UiState.Ready -> {}
+            is UiState.Success -> {
+                val token = (addScreenState.value as UiState.Success).token
+                viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
+                viewModel.setStateToReady()
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -73,7 +117,7 @@ fun Calificadas(
                 ),
                 title = {
                     Row(
-                        modifier = Modifier.padding(start = 100.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -84,14 +128,6 @@ fun Calificadas(
                         )
                         Text(text = "Calificadas")
                     }
-                },
-                navigationIcon = {
-                    Icon(
-                        modifier = Modifier.clickable { /*navController.popBackStack() para volver atrás*/ },
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "",
-                        tint = white
-                    )
                 }
             )
         },
@@ -104,19 +140,30 @@ fun Calificadas(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = "Home",
-                                tint = white
-                            )
-                        }
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = "Perfil",
-                                tint = white
-                            )
+
+                        if (userRole == "admin") {
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                        } else {
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                            IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = "User",
+                                    tint = white
+                                )
+                            }
                         }
                     }
                 }
@@ -131,8 +178,77 @@ fun Calificadas(
                 .background(black),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            //
-            Section(peliculas,calificacion,titulo,categoria,fechaLanzamiento)
+
+
+            when (moviesReatedState) {
+                is MoviesReated.Success -> {
+                    val movies =
+                        (moviesReatedState as MoviesReated.Success).data.ratedMovies
+                    Column {
+
+
+                        LazyColumn {
+                            items(movies.size) { index ->
+                                val movie = movies[index]
+
+                                Box(
+                                    modifier = Modifier
+                                        .padding(4.dp)
+                                        .clickable {
+                                            // Aquí navegas a la pantalla de descripción de la película
+                                            navController.navigate("${screenRoute.descripcionPeli.route}/${movie.movieId}")
+                                        }
+                                )
+                                {
+
+                                    BloquePeliD(
+                                        poster = movie.poster,
+                                        titulo = movie.title ?: "sin categoria",
+                                        fechaLanzamiento = movie.releaseDate ?: "sin fecha",
+                                        categoria = movie.genres,
+                                        averageRating = movie.averageRating,// Pasar el estado completo aquívi
+                                        viewModel = viewModel
+                                    )
+                                    Spacer(modifier = Modifier.height(18.dp))
+
+
+                                }
+
+
+                            }
+                        }
+                    }
+                }
+
+                is MoviesReated.Loading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(50.dp)
+                        )
+                    }
+                }
+
+                is MoviesReated.Error -> {
+                    // Aquí puedes manejar el estado de error
+                    Text(
+                        text = "Error: ${(moviesReatedState as MoviesReated.Error).errorMessage}",
+                        color = Color.Red,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+
+                is MoviesReated.Ready -> {
+
+                }
+
+            }
+
 
         }
     }
@@ -140,51 +256,47 @@ fun Calificadas(
 }
 
 //para iterar los bloques de las pelis que el usuario ya tiene calificadas
-@Composable
-//se le pasa una lista de peliculas y una lista de numeros que sería el número de estrellas que le ha dado el usuario a la película
-//también las categorias de la peli, el titulo y la fecha de lanzamiento
-fun Section(pelicula: List<Int>, rating: List<Int>, titulo: List<String>, categoria: List<String>, fecha: List<String>) {
-    Column {
-        Spacer(modifier = Modifier.height(10.dp))
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            //se agregan las películas dentro de la lista que entra a los posters y se van agregando a la columna
-            items(pelicula.size) { index ->
-                BloquePeli(
-                    pelicula[index],
-                    rating[index],
-                    titulo[index],
-                    fecha[index],
-                    categoria[index]
-                )
-                Spacer(modifier = Modifier.height(18.dp))
-            }
-        }
-    }
-}
 
 
 //Contenedor de la peli y su info básica
 @Composable
-fun BloquePeli(poster: Int, rating: Int, titulo: String, fechaLanzamiento: String, categoria: String) {
+fun BloquePeliD(
+    poster: String?,
+    titulo: String,
+    fechaLanzamiento: String?,
+    categoria: String?,
+    averageRating: Double,
+    viewModel: userCreateViewModel
+) {
+    val displayedFechaLanzamiento = fechaLanzamiento ?: "sin fecha"
+
     Row(
         modifier = Modifier
             .background(black),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
-    ){
+    ) {
         //Poster de la peli
         Box(
             modifier = Modifier
                 .size(100.dp, 150.dp)
         ) {
-            Image(
-                painter = painterResource(id = poster),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+            if (poster != null) {
+                AsyncImage(
+                    model = poster,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                // Placeholder para imagen nula
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Gray)
+                )
+            }
+
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -204,11 +316,11 @@ fun BloquePeli(poster: Int, rating: Int, titulo: String, fechaLanzamiento: Strin
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_star_rate_24),
                         contentDescription = null,
-                        tint = light_yellow,
+                        tint = Color.White,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = rating.toString(),
+                        text = String.format("%.2f", averageRating),
                         color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -232,15 +344,13 @@ fun BloquePeli(poster: Int, rating: Int, titulo: String, fechaLanzamiento: Strin
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                //iteración de categorias dentro del row, están en repetición
-                repeat(2) { categoriaIndex ->
+                categoria?.split(",")?.forEach { cat ->
                     Card(
-                        modifier = Modifier
-                            .wrapContentSize(),
+                        modifier = Modifier.wrapContentSize(),
                         colors = CardDefaults.cardColors(containerColor = sky_blue)
                     ) {
                         Text(
-                            text = categoria,
+                            text = cat,
                             color = Color.Black,
                             modifier = Modifier.padding(6.dp)
                         )
@@ -259,17 +369,11 @@ fun BloquePeli(poster: Int, rating: Int, titulo: String, fechaLanzamiento: Strin
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = fechaLanzamiento,
-                    color = white,
+                    text = displayedFechaLanzamiento,
+                    color = Color.White,
                     fontSize = 14.sp
                 )
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun calificadasPreview() {
-    Calificadas()
 }

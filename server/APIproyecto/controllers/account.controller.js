@@ -13,7 +13,8 @@ controller.register=async(req,res,next)=>{
           year_nac,
           genere,
          movie_genere,
-         avatar
+         avatar,
+         role
         } = req.body;
   
         const user = await User.findOne({ $or: [{ email: email }] });
@@ -31,6 +32,7 @@ controller.register=async(req,res,next)=>{
             genere:genere,
            movie_genere:movie_genere,
            avatar:avatar,
+           role: role// Aquí se asegura de establecer el rol proporcionado
 
         });
   
@@ -93,13 +95,41 @@ controller.register=async(req,res,next)=>{
 
         return res.status(200).json({
           message: 'Se ha iniciado sesión correctamente',
-          token
+          token,
+          role: user.role
+
       });
       } catch (error) {
         next(error);
       }
     };
 
+
+
+    // LOGOUT
+controller.logout = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const { userId } = await verifyToken(token);
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw httpError(404, "Usuario no encontrado");
+    }
+
+    // Eliminar el token de la lista de tokens del usuario
+    user.tokens = user.tokens.filter(t => t !== token);
+
+    await user.save();
+
+    return res.status(200).json({
+      message: 'Se ha cerrado sesión correctamente'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 
 

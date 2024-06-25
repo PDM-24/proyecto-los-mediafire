@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
@@ -42,6 +43,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+<<<<<<< HEAD
+=======
+import androidx.compose.runtime.setValue
+>>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -92,6 +97,9 @@ fun PerfilAnuncios(
     val wishlisGetState by viewModel.wishlisGetState.collectAsState()
     val averageRating by viewModel.averageRatingState.collectAsState()
     val moviesReatedState by viewModel.moviesReatedState.collectAsState()
+
+    val userRole = viewModel.getUserRole()
+
     LaunchedEffect(Unit) {
         viewModel.getWishlist()
         viewModel.getMoviesReated()
@@ -118,7 +126,11 @@ fun PerfilAnuncios(
             }
 
             UiState.Loading -> {
+<<<<<<< HEAD
                 viewModel.startLoadingTimer()
+=======
+                // Mostrar un diálogo de carga o indicador de progreso si es necesario
+>>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
             }
 
             UiState.Ready -> {}
@@ -158,27 +170,34 @@ fun PerfilAnuncios(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = "Home",
-                                tint = white
-                            )
-                        }
-                        IconButton(onClick = {
-                            navController.navigate(screenRoute.PerfilAnuncios.route)
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = "User",
-                                tint = white
-                            )
+                        if (userRole == "admin") {
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                        } else {
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                            IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = "User",
+                                    tint = white
+                                )
+                            }
                         }
                     }
                 }
             )
         }
-
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -224,13 +243,13 @@ fun PerfilAnuncios(
                     val generoUsuario = user.gender
                     val fechaNacimiento = user.yearOfBirth
 
-                    //ICONO QUE LLEVA A PANEL DE CONFIGURACIONES
+                    // ICONO QUE LLEVA A PANEL DE CONFIGURACIONES
                     Box(
                         modifier = Modifier
                             .align(Alignment.End)
                             .padding(end = 20.dp)
                             .clickable { navController.navigate(screenRoute.Configuraciones.route) }
-                    ){
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = null,
@@ -299,7 +318,7 @@ fun PerfilAnuncios(
 
             // BOTÓN PARA QUITAR ANUNCIOS
             Button(
-                onClick = { /*lo de quitar anuncios y actualizar el peril sin anuncios*/ },
+                onClick = { /* Aquí va la funcionalidad de eliminar anuncios si es necesario */ },
                 colors = ButtonDefaults.buttonColors(containerColor = grisComment),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.padding(horizontal = 20.dp)
@@ -319,17 +338,21 @@ fun PerfilAnuncios(
 
             Spacer(modifier = Modifier.height(15.dp))
 
+            // Aquí se agregan los banners de publicidad
+            AdvertisingBanner()
+
             // LISTAS
-            LazyColumn (
-                modifier = Modifier.padding(10.dp).fillMaxWidth()
-            ){
-                //LISTA DE DESEOS
+            LazyColumn(
+                modifier = Modifier
+                    .padding(10.dp)
+                    .fillMaxWidth()
+            ) {
+                // LISTA DE DESEOS
                 item {
                     Spacer(modifier = Modifier.height(20.dp))
                     when (wishlisGetState) {
                         is WishlistGetState.Success -> {
-                            val movies =
-                                (wishlisGetState as WishlistGetState.Success).data.wishlist
+                            val movies = (wishlisGetState as WishlistGetState.Success).data.wishlist
                             Column {
                                 Text(
                                     text = "Lista de deseos",
@@ -353,8 +376,7 @@ fun PerfilAnuncios(
                                                     // Aquí navegas a la pantalla de descripción de la película
                                                     navController.navigate("${screenRoute.descripcionPeli.route}/${movie.movieId}")
                                                 }
-                                        )
-                                        {
+                                        ) {
                                             AsyncImage(
                                                 model = movie.poster,
                                                 contentDescription = null,
@@ -402,11 +424,21 @@ fun PerfilAnuncios(
                         is WishlistGetState.Ready -> {
                             // Manejo del estado Ready si es necesario
                         }
+<<<<<<< HEAD
                     }
 
 
 
                     //LISTA DE CALIFICADAS
+=======
+
+                        is WishlistGetState.Ready -> {
+
+                        }
+                    }
+
+                    // LISTA DE CALIFICADAS
+>>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
                     Spacer(modifier = Modifier.height(40.dp))
 
                     when (moviesReatedState) {
@@ -414,7 +446,7 @@ fun PerfilAnuncios(
                             val movies = (moviesReatedState as MoviesReated.Success).data.ratedMovies
                             Column {
                                 Text(
-                                    text = "Peliculas calificadas",
+                                    text = "Películas calificadas",
                                     style = TextStyle(
                                         color = Color.White,
                                         textAlign = TextAlign.Start,
@@ -480,8 +512,14 @@ fun PerfilAnuncios(
                                 }
                             }
                         }
+<<<<<<< HEAD
                         is MoviesReated.Ready -> {
                             // Manejo del estado Ready si es necesario
+=======
+
+                        is MoviesReated.Ready -> {
+
+>>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
                         }
                     }
                     Spacer(modifier = Modifier.height(10.dp))
@@ -491,33 +529,58 @@ fun PerfilAnuncios(
     }
 }
 
-//para iterar los posters de pelis
+// Función para mostrar banners de publicidad
 @Composable
-fun Section(movies: List<Int>) {
-    Column() {
-        Spacer(modifier = Modifier.height(10.dp))
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(movies.size) { index ->
-                Poster(movies[index])
-            }
+fun AdvertisingBanner() {
+    var currentBanner by remember { mutableStateOf(R.drawable.banner1) }
+    val banners = listOf(
+        R.drawable.banner1,
+        R.drawable.banner2,
+        R.drawable.banner3,
+        R.drawable.banner4,
+        R.drawable.banner5,
+        R.drawable.banner6
+    )
+
+    LaunchedEffect(Unit) {
+        var index = 0
+        while (true) {
+            kotlinx.coroutines.delay(120000) // 2 minutos
+            index = (index + 1) % banners.size
+            currentBanner = banners[index]
         }
     }
-}
 
-//Poster de la peli
-@Composable
-fun Poster(imageRes: Int) {
-    Image(
-        painter = painterResource(id = imageRes),
-        contentDescription = null,
+    Box(
         modifier = Modifier
-            .size(150.dp, 230.dp)
-            .clickable { /*que te lleve a la descripcion de esa peli */ },
-        contentScale = ContentScale.Crop
-    )
+            .fillMaxWidth()
+            .height(200.dp)
+            .padding(10.dp)
+            .background(Color.Gray),
+        contentAlignment = Alignment.TopEnd
+    ) {
+        Image(
+            painter = painterResource(id = currentBanner),
+            contentDescription = "Banner Publicidad",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        // Botón para cerrar banner (sin funcionalidad)
+        Box(
+            modifier = Modifier
+                .size(30.dp)
+                .background(Color.Black, shape = CircleShape)
+                .clickable { /* Sin acción */ },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = "",
+                tint = white
+            )
+        }
+    }
 }
 
 fun getAvatarResource(avatarName: String): Int {
@@ -531,8 +594,9 @@ fun getAvatarResource(avatarName: String): Int {
         else -> R.drawable.avatar4 // Imagen por defecto si el nombre del avatar no coincide
     }
 }
-/*@Preview
+
+@Preview
 @Composable
 fun perfilAnunciosPreview() {
     PerfilAnuncios(userCreateViewModel(), rememberNavController())
-}*/
+}

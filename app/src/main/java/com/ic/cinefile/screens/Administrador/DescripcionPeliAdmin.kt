@@ -51,7 +51,7 @@ import coil.compose.AsyncImage
 import com.ic.cinefile.R
 import com.ic.cinefile.components.ratingStars
 import com.ic.cinefile.components.verTrailer
-import com.ic.cinefile.screens.Administrador.SeccComentariosAdmin.comentarios
+import com.ic.cinefile.screens.Administrador.SeccComentariosAdmin.comentariosAdmin
 import com.ic.cinefile.ui.theme.dark_red
 import com.ic.cinefile.ui.theme.light_yellow
 import com.ic.cinefile.ui.theme.sky_blue
@@ -62,7 +62,7 @@ import com.ic.cinefile.viewModel.userCreateViewModel
 
 
 @Composable
-fun descripcionPeli(
+fun descripcionPeliAdmin(
     onClick: () -> Unit,
     viewModel: userCreateViewModel,
     navController: NavController,
@@ -138,7 +138,7 @@ fun descripcionPeli(
                 //Modal de eliminar:
                 val openAlertDialog = remember { mutableStateOf(false) }
                 if (openAlertDialog.value) {
-                    DeleteDialog(
+                    DeleteDialogAdmin(
                         //lo que hace si se da en "eliminar", logica de eliminar la peli
                         onConfirmation = { openAlertDialog.value = false },
                         //lo que hace si se le da "atrás"
@@ -372,7 +372,7 @@ fun descripcionPeli(
                         //COMENTARIOS
                         item {
                             Spacer(modifier = Modifier.height(20.dp))
-                            comentarios(
+                            comentariosAdmin(
                                 viewModel = viewModel,
                                 movieId = movieId
                             )
@@ -386,13 +386,7 @@ fun descripcionPeli(
         }
     }
 }
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun descripcionPeliPreview() {
-//    var isBookmarked by remember { mutableStateOf(false) }
-//    descripcionPeli(onClick = { isBookmarked = !isBookmarked })
-//}
+
 
 
 @Composable

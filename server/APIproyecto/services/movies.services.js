@@ -41,9 +41,26 @@ const getMovies=async()=>{
 }
 
 
+const hideMovie = async (movieId) => {
+  try {
+    const movie = await Movie.findOne({ id: movieId });
+    if (!movie) {
+      throw new Error('Película no encontrada');
+    }
+
+    movie.isHidden = true;
+    await movie.save();
+
+    return { message: 'Película ocultada exitosamente' };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 
 
 //buscar PELICULAS
+// Buscar películas
 const normalizeString = (str) => {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 };
@@ -72,7 +89,7 @@ const searchMovieByTitle = async (title, userId, sortBy = 'relevancia', genre = 
       movies.sort((a, b) => new Date(a.release_date || '1970-01-01') - new Date(b.release_date || '1970-01-01'));
     }
 
-    const moviesWithGenres = await Promise.all(movies.map(async (movie) => {
+    const moviesWithGenresAndRatings = await Promise.all(movies.map(async (movie) => {
       const detailsResponse = await axios.get(`${BASE_URL_API}movie/${movie.id}?api_key=${API_KEY}&language=es-MX&append_to_response=videos`);
       const detailedMovie = detailsResponse.data;
 
@@ -81,6 +98,20 @@ const searchMovieByTitle = async (title, userId, sortBy = 'relevancia', genre = 
       
       // Mapear el nombre de género al ID usando genreMap
       const genreIds = detailedMovie.genres.map(genre => genreMap[genre.name.toLowerCase()]).filter(id => id !== undefined);
+
+      // Buscar todas las calificaciones más recientes de otros usuarios para la misma película
+      const users = await User.find({ 'ratings.movieId': movie.id });
+      const latestRatings = users.flatMap(user => {
+        const ratingsForMovie = user.ratings.filter(r => r.movieId === String(movie.id));
+        if (ratingsForMovie.length > 0) {
+          const latestRating = ratingsForMovie[ratingsForMovie.length - 1].rating;
+          return [latestRating];
+        }
+        return [];
+      });
+
+      // Calcular el promedio de las calificaciones más recientes
+      const averageRating = latestRatings.length > 0 ? latestRatings.reduce((sum, rating) => sum + rating, 0) / latestRatings.length : null;
 
       return {
         id: detailedMovie.id,
@@ -91,7 +122,8 @@ const searchMovieByTitle = async (title, userId, sortBy = 'relevancia', genre = 
         genero: genres.join(", "),
         descripcion: detailedMovie.overview,
         trailer: detailedMovie.videos.results.length > 0 ? `https://www.youtube.com/watch?v=${detailedMovie.videos.results[0].key}` : null,
-        genreIds: genreIds
+        genreIds: genreIds,
+        averageRating: averageRating // Agregar el promedio de calificaciones recientes
       };
     }));
 
@@ -105,12 +137,11 @@ const searchMovieByTitle = async (title, userId, sortBy = 'relevancia', genre = 
       await user.save();
     }
 
-    return moviesWithGenres;
+    return moviesWithGenresAndRatings;
   } catch (error) {
     throw new Error("Ocurrió un error al buscar la película. Por favor, inténtalo de nuevo.");
   }
 };
-
 
 
 
@@ -134,6 +165,10 @@ const getMoviesCategory = async (categoryName, limit = 10) => {
     );
 
     const movies = response.data.results.slice(0, limit); // Limitar las películas al número especificado
+
+
+
+
 
     // Enrich each movie with additional details including actors
     const moviesWithDetails = await Promise.all(
@@ -180,6 +215,9 @@ const getMoviesCategory = async (categoryName, limit = 10) => {
     throw new Error(`No se ha podido encontrar películas en la categoría: ${categoryName}`);
   }
 };
+
+
+
 
 
 
@@ -268,37 +306,51 @@ const getMoviesBySortType = async (sortType, limit = 10) => {
   };
 
 
+  //calificaciones generales
+  // const getMovieAverageRating = async (movieId) => {
+  //   try {
+  //     // Encontrar todos los usuarios que hayan calificado la película
+  //     const users = await User.find({ 'ratings.movieId': movieId });
+  
+  //     if (users.length === 0) {
+  //       return null; // Si no hay usuarios que hayan calificado la película, retornar null
+  //     }
+  
+  //     // Filtrar las calificaciones de la película específica
+  //     const ratings = users.map(user => {
+  //       const ratingObj = user.ratings.find(r => r.movieId === movieId);
+  //       return ratingObj ? ratingObj.rating : null;
+  //     }).filter(r => r !== null);
+  
+  //     if (ratings.length === 0) {
+  //       return null; // Si no hay calificaciones encontradas, retornar null
+  //     }
+  
+  //     // Calcular el promedio de las calificaciones
+  //     const averageRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+  
+  //     // Obtener detalles de la película desde cualquier usuario que la haya calificado
+  //     const user = users.find(user => user.ratings.find(r => r.movieId === movieId));
+  //     const movieDetails = user ? user.ratings.find(r => r.movieId === movieId) : null;
+  
+  //     return {
+  //       averageRating,
+  //       movieDetails
+  //     };
+  //   } catch (error) {
+  //     throw new Error("Error occurred while calculating the average rating. Please try again.");
+  //   }
+  // };
+  
+  
 
 
 
-//obtener por raiting
-const getMovieAverageRating = async (movieId) => {
-  try {
-    const users = await User.find({ 'ratings.movieId': movieId });
-    const ratings = users.map(user => {
-      const ratingObj = user.ratings.find(r => r.movieId === movieId);
-      return ratingObj ? ratingObj.rating : null;
-    }).filter(r => r !== null);
-
-    if (ratings.length === 0) return null;
-
-    const averageRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-
-    // Obtener los detalles de la primera película encontrada (asumiendo que todos los detalles son los mismos)
-    const user = users.find(user => user.ratings.find(r => r.movieId === movieId));
-    const movieDetails = user ? user.ratings.find(r => r.movieId === movieId) : null;
-    return {
-      averageRating,
-      movieDetails
-    };
-  } catch (error) {
-    throw new Error("Error occurred while calculating the average rating. Please try again.");
-  }
-};
 
 
 
-//obtener peliculas ya calificadas
+
+//obtener peliculas ya calificadas(usuario)
 const getMovieDetailsFromAPI = async (movieId) => {
   try {
     const response = await axios.get(`${BASE_URL_API}movie/${movieId}?api_key=${API_KEY}&language=es-MX`);
@@ -309,42 +361,68 @@ const getMovieDetailsFromAPI = async (movieId) => {
   }
 };
 
-const getRatedMovies = async () => {
-  try {
-    const users = await User.find({ 'ratings.0': { $exists: true } });
+//obtener peliculas ya calificadas(usuario)
 
-    // Crear un objeto para evitar duplicados y almacenar las películas calificadas
+const getRatedMovies = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+
+    if (!user || !user.ratings || user.ratings.length === 0) {
+      return [];
+    }
+
+    // Crear un objeto para almacenar las películas calificadas por el usuario
     const ratedMovies = {};
 
-    for (const user of users) {
-      for (const rating of user.ratings) {
-        if (!ratedMovies[rating.movieId]) {
-          const movieDetails = await getMovieDetailsFromAPI(rating.movieId);
-          if (movieDetails) {
-            ratedMovies[rating.movieId] = {
-              movieId: rating.movieId,
-              title: movieDetails.title,
-              poster: movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : null,
-              ratings: []
-            };
-          }
+    // Iterar sobre las calificaciones del usuario
+    for (const rating of user.ratings) {
+      if (!ratedMovies[rating.movieId]) {
+        const movieDetails = await getMovieDetailsFromAPI(rating.movieId);
+        if (movieDetails) {
+          ratedMovies[rating.movieId] = {
+            movieId: rating.movieId,
+            title: movieDetails.title,
+            poster: movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : null,
+            releaseDate: movieDetails.release_date,
+            genres: movieDetails.genres.map(genre => genre.name).join(', '),
+            ratings: [] // Aquí almacenaremos las calificaciones más recientes de todos los usuarios
+          };
         }
-        if (ratedMovies[rating.movieId]) {
-          ratedMovies[rating.movieId].ratings.push(rating.rating);
+      }
+
+      // Obtener la calificación más reciente del usuario para esta película
+      if (ratedMovies[rating.movieId]) {
+        const latestRating = ratedMovies[rating.movieId].ratings.length > 0 ? ratedMovies[rating.movieId].ratings[0] : null;
+        if (!latestRating || rating.timestamp > latestRating.timestamp) {
+          ratedMovies[rating.movieId].ratings = [{
+            rating: rating.rating,
+            timestamp: rating.timestamp
+          }];
         }
       }
     }
 
     // Convertir el objeto a un array y calcular el promedio de calificaciones para cada película
-    const ratedMoviesArray = Object.values(ratedMovies).map(movie => {
-      const averageRating = movie.ratings.reduce((sum, rating) => sum + rating, 0) / movie.ratings.length;
-      return {
-        movieId: movie.movieId,
-        title: movie.title,
-        poster: movie.poster,
-        averageRating
-      };
-    });
+    const ratedMoviesArray = Object.values(ratedMovies);
+
+    for (const movie of ratedMoviesArray) {
+      // Buscar todas las calificaciones más recientes de otros usuarios para la misma película
+      const users = await User.find({ 'ratings.movieId': movie.movieId });
+      const latestRatings = users.flatMap(user => {
+        const ratingsForMovie = user.ratings.filter(r => r.movieId === movie.movieId);
+        if (ratingsForMovie.length > 0) {
+          const latestRating = ratingsForMovie[ratingsForMovie.length - 1].rating;
+          return [latestRating];
+        }
+        return [];
+      });
+
+      // Calcular el promedio de las calificaciones más recientes
+      const averageRating = latestRatings.length > 0 ? latestRatings.reduce((sum, rating) => sum + rating, 0) / latestRatings.length : null;
+      movie.averageRating = averageRating;
+    }
+
+    console.log('Películas calificadas por el usuario:', ratedMoviesArray);
 
     return ratedMoviesArray;
   } catch (error) {
@@ -352,7 +430,11 @@ const getRatedMovies = async () => {
     throw new Error("Error occurred while fetching rated movies. Please try again.");
   }
 };
-  
+
+
+
+
+
   //proxiomo a estrenar
   const getUpcomingMovies= async (limit = 10) => {
     try {
@@ -434,8 +516,9 @@ const getRatedMovies = async () => {
         movieId: movieDetails.id,
         title: movieDetails.title,
         poster: movieDetails.poster,
-        releaseDate: movieDetails.fecha_lanzamiento,
-        genre: movieDetails.genero,
+        releaseDate: movieDetails.fecha_lanzamiento, // Usar fecha de lanzamiento del objeto movieDetails
+        genre: movieDetails.genero //
+        
       });
   
       await user.save();
@@ -447,6 +530,8 @@ const getRatedMovies = async () => {
   };
   
 
+
+  //obtener watclist
   const getWishlist = async (userId) => {
     try {
       const user = await User.findById(userId);
@@ -462,7 +547,23 @@ const getRatedMovies = async () => {
   };
   
   
+  const searchActorsByName = async (actorName) => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL_API}search/person?api_key=${API_KEY}&language=es-MX&query=${encodeURIComponent(actorName)}`
+      );
   
+      const actors = response.data.results.map(actor => ({
+        name: actor.name,
+        profileUrl: actor.profile_path ? `https://image.tmdb.org/t/p/w500${actor.profile_path}` : null
+      }));
+  
+      return actors;
+    } catch (error) {
+      console.error("Error al buscar actores:", error.message);
+      throw new Error("Ocurrió un error al buscar actores. Por favor, inténtalo de nuevo.");
+    }
+  };
   
 
 // se exportan como se deven son variables por asi asi
@@ -473,9 +574,11 @@ module.exports={
   getMostRecentMoviesAPI: getMostRecentMovies,
   searchMovieByTitleAPI: searchMovieByTitle,
   fetchMovieByIdAPI:fetchMovieById,
-  getMovieAverageRatingAPI:getMovieAverageRating,
+  //getMovieAverageRatingAPI:getMovieAverageRating,
   getUpcomingMoviesAPI:getUpcomingMovies,
   addToWishlistAPI:addToWishlist,
   getWishlistAPI:getWishlist,
-  getRatedMoviesAPI:getRatedMovies
+  getRatedMoviesAPI:getRatedMovies,
+  hideMovieAPI: hideMovie,
+  searchActorsByNameAPI:searchActorsByName
 }

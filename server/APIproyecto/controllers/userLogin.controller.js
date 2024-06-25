@@ -15,7 +15,7 @@ controller.getUserData = async (req, res, next) => {
     if (!user.hasSeenRandomMovies) {
       const genres = user.movie_genere;
       for (const genre of genres) {
-        const movies = await MoviesService.getMoviesCategoryAPI(genre, 10);
+        const movies = await MoviesService.getMoviesCategoryAPI(genre, 20);
         moviesByGenre[genre] = movies;
       }
      
@@ -27,7 +27,8 @@ controller.getUserData = async (req, res, next) => {
         year_nac: user.year_nac,
         genere: user.genere,
         movie_genere: user.movie_genere,
-        avatar: user.avatar
+        avatar: user.avatar,
+
       },
       movies: moviesByGenre
     });

@@ -195,7 +195,6 @@ import java.util.Locale
 fun Notificaciones(
     viewModel: userCreateViewModel,
     navController: NavController,
-    onNotificationClick: (NotificationResponse) -> Unit
 ) {
     val notificationState by viewModel.notificationState.collectAsState()
     val context = LocalContext.current
@@ -280,7 +279,11 @@ fun Notificaciones(
                     ) {
                         items(notifications) { notification ->
                             NotificationItem(
+<<<<<<< HEAD
                                 notification = notification, onClick = onNotificationClick
+=======
+                                notification = notification
+>>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
                             )
                         }
                     }
@@ -318,7 +321,11 @@ fun Notificaciones(
 
 @Composable
 fun NotificationItem(
+<<<<<<< HEAD
     notification: NotificationResponse, onClick: (NotificationResponse) -> Unit
+=======
+    notification: NotificationResponse,
+>>>>>>> c1174e897b864ac52181d65e51885b935f8b22d3
 ) {
     val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
 
@@ -332,8 +339,7 @@ fun NotificationItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
-            .clickable { onClick(notification) },
+            .height(60.dp),
         colors = CardDefaults.cardColors(containerColor = black),
     ) {
         Divider()
@@ -342,7 +348,7 @@ fun NotificationItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            val avatarUsuario = getAvatarResource(notification.user.avatar)
+            val avatarUsuario = getAvatarResource(notification.avatar)
 
             Image(
                 painter = painterResource(id = avatarUsuario),
@@ -353,7 +359,7 @@ fun NotificationItem(
                     .clip(CircleShape)
             )
             Text(
-                text = "${notification.user.username} respondió tu comentario",
+                text = "${notification.message} respondió tu comentario",
                 color = white,
                 modifier = Modifier.padding(start = 12.dp)
             )

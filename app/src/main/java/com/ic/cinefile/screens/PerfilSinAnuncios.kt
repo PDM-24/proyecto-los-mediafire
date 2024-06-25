@@ -69,6 +69,8 @@ fun PerfilSinAnuncios(
     val context = LocalContext.current
     val averageRating by viewModel.averageRatingState.collectAsState()
 
+    val userRole = viewModel.getUserRole()
+
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
             is UiState.Error -> {
@@ -122,21 +124,29 @@ fun PerfilSinAnuncios(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = { navController.navigate(screenRoute.Home.route) }) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = "Home",
-                                tint = white
-                            )
-                        }
-                        IconButton(onClick = {
-                            navController.navigate(screenRoute.PerfilAnuncios.route)
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = "User",
-                                tint = white
-                            )
+                        if(userRole=="admin"){
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                        }else{
+                            IconButton(onClick = { navController.navigate(screenRoute.HomeAdmin.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home",
+                                    tint = white
+                                )
+                            }
+                            IconButton(onClick = { navController.navigate(screenRoute.PerfilAnuncios.route) }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = "User",
+                                    tint = white
+                                )
+                            }
                         }
                     }
                 }
@@ -281,7 +291,7 @@ fun PerfilSinAnuncios(
                             .clickable { /*que abra la lista de todas las pelis en lista de deseos*/ }
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    Section(movies = listOf(R.drawable.deadpoll))
+                    SectionSinanuncios(movies = listOf(R.drawable.deadpoll))
 
                     //LISTA DE CALIFICADAS
                     Spacer(modifier = Modifier.height(40.dp))
