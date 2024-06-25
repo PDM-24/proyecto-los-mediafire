@@ -1,3 +1,4 @@
+
 const Mongoose = require("mongoose");
 const SchemaUsers = Mongoose.Schema;
 const crypto = require("crypto");
@@ -128,7 +129,3 @@ accountSchema
 
 const User = Mongoose.model("User", accountSchema);
 module.exports = User;
-
-
-
-

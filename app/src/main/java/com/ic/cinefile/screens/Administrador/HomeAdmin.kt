@@ -389,9 +389,6 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                     }
 
                     if (userRole == "admin") {
-
-
-
                         //Para agregar una peli
                         Button(
                             onClick = { /*NAVEGAR A AGREGARPELI*/

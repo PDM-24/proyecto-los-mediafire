@@ -8,108 +8,109 @@ const httpError = require("http-errors");
 controller.movieData=async(req,res,next)=>{
 
   try{
-      const{
-      //campos de datos
-      title, synopsis, duration, actors, coverPhoto, categories 
-  }=req.body;
+    const{
+    //campos de datos
+    title, synopsis, duration, actors, coverPhoto, categories 
+}=req.body;
 
-  // se le asignan los campos respectivos creando asi un nuevo objeto 
-  const newMovie=new Movie({
-      //campos de datos
-      title:title,
-          synopsis:synopsis,
-          duration:duration,
-          actors:actors,
-          coverPhoto:coverPhoto,
-          categories:categories
+// se le asignan los campos respectivos creando asi un nuevo objeto 
+const newMovie=new Movie({
+    //campos de datos
+    title:title,
+        synopsis:synopsis,
+        duration:duration,
+        actors:actors,
+        coverPhoto:coverPhoto,
+        categories:categories
 
 });   
 
 const movieSave = await newMovie.save();
 
 if (!movieSave) {
-  throw httpError(500, "No se ha podido guardar las peliculas");
+throw httpError(500, "No se ha podido guardar las peliculas");
 }
 res.status(200).json({ message:"Se ha creado la pelicula" });
 
-  }catch(error){
-      next(error);
+}catch(error){
+    next(error);
 
-  }
 }
+};
+
 
 //traer las peliculas
 controller.findAll = async (req, res, next) => {
-    try {
-      const movies = await MoviesService.getMoviesAPI();
+try {
+  const movies = await MoviesService.getMoviesAPI();
 
-      // Verificamos si se han encontrado películas
-      if (!movies || movies.length === 0) {
-          // Si no se encuentra ninguna película, lanzamos un error 500
-          throw httpError(500, "No se han encontrado películas");
+  // Verificamos si se han encontrado películas
+  if (!movies || movies.length === 0) {
+      // Si no se encuentra ninguna película, lanzamos un error 500
+      throw httpError(500, "No se han encontrado películas");
 
-      }      
-      return res.status(200).json({ data: movies });
-    } catch (error) {
-      next(error);
+  }      
+  return res.status(200).json({ data: movies });
+} catch (error) {
+  next(error);
+}
+};
+
+
+controller.deleteMovie = async (req, res, next) => {
+try {
+    const { id } = req.params; // Obtener el ID de la película a eliminar
+
+    // Verificar si la película existe
+    const movie = await Movie.findById(id);
+    if (!movie) {
+        throw httpError(404, 'Película no encontrada');
     }
-  };
 
+    // Eliminar la película
+    await Movie.findByIdAndDelete(id);
 
-  controller.deleteMovie = async (req, res, next) => {
-    try {
-        const { id } = req.params; // Obtener el ID de la película a eliminar
-
-        // Verificar si la película existe
-        const movie = await Movie.findById(id);
-        if (!movie) {
-            throw httpError(404, 'Película no encontrada');
-        }
-
-        // Eliminar la película
-        await Movie.findByIdAndDelete(id);
-
-        // Respuesta exitosa
-        res.status(200).json({ message: 'Película eliminada exitosamente' });
-    } catch (error) {
-        // Manejar errores y pasar al siguiente middleware de error
-        next(error);
-    }
+    // Respuesta exitosa
+    res.status(200).json({ message: 'Película eliminada exitosamente' });
+} catch (error) {
+    // Manejar errores y pasar al siguiente middleware de error
+    next(error);
+}
 };
 
 controller.getMovieById = async (req, res, next) => {
-  try {
-      const { id } = req.params; // Obtener el ID de la película a obtener
+try {
+  const { id } = req.params; // Obtener el ID de la película a obtener
 
-      // Buscar la película por su ID
-      const movie = await Movie.findById(id);
+  // Buscar la película por su ID
+  const movie = await Movie.findById(id);
 
-      // Verificar si la película existe
-      if (!movie) {
-          throw httpError(404, 'Película no encontrada');
-      }
-
-      // Respuesta exitosa con los datos de la película
-      res.status(200).json({ data: movie });
-  } catch (error) {
-      // Manejar errores y pasar al siguiente middleware de error
-      next(error);
+  // Verificar si la película existe
+  if (!movie) {
+      throw httpError(404, 'Película no encontrada');
   }
+
+  // Respuesta exitosa con los datos de la película
+  res.status(200).json({ data: movie });
+} catch (error) {
+  // Manejar errores y pasar al siguiente middleware de error
+  next(error);
+}
 };
 
 
 
 controller.getAllMovies = async (req, res, next) => {
-    try {
-        // Obtener todas las películas
-        const movies = await Movie.find();
+try {
+    // Obtener todas las películas
+    const movies = await Movie.find();
 
-        // Respuesta exitosa con las películas encontradas
-        res.status(200).json({ data: movies });
-    } catch (error) {
-        // Manejar errores y pasar al siguiente middleware de error
-        next(error);
-    }
+    // Respuesta exitosa con las películas encontradas
+    res.status(200).json({ data: movies });
+} catch (error) {
+    // Manejar errores y pasar al siguiente middleware de error
+    next(error);
+}
 };
 
 controller.getMostViewedMovies = async (req, res, next) => {

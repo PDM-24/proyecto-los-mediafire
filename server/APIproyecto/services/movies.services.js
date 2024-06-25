@@ -157,7 +157,7 @@ const getGenreId = (genreName) => {
   };
   
 
-const getMoviesCategory = async (categoryName, limit = 10) => {
+const getMoviesCategory = async (categoryName, limit = 20) => {
   try {
     const categoryId = getGenreId(categoryName);
     const response = await axios.get(
