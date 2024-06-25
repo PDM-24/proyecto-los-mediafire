@@ -344,7 +344,8 @@ fun unComentario(
                                         focusedLabelColor = white,
                                         focusedIndicatorColor = white,
                                         cursorColor = white,
-                                        focusedTextColor = white
+                                        focusedTextColor = white,
+                                        unfocusedTextColor = white
                                     ),
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))

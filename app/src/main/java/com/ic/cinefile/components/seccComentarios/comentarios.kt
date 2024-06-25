@@ -222,7 +222,8 @@ fun comentarios(
                                     focusedLabelColor = white,
                                     focusedIndicatorColor = white,
                                     cursorColor = white,
-                                    focusedTextColor = white
+                                    focusedTextColor = white,
+                                    unfocusedTextColor = white
                                 ),
                                 placeholder = {
                                     Text(
@@ -244,7 +245,7 @@ fun comentarios(
 
                                 viewModel.postComment(movieId,userData)
                                 Log.d("activity","userData:$userData")
-
+                                commentText = ""
 
                             }
                             ) {
