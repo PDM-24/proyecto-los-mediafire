@@ -80,6 +80,7 @@ import com.ic.cinefile.ui.theme.dark_red
 import com.ic.cinefile.ui.theme.montserratFamily
 import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.GetMovieCreate
+import com.ic.cinefile.viewModel.LogoutResult
 import com.ic.cinefile.viewModel.RecentMoviestState
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserDataState
@@ -89,7 +90,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
-    var buscador by remember { mutableStateOf("") }
     val context = LocalContext.current
     val addScreenState = viewModel.uiState.collectAsState()
     val userDataState by viewModel.userDataState.collectAsState()
@@ -97,7 +97,8 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     //Del menu hamburguesa
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
-    val navigationController = rememberNavController()
+    val logoutResult by viewModel.logoutResult.collectAsState()
+
 
     var isLoading by remember { mutableStateOf(true) }
 
@@ -142,10 +143,30 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
 
     }
 
+<<<<<<< HEAD
     LaunchedEffect(Unit) {
         viewModel.startLoadingTimer()
     }
 
+=======
+    // Manejar el resultado del logout
+    LaunchedEffect(logoutResult) {
+        when (logoutResult) {
+            is LogoutResult.Success -> {
+                navController.navigate(screenRoute.Login.route) {
+                    popUpTo(0)
+                }
+            }
+            is LogoutResult.Error -> {
+                val message = (logoutResult as LogoutResult.Error).message
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+            else -> {}
+        }
+    }
+
+
+>>>>>>> ea30d121ae8e7362c3a788cb7f6bf61286bf6a1e
     val getMovieCreateState by viewModel.getMovieCreate.collectAsState()
 
     ModalNavigationDrawer(drawerState = drawerState, gesturesEnabled = true, drawerContent = {
@@ -286,6 +307,7 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                     coroutineScope.launch {
                         drawerState.close()
                     }/*LOGICA PA SALIR DE LA APP*/
+                    viewModel.logout()
                 },
                 colors = NavigationDrawerItemDefaults.colors(
                     unselectedContainerColor = Color.Transparent,
@@ -495,6 +517,9 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                                                 modifier = Modifier
                                                     .padding(4.dp)
                                                     .clickable {
+                                                     //   navController.navigate(route = screenRoute.descripcionPeli2.route + "/${movie.id}")
+                                                        navController.navigate(route = screenRoute.descripcionPeli2.route + "/${movie.id}")
+
                                                         // Aquí navegas a la pantalla de descripción de la película
                                                     }
                                             )
@@ -618,68 +643,68 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
 
                     else {
 
-                        //PELICULAS CREADAS POR USUARIO
-                        when (getMovieCreateState) {
-                            is GetMovieCreate.Success -> {
-                                val movies =
-                                    (getMovieCreateState as GetMovieCreate.Success).data.data
-                                Column {
-                                    Text(
-                                        text = "Peliculas creadas para ti",
-                                        style = TextStyle(
-                                            color = Color.White,
-                                            textAlign = TextAlign.Start,
-                                            fontFamily = montserratFamily,
-                                            fontWeight = FontWeight.Medium,
-                                            fontSize = 20.sp
-                                        ),
-                                        modifier = Modifier.padding(8.dp)
-                                    )
-
-                                    LazyRow {
-                                        items(movies.size) { index ->
-                                            val movie = movies[index]
-                                            Box(
-                                                modifier = Modifier
-                                                    .padding(4.dp)
-                                                    .clickable {
-                                                        // Aquí navegas a la pantalla de descripción de la película
-                                                        navController.navigate(route = screenRoute.descripcionPeli.route + "/${movie._id}")
-                                                    }
-                                            )
-                                            {
-                                                AsyncImage(
-                                                    model = movie.coverPhoto,
-                                                    contentDescription = null,
-                                                    modifier = Modifier
-                                                        .padding(4.dp)
-                                                        .height(200.dp)
-                                                        .width(150.dp)
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            is GetMovieCreate.Loading -> {
-                                // Aquí puedes mostrar un diálogo de carga o un indicador de progreso
-                                LoadingProgressDialog()
-                            }
-
-                            is GetMovieCreate.Error -> {
-                                // Aquí puedes manejar el estado de error
-                                Text(
-                                    text = "Error: ${(getMovieCreateState as GetMovieCreate.Error).errorMessage}",
-                                    color = Color.Red,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-
-                            is GetMovieCreate.Ready -> {
-                                // Aquí puedes manejar el estado de preparación inicial si es necesario
-                            }
-                        }
+                        //PELICULAS CREADAS POR ADMIn
+//                        when (getMovieCreateState) {
+//                            is GetMovieCreate.Success -> {
+//                                val movies =
+//                                    (getMovieCreateState as GetMovieCreate.Success).data.data
+//                                Column {
+//                                    Text(
+//                                        text = "Peliculas creadas para ti",
+//                                        style = TextStyle(
+//                                            color = Color.White,
+//                                            textAlign = TextAlign.Start,
+//                                            fontFamily = montserratFamily,
+//                                            fontWeight = FontWeight.Medium,
+//                                            fontSize = 20.sp
+//                                        ),
+//                                        modifier = Modifier.padding(8.dp)
+//                                    )
+//
+//                                    LazyRow {
+//                                        items(movies.size) { index ->
+//                                            val movie = movies[index]
+//                                            Box(
+//                                                modifier = Modifier
+//                                                    .padding(4.dp)
+//                                                    .clickable {
+//                                                        // Aquí navegas a la pantalla de descripción de la película
+//                                                        navController.navigate(route = screenRoute.descripcionPeli2.route + "/${movie.id}")
+//                                                    }
+//                                            )
+//                                            {
+//                                                AsyncImage(
+//                                                    model = movie.coverPhoto,
+//                                                    contentDescription = null,
+//                                                    modifier = Modifier
+//                                                        .padding(4.dp)
+//                                                        .height(200.dp)
+//                                                        .width(150.dp)
+//                                                )
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//
+//                            is GetMovieCreate.Loading -> {
+//                                // Aquí puedes mostrar un diálogo de carga o un indicador de progreso
+//                                LoadingProgressDialog()
+//                            }
+//
+//                            is GetMovieCreate.Error -> {
+//                                // Aquí puedes manejar el estado de error
+//                                Text(
+//                                    text = "Error: ${(getMovieCreateState as GetMovieCreate.Error).errorMessage}",
+//                                    color = Color.Red,
+//                                    modifier = Modifier.padding(8.dp)
+//                                )
+//                            }
+//
+//                            is GetMovieCreate.Ready -> {
+//                                // Aquí puedes manejar el estado de preparación inicial si es necesario
+//                            }
+//                        }
 
 
 

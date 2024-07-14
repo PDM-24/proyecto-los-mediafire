@@ -16,10 +16,12 @@ sealed class screenRoute(var route: String) {
     object Buscador:screenRoute("Buscador")
 
     object descripcionPeli:screenRoute("descripcionPeli")
+    object descripcionPeli2:screenRoute("descripcionPeli2")
+
     object Notificaciones:screenRoute("Notificaciones")
     object PerfilAnuncios:screenRoute("PerfilAnuncios")
 
-    object unComentario:screenRoute("unComentario")
+    object unComentario: screenRoute("unComentario/{movieId}/{id}/{username}/{parentId}/{description}/{imagePainter}/{createdAt}")
 
     object ResultadoBuscador:screenRoute("ResultadoBuscador")
     object Calificadas:screenRoute("Calificadas")

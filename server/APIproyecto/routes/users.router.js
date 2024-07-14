@@ -47,8 +47,16 @@ router.patch('/user/notifications/:id', authenticate, notificationController.mar
 //crear pelicula
 router.post('/user/admin/home/movies', movieController.movieData);
 
+//borrar peli
+
 router.delete('/user/admin/home/movies/:id', movieController.deleteMovie);  
-router.get('/user/home/movies/:id', movieController.getMovieById);
+
+
+
+//todas las peliculas creadas por id
+router.get('/user/admin/home/:id',authenticate, movieController.getMovieByAdminId);
+
+//buscar actor
 router.get('/user/admin/home/movies/actors/search/:actorName', authenticate, movieController.searchActorsByName);
 
 

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,12 +47,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.ic.cinefile.R
+import com.ic.cinefile.components.LoadingProgressDialog
 import com.ic.cinefile.components.botonGuardar
 import com.ic.cinefile.components.seccComentarios.comentarios
 import com.ic.cinefile.components.ratingStars
@@ -61,10 +65,13 @@ import com.ic.cinefile.screens.Administrador.DeleteDialogAdmin
 import com.ic.cinefile.ui.theme.black
 import com.ic.cinefile.ui.theme.dark_red
 import com.ic.cinefile.ui.theme.light_yellow
+import com.ic.cinefile.ui.theme.montserratFamily
 import com.ic.cinefile.ui.theme.sky_blue
 import com.ic.cinefile.ui.theme.white
 import com.ic.cinefile.viewModel.AverageRatingForUserState
 import com.ic.cinefile.viewModel.AverageRatingState
+import com.ic.cinefile.viewModel.GetMovieCreate
+import com.ic.cinefile.viewModel.GetMovieCreateState
 import com.ic.cinefile.viewModel.MovieState
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserRatingState
@@ -72,7 +79,7 @@ import com.ic.cinefile.viewModel.userCreateViewModel
 
 
 @Composable
-fun descripcionPeli(
+fun descripcionPeli2(
     onClick: () -> Unit,
     viewModel: userCreateViewModel,
     navController: NavController,
@@ -86,9 +93,8 @@ fun descripcionPeli(
     val context = LocalContext.current
     val addScreenState = viewModel.uiState.collectAsState()
 
-    val movieState by viewModel.movieState.collectAsState()
 
-
+    val getmovieCreateState by viewModel.getMovieCreateState.collectAsState()
     val userRole = viewModel.getUserRole()
 
     val averageRating by viewModel.averageRatingState.collectAsState()
@@ -114,7 +120,7 @@ fun descripcionPeli(
 
 
     LaunchedEffect(movieId) {
-        viewModel.getMovieById(movieId)
+        viewModel.getMovieCreateById(movieId)
         viewModel.getAverageRating(movieId)
         viewModel.getRatingForUser(movieId)
     }
@@ -127,8 +133,13 @@ fun descripcionPeli(
             .background(Color.Black)
     ) {
 
-        when (movieState) {
-            is MovieState.Loading -> {
+
+
+
+
+
+        when (getmovieCreateState) {
+            is GetMovieCreateState.Loading -> {
                 // Mostrar un indicador de carga mientras se obtienen los datos
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -137,15 +148,15 @@ fun descripcionPeli(
                 )
             }
 
-            is MovieState.Error -> {
+            is GetMovieCreateState.Error -> {
                 // Mostrar un mensaje de error en caso de fallo
-                val message = (movieState as MovieState.Error).msg
+                val message = (getmovieCreateState as GetMovieCreateState.Error).msg
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
 
-            is MovieState.Success -> {
+            is GetMovieCreateState.Success -> {
                 // Mostrar la información de la película una vez cargada
-                val movie = (movieState as MovieState.Success).data
+                val movie = (getmovieCreateState as GetMovieCreateState.Success).data
 
                 //Modal de eliminar:
                 val openAlertDialog = remember { mutableStateOf(false) }
@@ -162,7 +173,7 @@ fun descripcionPeli(
                 //Imagen de fondo
 
                 AsyncImage(
-                    model = movie.posterUrl,
+                    model = movie.coverPhoto,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -247,7 +258,7 @@ fun descripcionPeli(
                                     tint = white
                                 )
                                 Text(
-                                    text = formatDuration(movie.duration ?: 0), // Asegurarse de manejar valores nulos
+                                    text = movie.duration ,
                                     color = white,
                                     fontSize = 16.sp,
                                     modifier = Modifier
@@ -277,7 +288,7 @@ fun descripcionPeli(
                                     tint = white
                                 )
                                 Text(
-                                    text = movie.releaseDate ?: "", // Asegurarse de manejar valores nulos
+                                    text = movie.createdAt ?: "", // Asegurarse de manejar valores nulos
                                     color = white,
                                     fontSize = 16.sp,
                                     modifier = Modifier
@@ -288,6 +299,8 @@ fun descripcionPeli(
 
 
                         //Categorias
+
+                        // Categorias
                         item {
                             Spacer(modifier = Modifier.height(15.dp))
                             Row(
@@ -295,15 +308,14 @@ fun descripcionPeli(
                                     .fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
-                                // Separar las categorías y mostrarlas individualmente
-                                movie.genres.split(",").forEach { category ->
+                                movie.categories.forEach { category ->
                                     Card(
                                         modifier = Modifier
                                             .wrapContentSize(),
                                         colors = CardDefaults.cardColors(containerColor = sky_blue)
                                     ) {
                                         Text(
-                                            text = category.trim(), // Eliminar espacios en blanco alrededor
+                                            text = category.trim(),
                                             color = Color.Black,
                                             modifier = Modifier.padding(6.dp)
                                         )
@@ -316,21 +328,21 @@ fun descripcionPeli(
                         item {
                             Spacer(modifier = Modifier.height(15.dp))
                             Text(
-                                text = movie.description ?:"",
+                                text = movie.synopsis ?:"",
                                 lineHeight = 20.sp,
                                 color = Color.White
                             )
                         }
 
-                        //TRAILER
-                        item {
-                            Spacer(modifier = Modifier.height(15.dp))
-                            verTrailer(onClick = {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(movie.trailerUrl))
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                context.startActivity(intent)
-                            })
-                        }
+//                        //TRAILER
+//                        item {
+//                            Spacer(modifier = Modifier.height(15.dp))
+//                            verTrailer(onClick = {
+//                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(movie.trailerUrl))
+//                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                                context.startActivity(intent)
+//                            })
+//                        }
 
                         //CALIFICACION
                         item {
@@ -439,12 +451,6 @@ fun descripcionPeli(
 //}
 
 
-@Composable
-fun formatDuration(durationInMinutes: Int): String {
-    val hours = durationInMinutes / 60
-    val minutes = durationInMinutes % 60
-    return "${hours}h ${minutes}min"
-}
 
 
 

@@ -91,6 +91,28 @@ controller.getComments = async (req, res, next) => {
 };
 
 
+controller.pollComments = async (req, res, next) => {
+  try {
+    const { id: movieId } = req.params;
+    const { lastFetched } = req.query;
+
+    const newComments = await commentUser.find({
+      movieId,
+      createdAt: { $gt: lastFetched }
+    }).populate('userId', 'username avatar').sort({ createdAt: 1 });
+
+    const formattedComments = newComments.map(comment => ({
+      ...comment.toObject(),
+      createdAt: moment(comment.createdAt).tz('America/El_Salvador').format('YYYY-MM-DD HH:mm:ss'),
+      updatedAt: moment(comment.updatedAt).tz('America/El_Salvador').format('YYYY-MM-DD HH:mm:ss')
+    }));
+
+    res.status(200).json(formattedComments);
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 // Función para obtener respuestas a un comentario específico
 controller.getRepliesToComment = async (req, res, next) => {

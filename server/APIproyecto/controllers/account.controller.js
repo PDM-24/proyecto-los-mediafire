@@ -107,11 +107,53 @@ controller.register=async(req,res,next)=>{
 
 
     // LOGOUT
+// // LOGOUT
+// controller.logout = async (req, res, next) => {
+//   try {
+//     // Verificar que el token se está enviando en la cabecera de autorización
+//     const authHeader = req.headers.authorization;
+//     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//       throw httpError(400, "Token no proporcionado o formato inválido");
+//     }
+
+//     const token = authHeader.split(" ")[1];
+//     const { userId } = await verifyToken(token);
+
+//     // Asegurarse de que verifyToken devuelva el userId
+//     if (!userId) {
+//       throw httpError(401, "Token inválido");
+//     }
+
+//     const user = await User.findById(userId);
+
+//     if (!user) {
+//       throw httpError(404, "Usuario no encontrado");
+//     }
+
+//     // Eliminar el token de la lista de tokens del usuario
+//     user.tokens = user.tokens.filter(t => t !== token);
+
+//     await user.save();
+
+//     return res.status(200).json({
+//       message: 'Se ha cerrado sesión correctamente'
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+// Logout de usuario
 controller.logout = async (req, res, next) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
-    const { userId } = await verifyToken(token);
+    const payload = await verifyToken(token);
 
+    if (!payload) {
+      throw httpError(401, "Token inválido o expirado");
+    }
+
+    const userId = payload.sub;
     const user = await User.findById(userId);
 
     if (!user) {
@@ -130,8 +172,6 @@ controller.logout = async (req, res, next) => {
     next(error);
   }
 };
-
-
 
    
 

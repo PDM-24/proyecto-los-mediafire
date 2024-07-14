@@ -60,6 +60,7 @@ import com.ic.cinefile.viewModel.CommentPostState
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserDataState
 import com.ic.cinefile.viewModel.userCreateViewModel
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,6 +103,8 @@ fun comentarios(
     LaunchedEffect(Unit) {
         viewModel.getComments(movieId) // Llamada para obtener los comentarios de la película
     }
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth()

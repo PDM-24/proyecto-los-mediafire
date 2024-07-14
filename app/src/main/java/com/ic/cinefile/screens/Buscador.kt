@@ -583,8 +583,8 @@ fun SearchHistoryScreen(onBackClick: () -> Unit, recentSearches: List<String>, n
 }
 
 
-@Preview
-@Composable
-fun BuscadorPreview(){
-    Buscador(viewModel = userCreateViewModel(), navController = rememberNavController())
-}
+//@Preview
+//@Composable
+//fun BuscadorPreview(){
+//    Buscador(viewModel = userCreateViewModel(), navController = rememberNavController())
+//}
