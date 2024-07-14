@@ -26,6 +26,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -40,7 +42,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,6 +52,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,6 +70,7 @@ import com.ic.cinefile.viewModel.MoviesReated
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.WishlistGetState
 import com.ic.cinefile.viewModel.userCreateViewModel
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +83,9 @@ fun Calificadas(
     val addScreenState = viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val userRole = viewModel.getUserRole()
+    var showReloadButton by remember { mutableStateOf(false) }
+
+
 
 
     //Listas de valores para prueba
@@ -86,6 +95,12 @@ fun Calificadas(
         viewModel.getWishlist()
         viewModel.getMoviesReated()
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.startLoadingTimer()
+    }
+
+
 
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
@@ -178,6 +193,35 @@ fun Calificadas(
                 .background(black),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            if (showReloadButton) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.6f))
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "¿Crees que está tardando mucho?",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { viewModel.reloadUserData() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                    ) {
+                        Text(
+                            text = "Recargar",
+                            color = Color.Black,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            }
 
 
             when (moviesReatedState) {

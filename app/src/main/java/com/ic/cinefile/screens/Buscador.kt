@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,6 +28,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -80,6 +83,7 @@ import com.ic.cinefile.viewModel.TopMoviestState
 import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserDataState
 import com.ic.cinefile.viewModel.userCreateViewModel
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -89,6 +93,8 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    var showReloadButton by remember { mutableStateOf(false) }
+
 
     var searchHistory by remember { mutableStateOf(listOf<String>()) }
 
@@ -107,7 +113,7 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
             }
 
             UiState.Loading -> {
-                // Mostrar un diálogo de carga o algún indicador de progreso
+                viewModel.startLoadingTimer()
             }
 
             UiState.Ready -> {}
@@ -127,6 +133,13 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
         viewModel.TopMovies()
     }
 
+    LaunchedEffect(isSearching) {
+        if (isSearching) {
+            viewModel.startLoadingTimer()
+        } else {
+            viewModel.resetReloadButton()
+        }
+    }
 
 
 
@@ -245,20 +258,44 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
         }
     ) { innerPadding ->
         // Contenido del Scaffold
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .background(Color.Black)
-            ) {
-                if (isSearching) {
-                    // Mostrar la pantalla de historial de búsqueda dentro de la columna del Scaffold
-                    SearchHistoryScreen(
-                        onBackClick = { isSearching = false },
-                        recentSearches = viewModel.recentSearches.collectAsState().value,
-                        navController = navController
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(Color.Black)
+        ) {
 
+            if (showReloadButton) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.6f))
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "¿Crees que está tardando mucho?",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Center
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            viewModel.searchMoviesByTitle(buscador)
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                    ) {
+                        Text(
+                            text = "Recargar",
+                            color = Color.Black,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+
+
                 } else {
                     // Contenido principal
                     Column(
@@ -381,6 +418,8 @@ fun Buscador(viewModel: userCreateViewModel, navController: NavController) {
                                 }
                             }
                         }
+
+
 
                         is MostViewsMoviestState.Loading -> {
                             // Aquí puedes mostrar un diálogo de carga o un indicador de progreso

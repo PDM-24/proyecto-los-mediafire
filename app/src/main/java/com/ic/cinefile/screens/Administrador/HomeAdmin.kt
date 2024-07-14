@@ -100,6 +100,8 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     val logoutResult by viewModel.logoutResult.collectAsState()
 
 
+    var isLoading by remember { mutableStateOf(true) }
+
     val userRole = viewModel.getUserRole()
 
     //Modal de eliminar:
@@ -141,6 +143,12 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
 
     }
 
+<<<<<<< HEAD
+    LaunchedEffect(Unit) {
+        viewModel.startLoadingTimer()
+    }
+
+=======
     // Manejar el resultado del logout
     LaunchedEffect(logoutResult) {
         when (logoutResult) {
@@ -158,6 +166,7 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     }
 
 
+>>>>>>> ea30d121ae8e7362c3a788cb7f6bf61286bf6a1e
     val getMovieCreateState by viewModel.getMovieCreate.collectAsState()
 
     ModalNavigationDrawer(drawerState = drawerState, gesturesEnabled = true, drawerContent = {
@@ -360,6 +369,37 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                 }
             })
         }) { innerPadding ->
+
+                // Insertar aquí el botón de recarga
+                if (viewModel.showReloadButton) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.6f))
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "¿Crees que está tardando mucho?",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = { viewModel.reload() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                        ) {
+                            Text(
+                                text = "Recargar",
+                                color = Color.Black,
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
+                }
+
             if (userDataState is UserDataState.Loading) {
                 LoadingAnimation()
             } else {
