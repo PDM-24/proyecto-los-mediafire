@@ -1,6 +1,9 @@
 package com.ic.cinefile.Navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,17 +32,23 @@ import com.ic.cinefile.screens.Resultadobuscador
 import com.ic.cinefile.screens.contentAvatar
 import com.ic.cinefile.screens.contentGenero
 import com.ic.cinefile.screens.descripcionPeli
+import com.ic.cinefile.screens.descripcionPeli2
+import com.ic.cinefile.screens.getAvatarResource
+import com.ic.cinefile.viewModel.UserCreateViewModelFactory
+import com.ic.cinefile.viewModel.UserPreferences
 import com.ic.cinefile.viewModel.userCreateViewModel
 
 @Composable
 fun AppNavigation(
     viewModel : userCreateViewModel,
+    navController: NavHostController = rememberNavController()
+
 ){
-    val navController = rememberNavController()
+
 
     NavHost(
         navController = navController,
-        startDestination = screenRoute.HomeAppScreen.route
+            startDestination = screenRoute.HomeAppScreen.route
     )
     {
         composable(route = screenRoute.CrearCuenta.route){
@@ -72,6 +81,8 @@ fun AppNavigation(
         composable(route=screenRoute.Buscador.route){
             Buscador(viewModel,navController)
         }
+
+
         composable(
             route = "${screenRoute.descripcionPeli.route}/{movieId}",
                 arguments = listOf(navArgument("movieId"){
@@ -84,6 +95,24 @@ fun AppNavigation(
             descripcionPeli(
                onClick = {}, viewModel,navController, movieId)
         }
+
+
+
+
+        composable(
+            route = "${screenRoute.descripcionPeli2.route}/{movieId}",
+            arguments = listOf(navArgument("movieId"){
+                type= NavType.IntType
+            })
+
+        ) { backStackEntry ->
+            val movieId = backStackEntry.arguments?.getInt("movieId") ?: throw IllegalArgumentException("Movie ID missing")
+
+            descripcionPeli2(
+                onClick = {}, viewModel,navController, movieId)
+        }
+
+
         composable(route=screenRoute.PerfilAnuncios.route){
             PerfilAnuncios(viewModel,navController)
         }
@@ -108,21 +137,6 @@ fun AppNavigation(
         }
 
 
-//        composable(
-//            route = screenRoute.ResultadoBuscador.route + "/{title}",
-//            arguments = listOf(
-//                navArgument("title") { type = NavType.StringType }
-//            )
-//        ) { backStackEntry ->
-//            val title = backStackEntry.arguments?.getString("title") ?: throw IllegalArgumentException("Title missing")
-//
-//            Resultadobuscador(
-//                viewModel ,
-//                navController,
-//                title
-//            )
-//        }
-
         composable(route=screenRoute.Calificadas.route){
             Calificadas(viewModel,navController)
         }
@@ -134,34 +148,8 @@ fun AppNavigation(
         }
 
 
-        composable(
-            route = "${screenRoute.unComentario.route}/{parentId}",
-            arguments = listOf(
-                navArgument("parentId") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val parentId = backStackEntry.arguments?.getString("parentId") ?: throw IllegalArgumentException("Parent ID missing")
 
-            // Aquí debes obtener los otros parámetros necesarios para la pantalla unComentario
-            // Puedes obtenerlos de tu ViewModel, base de datos, o de donde estés almacenando la información.
-            val movieId = 1 // Ejemplo, debes obtener el movieId correspondiente al parentId
-            val id = "123" // Ejemplo, debes obtener el id correspondiente al parentId
-            val username = "John Doe" // Ejemplo, debes obtener el username correspondiente al parentId
-            val description = "Descripción del comentario" // Ejemplo, debes obtener la descripción correspondiente al parentId
-            val createdAt = "2024-06-24T10:00:00Z" // Ejemplo, debes obtener el createdAt correspondiente al parentId
-            val imagePainter = rememberImagePainter(data = "URL de la imagen") // Ajusta según tu fuente de imagen
 
-            unComentario(
-                movieId = movieId,
-                id = id,
-                username = username,
-                parentId = parentId,
-                description = description,
-                imagePainter = imagePainter,
-                createdAt = createdAt,
-                viewModel = viewModel
-            )
-        }
 
 
 

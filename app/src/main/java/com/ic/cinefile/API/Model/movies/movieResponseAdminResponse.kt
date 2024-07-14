@@ -38,7 +38,10 @@ data class MovieAdmin(
     val updatedAt: String,
 
     @SerializedName("__v")
-    val __v: Int
+    val __v: Int,
+
+    @SerializedName("id")
+    val id:Int
 )
 
 data class Actor(

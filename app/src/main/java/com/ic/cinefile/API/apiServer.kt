@@ -19,7 +19,6 @@ object apiServer {
              .build()
              .create(Methods::class.java)
 
-
     }
 
     }

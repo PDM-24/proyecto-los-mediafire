@@ -524,7 +524,7 @@ fun Resultadobuscador(viewModel: userCreateViewModel, navController: NavControll
                             ) {
                                 Peli(
                                     poster = movie.posterUrl,
-                                    titulo = movie.title,
+                                    titulo = movie.title ?:"sin titulo",
                                     fechaLanzamiento = movie.releaseDate ?: "sin fecha",
                                     categoria = movie.genres,
                                     userRole = userRole,

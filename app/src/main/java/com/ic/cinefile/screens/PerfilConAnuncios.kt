@@ -73,6 +73,7 @@ import com.ic.cinefile.ui.theme.grisComment
 import com.ic.cinefile.ui.theme.light_red
 import com.ic.cinefile.ui.theme.montserratFamily
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.LogoutResult
 import com.ic.cinefile.viewModel.MoviesReated
 import com.ic.cinefile.viewModel.RecentMoviestState
 import com.ic.cinefile.viewModel.UiState
@@ -93,6 +94,7 @@ fun PerfilAnuncios(
     val wishlisGetState by viewModel.wishlisGetState.collectAsState()
     val averageRating by viewModel.averageRatingState.collectAsState()
     val moviesReatedState by viewModel.moviesReatedState.collectAsState()
+    val logoutResult by viewModel.logoutResult.collectAsState()
 
     val userRole = viewModel.getUserRole()
 
@@ -119,6 +121,21 @@ fun PerfilAnuncios(
                 viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
                 viewModel.setStateToReady()
             }
+        }
+    }
+// Manejar el resultado del logout
+    LaunchedEffect(logoutResult) {
+        when (logoutResult) {
+            is LogoutResult.Success -> {
+                navController.navigate(screenRoute.Login.route) {
+                    popUpTo(0)
+                }
+            }
+            is LogoutResult.Error -> {
+                val message = (logoutResult as LogoutResult.Error).message
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+            else -> {}
         }
     }
 
@@ -498,8 +515,8 @@ fun getAvatarResource(avatarName: String): Int {
     }
 }
 
-@Preview
-@Composable
-fun perfilAnunciosPreview() {
-    PerfilAnuncios(userCreateViewModel(), rememberNavController())
-}
+//@Preview
+//@Composable
+//fun perfilAnunciosPreview() {
+//    PerfilAnuncios(userCreateViewModel(), rememberNavController())
+//}

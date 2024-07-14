@@ -81,30 +81,13 @@ fun descripcionPeliAdmin(
     val movieState by viewModel.movieState.collectAsState()
 
 
-//    LaunchedEffect(addScreenState.value) {
-//        when (addScreenState.value) {
-//            is UiState.Error -> {
-//                val message = (addScreenState.value as UiState.Error).msg
-//                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-//                viewModel.setStateToReady()
-//            }
-//            UiState.Loading -> {
-//                // Mostrar un diálogo de carga o algún indicador de progreso
-//            }
-//            UiState.Ready -> {}
-//            is UiState.Success -> {
-//                val token = (addScreenState.value as UiState.Success).token
-//                viewModel.getMovieById(movieId) // Llama a getUserData para obtener la información del usuario
-//                viewModel.setStateToReady()
-//            }
-//        }
-//    }
-
     val averageRating by viewModel.averageRatingState.collectAsState()
+
 
     LaunchedEffect(movieId) {
         viewModel.getMovieById(movieId)
         viewModel.getAverageRating(movieId)
+        viewModel.getRatingForUser(movieId)
 
     }
 
@@ -179,7 +162,7 @@ fun descripcionPeliAdmin(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = movie.title, // Mostrar el nombre de la película seleccionada
+                                    text = movie.title ?:"s/n", // Mostrar el nombre de la película seleccionada
                                     fontSize = 28.sp,
                                     color = Color.White,
                                     modifier = Modifier.fillMaxWidth(0.85f)

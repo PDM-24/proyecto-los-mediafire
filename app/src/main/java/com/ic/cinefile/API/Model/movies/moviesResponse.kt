@@ -9,7 +9,7 @@ data class moviesResponse(
     @SerializedName("poster")
     val posterUrl: String,
     @SerializedName("title")
-    val title: String,
+    val title: String?,
     @SerializedName("duracion")
     val duration: Int,
     @SerializedName("fecha_lanzamiento")
@@ -24,7 +24,9 @@ data class moviesResponse(
 val actors: List<ActorResponse>,
 
     @SerializedName("averageRating")
-    val averageRating: Double
+    val averageRating: Double,
+    @SerializedName("userRating") val userRating: Int?
+
 )
 
 

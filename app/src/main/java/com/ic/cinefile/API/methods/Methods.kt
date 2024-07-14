@@ -3,8 +3,10 @@ package com.ic.cinefile.API.methods
 import com.ic.cinefile.API.Model.movies.ActorResponse
 import com.ic.cinefile.API.Model.movies.AverageRatingResponse
 import com.ic.cinefile.API.Model.movies.DeleteResponse
+import com.ic.cinefile.API.Model.movies.MovieAdmin
 import com.ic.cinefile.API.Model.movies.RatingResponse
 import com.ic.cinefile.API.Model.movies.ReplyComment
+import com.ic.cinefile.API.Model.movies.UserRatingResponse
 import com.ic.cinefile.API.Model.movies.actorNameResponse
 import com.ic.cinefile.API.Model.movies.createMovieResponse
 import com.ic.cinefile.API.Model.movies.getCommentResponse
@@ -58,7 +60,11 @@ interface Methods {
 
     @Headers("Content-Type: application/json")
     @POST("api/account/logout")
-    suspend fun logoutAccount(): Response<Unit>
+    suspend fun logoutAccount(
+        @Header("Authorization") authorization: String
+
+
+    ): Response<Unit>
 
     @Headers("Content-Type: application/json")
     @GET("api/account/user/home")
@@ -106,14 +112,21 @@ interface Methods {
         @Body commentData: commentData // Asegúrate de tener tu modelo de datos para el cuerpo del comentario definido
     ): Response<postCommentResponse>
 
-    @Headers("Content-Type: application/json")
-    @GET("api/movies/moviesId/{id}/comments")
-    suspend fun getComments(
-        @Header("Authorization") authorization: String,
-        @Path("id") movieId: Int,
+        @Headers("Content-Type: application/json")
+        @GET("api/movies/moviesId/{id}/comments")
+        suspend fun getComments(
+            @Header("Authorization") authorization: String,
+            @Path("id") movieId: Int,
 
+            ): Response<List<getCommentResponse>>
+
+
+        @GET("api/movies/moviesId/{id}/pollComments")
+        suspend fun pollComments(
+            @Header("Authorization") authorization: String,
+            @Path("id") movieId: Int,
+            @Query("lastFetched") lastFetched: String
         ): Response<List<getCommentResponse>>
-
 
     @Headers("Content-Type: application/json")
     @GET("api/movies/moviesId/{id}/comments/{parentId}")
@@ -210,7 +223,15 @@ interface Methods {
     @GET("api/account/user/admin/home")
     suspend fun getMovieCreate(
 
-    ): Response<movieResponseAdminResponse>
+        ): Response<movieResponseAdminResponse>
+
+
+    @Headers("Content-Type: application/json")
+    @GET("api/account/user/admin/home/{id}")
+    suspend fun getMovieCreateById(
+        @Header("Authorization") authorization: String,
+        @Path("id") movieId: Int
+    ): Response<MovieAdmin>
 
     @GET("api/account/user/admin/home/movies/actors/search/{actorName}")
     suspend fun searchActorsByName(
@@ -226,7 +247,12 @@ interface Methods {
 
 
 
-
+    @Headers(value=["Content-Type:application/json"])
+    @GET("api/movies/moviesId/{movieId}/userRatings")
+    suspend fun getRatedForUser(
+        @Header("Authorization") authorization: String,
+        @Path("movieId") movieId: Int
+    ): Response<UserRatingResponse>
 
 
 
