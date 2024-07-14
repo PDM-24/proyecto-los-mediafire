@@ -329,20 +329,21 @@ class userCreateViewModel: ViewModel() {
 
 
 
-    var showReloadButton by mutableStateOf(false)
+    var showReloadButton by mutableStateOf(true)
         private set
 
     // Función para mostrar el botón de recarga después de 7 segundos
     fun startLoadingTimer() {
         viewModelScope.launch {
             delay(7000)
-            if (userDataState.value is UserDataState.Loading ||
-                wishlisGetState.value is WishlistGetState.Loading ||
-                moviesReatedState.value is MoviesReated.Loading) {
-                showReloadButton = true
-            }
+            showReloadButton = true
         }
     }
+
+    fun resetReloadButton() {
+        showReloadButton = false
+    }
+
 
     // Función para recargar datos y ocultar el botón de recarga
     fun reload() {
@@ -351,6 +352,19 @@ class userCreateViewModel: ViewModel() {
         fetchUserData("Your_Token")  // Llama a fetchUserData con el token adecuado
     }
 
+    fun reloadUserData() {
+        showReloadButton = false
+        _uiState.value = UiState.Loading
+        viewModelScope.launch {
+            try {
+                val token = "Your_Token" // Fetch token logic here
+                fetchUserData(token)
+                _uiState.value = UiState.Success(token)
+            } catch (e: Exception) {
+                _uiState.value = UiState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
 
 
     //obtener peliculas recientes
@@ -440,6 +454,8 @@ class userCreateViewModel: ViewModel() {
 
     fun searchMoviesByTitle(title: String, sortBy: String? = null, genre: String? = null) {
         val normalizedTitle = normalizeString(title)
+        resetReloadButton()
+        startLoadingTimer()
 
         viewModelScope.launch(Dispatchers.IO) {
             try {

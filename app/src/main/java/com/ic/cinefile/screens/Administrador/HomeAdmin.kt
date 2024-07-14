@@ -93,12 +93,13 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     val context = LocalContext.current
     val addScreenState = viewModel.uiState.collectAsState()
     val userDataState by viewModel.userDataState.collectAsState()
-    var showReloadButton by remember { mutableStateOf(false) }
     var isFocused by remember { mutableStateOf(false) }
     //Del menu hamburguesa
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
     val navigationController = rememberNavController()
+
+    var isLoading by remember { mutableStateOf(true) }
 
     val userRole = viewModel.getUserRole()
 
@@ -139,6 +140,10 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     LaunchedEffect(Unit) {
         viewModel.getMovieCreate()
 
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.startLoadingTimer()
     }
 
     val getMovieCreateState by viewModel.getMovieCreate.collectAsState()
@@ -342,6 +347,37 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                 }
             })
         }) { innerPadding ->
+
+                // Insertar aquí el botón de recarga
+                if (viewModel.showReloadButton) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.6f))
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "¿Crees que está tardando mucho?",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = { viewModel.reload() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                        ) {
+                            Text(
+                                text = "Recargar",
+                                color = Color.Black,
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
+                }
+
             if (userDataState is UserDataState.Loading) {
                 LoadingAnimation()
             } else {

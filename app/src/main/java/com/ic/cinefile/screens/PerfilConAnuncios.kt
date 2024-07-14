@@ -79,6 +79,7 @@ import com.ic.cinefile.viewModel.UiState
 import com.ic.cinefile.viewModel.UserDataState
 import com.ic.cinefile.viewModel.WishlistGetState
 import com.ic.cinefile.viewModel.userCreateViewModel
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,9 +97,15 @@ fun PerfilAnuncios(
 
     val userRole = viewModel.getUserRole()
 
+    var showReloadButton by remember { mutableStateOf(false) }
+
+
     LaunchedEffect(Unit) {
         viewModel.getWishlist()
         viewModel.getMoviesReated()
+
+        delay(7000) // Esperar 7 segundos
+        showReloadButton = true
     }
 
     LaunchedEffect(addScreenState.value) {
@@ -185,6 +192,35 @@ fun PerfilAnuncios(
                 .background(black),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            if (viewModel.showReloadButton) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.6f))
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "¿Crees que está tardando mucho?",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { viewModel.reloadUserData() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                    ) {
+                        Text(
+                            text = "Recargar",
+                            color = Color.Black,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            }
 
             // FOTO DE PERFIL DEL USUARIO Y NOMBRE
             when (userDataState) {
