@@ -59,7 +59,7 @@ fun ratingStars(
                         }
                         true
                     },
-                tint = if (i <= ratingState) light_yellow else Color(0xFFA2ADB1)
+                tint = if (i <= ratingState ) light_yellow else Color(0xFFA2ADB1)
             )
         }
     }

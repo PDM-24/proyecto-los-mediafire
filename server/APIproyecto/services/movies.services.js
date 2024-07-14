@@ -278,8 +278,8 @@ const getMoviesBySortType = async (sortType, limit = 10) => {
   
 
 
-  //por id
- const fetchMovieById = async (id) => {
+
+  const fetchMovieById = async (id,userId) => {
     try {
       const response = await axios.get(`${BASE_URL_API}movie/${id}?api_key=${API_KEY}&language=es-MX&append_to_response=videos,credits`);
       const movie = response.data;
@@ -288,6 +288,19 @@ const getMoviesBySortType = async (sortType, limit = 10) => {
         name: actor.name,
         profileUrl: actor.profile_path ? `https://image.tmdb.org/t/p/w500${actor.profile_path}` : null,
       }));
+
+   //   Buscar la calificación del usuario para esta película
+  
+    const user = await User.findById(userId);
+    let userRating = null;
+
+    if (user) {
+      const userRatingObj = user.ratings.find(rating => rating.movieId === id.toString());
+      if (userRatingObj) {
+        userRating = userRatingObj.rating;
+      }
+    }
+
   
       return {
         id: movie.id,
@@ -299,11 +312,13 @@ const getMoviesBySortType = async (sortType, limit = 10) => {
         descripcion: movie.overview,
         trailer: movie.videos.results.length > 0 ? `https://www.youtube.com/watch?v=${movie.videos.results[0].key}` : null,
         actors: actors,
+        userRating: userRating ? userRating :0 // Incluir la calificación del usuario
       };
     } catch (error) {
       throw new Error("Error occurred while fetching movie details. Please try again.");
     }
   };
+  
 
 
   //calificaciones generales
@@ -566,6 +581,52 @@ const getRatedMovies = async (userId) => {
   };
   
 
+
+  const getUserRatingsForMovie = async (userId, movieId) => {
+    try {
+      const user = await User.findById(userId);
+  
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+  
+      // Asegurémonos de que movieId es una cadena
+      movieId = movieId.toString();
+      
+      console.log(`User ID: ${userId}`);
+      console.log(`Movie ID: ${movieId}`);
+      console.log('User Ratings:', user.ratings);
+  
+      const ratingsForMovie = user.ratings
+        .filter(rating => rating.movieId.toString() === movieId);
+  
+      console.log('Filtered Ratings for Movie:', ratingsForMovie);
+  
+      if (ratingsForMovie.length > 0) {
+        const sortedRatings = ratingsForMovie.sort((a, b) => {
+          console.log(`Comparing ${a.timestamp} and ${b.timestamp}`);
+          return new Date(b.timestamp) - new Date(a.timestamp);
+        });
+        
+        console.log('Sorted Ratings:', sortedRatings);
+  
+        const userRatingObj = sortedRatings[0]; // Obtener la calificación más reciente
+  
+        return {
+          userId: user._id,
+          rating: userRatingObj.rating
+        };
+      } else {
+        console.log('No ratings found for the movie.');
+        return null; // Si no hay calificaciones para la película
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      throw new Error('Error al obtener las calificaciones del usuario para la película');
+    }
+  };
+  
+
 // se exportan como se deven son variables por asi asi
 module.exports={
     getMoviesAPI:getMovies,
@@ -580,5 +641,6 @@ module.exports={
   getWishlistAPI:getWishlist,
   getRatedMoviesAPI:getRatedMovies,
   hideMovieAPI: hideMovie,
-  searchActorsByNameAPI:searchActorsByName
+  searchActorsByNameAPI:searchActorsByName,
+  getUserRatingsForMovieAPI:getUserRatingsForMovie
 }

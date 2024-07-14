@@ -13,5 +13,6 @@ data class Movie(
     @SerializedName("poster") val poster: String,
     @SerializedName("releaseDate") val releaseDate:String,
     @SerializedName("genres") val genres:String,
+    @SerializedName("userRating") val userRating:Int,
     @SerializedName("averageRating") val averageRating: Double
 )

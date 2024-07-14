@@ -60,6 +60,7 @@ const accountSchema = SchemaUsers(
   poster: { type: String },
   releaseDate: { type: String },
   genre: { type: String },
+  timestamp: { type: Date, default: Date.now } // Agregar timestamp para la fecha y hora de la calificación
 
     }],
     isHidden: { type: Boolean, default: false }, // Nuevo campo para marcar si la película está oculta

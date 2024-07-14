@@ -63,9 +63,11 @@ import com.ic.cinefile.ui.theme.dark_red
 import com.ic.cinefile.ui.theme.light_yellow
 import com.ic.cinefile.ui.theme.sky_blue
 import com.ic.cinefile.ui.theme.white
+import com.ic.cinefile.viewModel.AverageRatingForUserState
 import com.ic.cinefile.viewModel.AverageRatingState
 import com.ic.cinefile.viewModel.MovieState
 import com.ic.cinefile.viewModel.UiState
+import com.ic.cinefile.viewModel.UserRatingState
 import com.ic.cinefile.viewModel.userCreateViewModel
 
 
@@ -75,9 +77,7 @@ fun descripcionPeli(
     viewModel: userCreateViewModel,
     navController: NavController,
     movieId: Int,
-//    id: String,
-//    imagePainter: Painter,
-//    description: String
+
 ) {
 
 
@@ -88,13 +88,11 @@ fun descripcionPeli(
 
     val movieState by viewModel.movieState.collectAsState()
 
-    val witchListPostSate by viewModel.wishListPostState
-    var idMovie by remember { mutableStateOf(witchListPostSate.movieId) }
 
     val userRole = viewModel.getUserRole()
 
     val averageRating by viewModel.averageRatingState.collectAsState()
-
+    val averageRatingForUser by viewModel.averageRatingForUserState.collectAsState()
     LaunchedEffect(addScreenState.value) {
         when (addScreenState.value) {
             is UiState.Error -> {
@@ -118,7 +116,7 @@ fun descripcionPeli(
     LaunchedEffect(movieId) {
         viewModel.getMovieById(movieId)
         viewModel.getAverageRating(movieId)
-
+        viewModel.getRatingForUser(movieId)
     }
 
 
@@ -204,7 +202,7 @@ fun descripcionPeli(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = movie.title, // Mostrar el nombre de la película seleccionada
+                                    text = movie.title ?: "Sin título", // Evitar null
                                     fontSize = 28.sp,
                                     color = Color.White,
                                     modifier = Modifier.fillMaxWidth(0.85f)
@@ -249,7 +247,7 @@ fun descripcionPeli(
                                     tint = white
                                 )
                                 Text(
-                                    text = formatDuration(movie.duration),
+                                    text = formatDuration(movie.duration ?: 0), // Asegurarse de manejar valores nulos
                                     color = white,
                                     fontSize = 16.sp,
                                     modifier = Modifier
@@ -279,7 +277,7 @@ fun descripcionPeli(
                                     tint = white
                                 )
                                 Text(
-                                    text = movie.releaseDate,
+                                    text = movie.releaseDate ?: "", // Asegurarse de manejar valores nulos
                                     color = white,
                                     fontSize = 16.sp,
                                     modifier = Modifier
@@ -318,7 +316,7 @@ fun descripcionPeli(
                         item {
                             Spacer(modifier = Modifier.height(15.dp))
                             Text(
-                                text = movie.description,
+                                text = movie.description ?:"",
                                 lineHeight = 20.sp,
                                 color = Color.White
                             )
@@ -344,11 +342,19 @@ fun descripcionPeli(
                                     .padding(bottom = 8.dp)
                             )
                             ratingStars(
-                                rating = 1,
+//
+                                rating = when (val state = averageRatingForUser) {
+                                    is AverageRatingForUserState.Success -> state.rating
+                                    else -> 0
+                                }
+                                , // Mostrar la calificación del usuario
                                 onRatingChanged = { rating ->
                                     viewModel.rateMovie(movieId, rating.toDouble())
                                 }
                             )
+
+
+
                         }
 
                         //ACTORES
@@ -439,3 +445,7 @@ fun formatDuration(durationInMinutes: Int): String {
     val minutes = durationInMinutes % 60
     return "${hours}h ${minutes}min"
 }
+
+
+
+

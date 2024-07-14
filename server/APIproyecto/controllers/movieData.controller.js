@@ -1,9 +1,11 @@
+
 const controller = {};//encargado de contener la informacion
 const Movie = require("../models/movieData.model");
 const MoviesService = require('../services/movies.services');
 const User = require('../models/account.model');
 
 const httpError = require("http-errors");
+const moviesServices = require("../services/movies.services");
 
 controller.movieData=async(req,res,next)=>{
 
@@ -77,23 +79,23 @@ controller.findAll = async (req, res, next) => {
     }
 };
 
-controller.getMovieById = async (req, res, next) => {
+controller.getMovieByAdminId = async (req, res, next) => {
   try {
-      const { id } = req.params; // Obtener el ID de la película a obtener
+    const { id } = req.params; // Obtener el ID de la película a obtener
 
-      // Buscar la película por su ID
-      const movie = await Movie.findById(id);
+    // Buscar la película por su campo id (auto-incremental)
+    const movie = await Movie.findOne({ id: parseInt(id, 10) });
 
-      // Verificar si la película existe
-      if (!movie) {
-          throw httpError(404, 'Película no encontrada');
-      }
+    // Verificar si la película existe
+    if (!movie) {
+      throw httpError(404, 'Película no encontrada');
+    }
 
-      // Respuesta exitosa con los datos de la película
-      res.status(200).json({ data: movie });
+    // Respuesta exitosa con los datos de la película
+    res.status(200).json(movie);
   } catch (error) {
-      // Manejar errores y pasar al siguiente middleware de error
-      next(error);
+    // Manejar errores y pasar al siguiente middleware de error
+    next(error);
   }
 };
 
@@ -226,7 +228,13 @@ controller.getMovieById = async (req, res, next) => {
   try { 
 
     const { id } = req.params;
+    const userId = req.user._id;
 
+    // Buscar al usuario en la base de datos
+    const user = await User.findById(userId);
+    if (!user) {
+      throw httpError(404, 'Usuario no encontrado');
+    }
     // Obtener los detalles de la película por ID
     const movieDetails = await MoviesService.fetchMovieByIdAPI(id);
     if (!movieDetails || movieDetails.length === 0) {
@@ -317,20 +325,6 @@ controller.getMovieAverageRating = async (req, res, next) => {
     next(error);
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -499,7 +493,25 @@ controller.getRatedMovies = async (req, res, next) => {
   };
 
 
+  controller.getUserRatingsForMovie = async (req, res, next) => {
+    try {
+      const { movieId } = req.params;
+      const userId = req.user._id; // Asumiendo que el middleware de autenticación añade el usuario a la solicitud
+  
+      // Obtener la calificación del usuario actual para la película con movieId
+      const userRating = await moviesServices.getUserRatingsForMovieAPI(userId, movieId);
+  
+      if (userRating) {
+        // Devolver la calificación del usuario como respuesta
+        res.status(200).json({ userRating });
+      } else {
+        // Si no se encuentra la calificación, devolver un 404
+        res.status(404).json({ message: "No rating found for the specified movie." });
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
 
 module.exports = controller;
-
 
