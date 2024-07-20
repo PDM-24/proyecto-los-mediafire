@@ -106,8 +106,7 @@ fun PerfilAnuncios(
         viewModel.getWishlist()
         viewModel.getMoviesReated()
 
-        delay(7000) // Esperar 7 segundos
-        showReloadButton = true
+
     }
 
     LaunchedEffect(addScreenState.value) {
@@ -119,17 +118,27 @@ fun PerfilAnuncios(
             }
 
             UiState.Loading -> {
+             //   viewModel.startLoadingTimer()  // Inicia el temporizador cuando comienza la carga
+
                 // Mostrar un diálogo de carga o indicador de progreso si es necesario
             }
 
-            UiState.Ready -> {}
+            UiState.Ready -> {
+//                viewModel.resetReloadButton()  // Reinicia el botón si la carga se completa antes de tiempo
+
+            }
             is UiState.Success -> {
                 val token = (addScreenState.value as UiState.Success).token
                 viewModel.fetchUserData(token) // Llama a getUserData para obtener la información del usuario
-                viewModel.setStateToReady()
+//                viewModel.setStateToReady()
+//                viewModel.resetReloadButton()  // Reinicia el botón si la carga se completa antes de tiempo
+
             }
         }
     }
+
+
+
 // Manejar el resultado del logout
     LaunchedEffect(logoutResult) {
         when (logoutResult) {
@@ -210,34 +219,9 @@ fun PerfilAnuncios(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            if (viewModel.showReloadButton) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.6f))
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "¿Crees que está tardando mucho?",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = { viewModel.reloadUserData() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-                    ) {
-                        Text(
-                            text = "Recargar",
-                            color = Color.Black,
-                            fontSize = 16.sp
-                        )
-                    }
-                }
-            }
+
+
+
 
             // FOTO DE PERFIL DEL USUARIO Y NOMBRE
             when (userDataState) {
@@ -347,7 +331,8 @@ fun PerfilAnuncios(
             Spacer(modifier = Modifier.height(15.dp))
 
             // Aquí se agregan los banners de publicidad
-            AdvertisingBanner()
+
+
 
             // LISTAS
             LazyColumn(
