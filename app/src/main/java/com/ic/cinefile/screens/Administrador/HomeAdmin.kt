@@ -123,7 +123,7 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 viewModel.setStateToReady()
             }
-
+    
             UiState.Loading -> {
                 // Puedes agregar algún indicador de carga general aquí si es necesario
             }
@@ -143,12 +143,10 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
 
     }
 
-<<<<<<< HEAD
     LaunchedEffect(Unit) {
         viewModel.startLoadingTimer()
     }
 
-=======
     // Manejar el resultado del logout
     LaunchedEffect(logoutResult) {
         when (logoutResult) {
@@ -166,7 +164,6 @@ fun HomeAdmin(viewModel: userCreateViewModel, navController: NavController) {
     }
 
 
->>>>>>> ea30d121ae8e7362c3a788cb7f6bf61286bf6a1e
     val getMovieCreateState by viewModel.getMovieCreate.collectAsState()
 
     ModalNavigationDrawer(drawerState = drawerState, gesturesEnabled = true, drawerContent = {

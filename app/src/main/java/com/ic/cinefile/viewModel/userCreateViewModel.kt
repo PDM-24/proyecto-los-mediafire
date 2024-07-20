@@ -51,6 +51,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -401,7 +402,7 @@ class userCreateViewModel(
 
 
 
-    var showReloadButton by mutableStateOf(true)
+    var showReloadButton by mutableStateOf(false)
         private set
 
     // Función para mostrar el botón de recarga después de 7 segundos
@@ -421,19 +422,34 @@ class userCreateViewModel(
     fun reload() {
         showReloadButton = false
         _uiState.value = UiState.Loading
-        fetchUserData("Your_Token")  // Llama a fetchUserData con el token adecuado
+
+        // Obtener el token desde UserPreferences
+        viewModelScope.launch {
+            val token = userPreferences.authToken.firstOrNull()
+            if (token != null) {
+                fetchUserData(token)
+            } else {
+                _uiState.value = UiState.Error("Token no disponible")
+            }
+        }
     }
 
     fun reloadUserData() {
         showReloadButton = false
         _uiState.value = UiState.Loading
+
+        // Obtener el token desde UserPreferences
         viewModelScope.launch {
             try {
-                val token = "Your_Token" // Fetch token logic here
-                fetchUserData(token)
-                _uiState.value = UiState.Success(token)
+                val token = userPreferences.authToken.firstOrNull()
+                if (token != null) {
+                    fetchUserData(token)
+                    _uiState.value = UiState.Success(token)
+                } else {
+                    _uiState.value = UiState.Error("Token no disponible")
+                }
             } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.message ?: "Unknown error")
+                _uiState.value = UiState.Error(e.message ?: "Error desconocido")
             }
         }
     }
